@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../api/api_exception.dart';
@@ -77,8 +78,15 @@ class EnsureConversationNotifier
       );
       return conversation.id;
     } on ApiException catch (error) {
+      debugPrint(
+        '[Chat][EnsureConversation][owner=$ownerUserId][current=$currentUserId] ${error.message}',
+      );
       state = state.copyWith(isLoading: false, errorMessage: error.message);
-    } catch (error) {
+    } catch (error, stackTrace) {
+      debugPrint(
+        '[Chat][EnsureConversation][owner=$ownerUserId][current=$currentUserId][Unexpected] ${error.toString()}',
+      );
+      debugPrintStack(stackTrace: stackTrace);
       state = state.copyWith(isLoading: false, errorMessage: error.toString());
     }
 

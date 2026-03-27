@@ -7,6 +7,40 @@ abstract final class ApiConstants {
   static const Duration connectTimeout = Duration(seconds: 20);
   static const Duration receiveTimeout = Duration(seconds: 20);
   static const Duration sendTimeout = Duration(seconds: 20);
+  static const Duration chatHeartbeatInterval = Duration(seconds: 20);
+  static const Duration chatReconnectBaseDelay = Duration(seconds: 1);
+  static const Duration chatReconnectMaxDelay = Duration(seconds: 8);
+
+  static String resolveUrl(String url) {
+    final trimmed = url.trim();
+    if (trimmed.isEmpty) {
+      return trimmed;
+    }
+
+    final parsed = Uri.tryParse(trimmed);
+    if (parsed != null && parsed.hasScheme) {
+      return trimmed;
+    }
+
+    return Uri.parse(baseUrl).resolve(trimmed).toString();
+  }
+
+  static Uri buildChatSocketUri({
+    required int conversationId,
+    required String token,
+  }) {
+    final base = Uri.parse(baseUrl);
+    final scheme = switch (base.scheme) {
+      'https' => 'wss',
+      'http' => 'ws',
+      _ => 'ws',
+    };
+    return base.replace(
+      scheme: scheme,
+      path: '/ws/chat/$conversationId/',
+      queryParameters: {'token': token},
+    );
+  }
 }
 
 abstract final class ApiEndpoints {

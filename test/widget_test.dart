@@ -268,7 +268,7 @@ class TestLoadConversationsNotifier extends LoadConversationsNotifier {
   }
 
   @override
-  Future<void> load() async {}
+  Future<void> load({bool forceRefresh = false}) async {}
 
   @override
   Future<void> loadMore() async {}

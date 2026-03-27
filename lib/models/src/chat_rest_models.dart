@@ -140,6 +140,22 @@ class ConversationLastMessagePreview {
       'timestamp': timestamp?.toIso8601String(),
     };
   }
+
+  ConversationLastMessagePreview copyWith({
+    int? id,
+    String? text,
+    int? senderId,
+    String? senderName,
+    DateTime? timestamp,
+  }) {
+    return ConversationLastMessagePreview(
+      id: id ?? this.id,
+      text: text ?? this.text,
+      senderId: senderId ?? this.senderId,
+      senderName: senderName ?? this.senderName,
+      timestamp: timestamp ?? this.timestamp,
+    );
+  }
 }
 
 class ConversationListItem {
@@ -185,12 +201,33 @@ class ConversationListItem {
       'unread_count': unreadCount,
     };
   }
+
+  ConversationListItem copyWith({
+    int? id,
+    String? title,
+    List<ConversationParticipantRead>? participants,
+    Object? lastMessage = _conversationListItemUnset,
+    int? unreadCount,
+  }) {
+    return ConversationListItem(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      participants: participants ?? this.participants,
+      lastMessage: identical(lastMessage, _conversationListItemUnset)
+          ? this.lastMessage
+          : lastMessage as ConversationLastMessagePreview?,
+      unreadCount: unreadCount ?? this.unreadCount,
+    );
+  }
 }
+
+const _conversationListItemUnset = Object();
 
 class MessageAttachmentModel {
   const MessageAttachmentModel({
     required this.id,
     this.fileUrl,
+    this.localPath,
     this.contentType,
     required this.size,
     this.createdAt,
@@ -198,14 +235,18 @@ class MessageAttachmentModel {
 
   final int id;
   final String? fileUrl;
+  final String? localPath;
   final String? contentType;
   final int size;
   final DateTime? createdAt;
+
+  bool get isImage => (contentType ?? '').toLowerCase().startsWith('image/');
 
   factory MessageAttachmentModel.fromJson(JsonMap json) {
     return MessageAttachmentModel(
       id: intFromJson(json['id']) ?? 0,
       fileUrl: stringFromJson(json['file_url']),
+      localPath: stringFromJson(json['local_path']),
       contentType: stringFromJson(json['content_type']),
       size: intFromJson(json['size']) ?? 0,
       createdAt: dateTimeFromJson(json['created_at']),
@@ -216,10 +257,62 @@ class MessageAttachmentModel {
     return {
       'id': id,
       'file_url': fileUrl,
+      'local_path': localPath,
       'content_type': contentType,
       'size': size,
       'created_at': createdAt?.toIso8601String(),
     };
+  }
+
+  MessageAttachmentModel copyWith({
+    int? id,
+    Object? fileUrl = _messageAttachmentUnset,
+    Object? localPath = _messageAttachmentUnset,
+    Object? contentType = _messageAttachmentUnset,
+    int? size,
+    Object? createdAt = _messageAttachmentUnset,
+  }) {
+    return MessageAttachmentModel(
+      id: id ?? this.id,
+      fileUrl: identical(fileUrl, _messageAttachmentUnset)
+          ? this.fileUrl
+          : fileUrl as String?,
+      localPath: identical(localPath, _messageAttachmentUnset)
+          ? this.localPath
+          : localPath as String?,
+      contentType: identical(contentType, _messageAttachmentUnset)
+          ? this.contentType
+          : contentType as String?,
+      size: size ?? this.size,
+      createdAt: identical(createdAt, _messageAttachmentUnset)
+          ? this.createdAt
+          : createdAt as DateTime?,
+    );
+  }
+}
+
+const _messageAttachmentUnset = Object();
+
+class ChatUploadImage {
+  const ChatUploadImage({
+    required this.path,
+    required this.fileName,
+    required this.contentType,
+    this.size = 0,
+  });
+
+  final String path;
+  final String fileName;
+  final String contentType;
+  final int size;
+
+  MessageAttachmentModel toOptimisticAttachment({required int id}) {
+    return MessageAttachmentModel(
+      id: id,
+      localPath: path,
+      contentType: contentType,
+      size: size,
+    );
   }
 }
 
@@ -258,6 +351,8 @@ class MessageStatusModel {
     };
   }
 }
+
+enum MessageReceiptState { pending, sent, delivered, seen, failed }
 
 class MessageReplyModel {
   const MessageReplyModel({
@@ -314,6 +409,9 @@ class MessageModel {
     this.clientTimestamp,
     this.serverTimestamp,
     required this.statuses,
+    this.localMessageId,
+    this.isOptimistic = false,
+    this.hasSendError = false,
   });
 
   final int id;
@@ -327,6 +425,9 @@ class MessageModel {
   final DateTime? clientTimestamp;
   final DateTime? serverTimestamp;
   final List<MessageStatusModel> statuses;
+  final String? localMessageId;
+  final bool isOptimistic;
+  final bool hasSendError;
 
   factory MessageModel.fromJson(JsonMap json) {
     return MessageModel(
@@ -345,11 +446,14 @@ class MessageModel {
       clientTimestamp: dateTimeFromJson(json['client_timestamp']),
       serverTimestamp: dateTimeFromJson(json['server_timestamp']),
       statuses: listFromJson(json['statuses'], MessageStatusModel.fromJson),
+      localMessageId: stringFromJson(json['local_message_id']),
+      isOptimistic: boolFromJson(json['is_optimistic']) ?? false,
+      hasSendError: boolFromJson(json['has_send_error']) ?? false,
     );
   }
 
   JsonMap toJson() {
-    return {
+    final json = <String, dynamic>{
       'id': id,
       'conversation_id': conversationId,
       'sender': sender.toJson(),
@@ -362,8 +466,115 @@ class MessageModel {
       'server_timestamp': serverTimestamp?.toIso8601String(),
       'statuses': statuses.map((item) => item.toJson()).toList(growable: false),
     };
+    if (localMessageId != null && localMessageId!.isNotEmpty) {
+      json['local_message_id'] = localMessageId;
+    }
+    if (isOptimistic) {
+      json['is_optimistic'] = true;
+    }
+    if (hasSendError) {
+      json['has_send_error'] = true;
+    }
+    return json;
+  }
+
+  MessageModel copyWith({
+    int? id,
+    int? conversationId,
+    UserBrief? sender,
+    String? messageType,
+    String? text,
+    List<MessageAttachmentModel>? media,
+    Object? product = _messageModelUnset,
+    Object? replyTo = _messageModelUnset,
+    Object? clientTimestamp = _messageModelUnset,
+    Object? serverTimestamp = _messageModelUnset,
+    List<MessageStatusModel>? statuses,
+    Object? localMessageId = _messageModelUnset,
+    bool? isOptimistic,
+    bool? hasSendError,
+  }) {
+    return MessageModel(
+      id: id ?? this.id,
+      conversationId: conversationId ?? this.conversationId,
+      sender: sender ?? this.sender,
+      messageType: messageType ?? this.messageType,
+      text: text ?? this.text,
+      media: media ?? this.media,
+      product: identical(product, _messageModelUnset)
+          ? this.product
+          : product as PartRequestBrief?,
+      replyTo: identical(replyTo, _messageModelUnset)
+          ? this.replyTo
+          : replyTo as MessageReplyModel?,
+      clientTimestamp: identical(clientTimestamp, _messageModelUnset)
+          ? this.clientTimestamp
+          : clientTimestamp as DateTime?,
+      serverTimestamp: identical(serverTimestamp, _messageModelUnset)
+          ? this.serverTimestamp
+          : serverTimestamp as DateTime?,
+      statuses: statuses ?? this.statuses,
+      localMessageId: identical(localMessageId, _messageModelUnset)
+          ? this.localMessageId
+          : localMessageId as String?,
+      isOptimistic: isOptimistic ?? this.isOptimistic,
+      hasSendError: hasSendError ?? this.hasSendError,
+    );
+  }
+
+  factory MessageModel.optimistic({
+    required int tempId,
+    required int conversationId,
+    required UserBrief sender,
+    required String messageType,
+    required String text,
+    required DateTime clientTimestamp,
+    String? localMessageId,
+    PartRequestBrief? product,
+    MessageReplyModel? replyTo,
+    List<MessageAttachmentModel> media = const [],
+  }) {
+    return MessageModel(
+      id: tempId,
+      conversationId: conversationId,
+      sender: sender,
+      messageType: messageType,
+      text: text,
+      media: media,
+      product: product,
+      replyTo: replyTo,
+      clientTimestamp: clientTimestamp,
+      serverTimestamp: null,
+      statuses: const [],
+      localMessageId: localMessageId,
+      isOptimistic: true,
+    );
+  }
+
+  MessageReceiptState receiptStateFor(int currentUserId) {
+    if (hasSendError) {
+      return MessageReceiptState.failed;
+    }
+    if (isOptimistic) {
+      return MessageReceiptState.pending;
+    }
+
+    final participantStatuses = statuses
+        .where((status) => status.userId != currentUserId)
+        .map((status) => status.status)
+        .toSet();
+
+    if (participantStatuses.contains('seen')) {
+      return MessageReceiptState.seen;
+    }
+    if (participantStatuses.contains('delivered')) {
+      return MessageReceiptState.delivered;
+    }
+    return MessageReceiptState.sent;
   }
 }
+
+const _messageModelUnset = Object();
 
 class MessageCreateRequest {
   const MessageCreateRequest({
@@ -373,6 +584,7 @@ class MessageCreateRequest {
     this.product,
     this.replyTo,
     required this.clientTimestamp,
+    this.attachments = const [],
   });
 
   final int conversation;
@@ -381,6 +593,7 @@ class MessageCreateRequest {
   final int? product;
   final int? replyTo;
   final DateTime clientTimestamp;
+  final List<ChatUploadImage> attachments;
 
   JsonMap toJson() {
     return {

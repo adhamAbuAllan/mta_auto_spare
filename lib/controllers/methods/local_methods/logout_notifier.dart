@@ -4,9 +4,11 @@ import '../../../session/session_notifier.dart';
 import '../../statuses/auth_state.dart';
 
 class LogoutNotifier extends StateNotifier<AuthState> {
-  LogoutNotifier(this._sessionNotifier) : super(const AuthState());
+  LogoutNotifier(this._sessionNotifier, {required this.onLogout})
+    : super(const AuthState());
 
   final SessionNotifier _sessionNotifier;
+  final Future<void> Function() onLogout;
 
   Future<void> logout() async {
     state = state.copyWith(
@@ -18,6 +20,7 @@ class LogoutNotifier extends StateNotifier<AuthState> {
     );
 
     await _sessionNotifier.clear();
+    await onLogout();
 
     state = state.copyWith(
       isLoading: false,

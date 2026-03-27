@@ -248,7 +248,17 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
       return;
     }
 
-    await ref.read(conversationsNotifierProvider.notifier).load();
+    if (ensureState.wasCreated) {
+      await ref
+          .read(conversationsNotifierProvider.notifier)
+          .load(forceRefresh: true);
+    }
+    ref.read(pendingSharedProductProvider.notifier).state = PartRequestBrief(
+      id: request.id ?? 0,
+      title: request.title,
+      minPrice: request.minPrice,
+      maxPrice: request.maxPrice,
+    );
     widget.onOpenConversation(conversationId);
   }
 }

@@ -70,8 +70,9 @@ class _ConversationsViewState extends ConsumerState<ConversationsView> {
               tooltip: 'Refresh conversations',
               onPressed: conversationState.isLoading
                   ? null
-                  : () =>
-                        ref.read(conversationsNotifierProvider.notifier).load(),
+                  : () => ref
+                        .read(conversationsNotifierProvider.notifier)
+                        .load(forceRefresh: true),
               icon: const Icon(Icons.refresh_rounded),
             ),
           ],
@@ -115,7 +116,9 @@ class _ConversationsViewState extends ConsumerState<ConversationsView> {
         conversationState.conversations.isEmpty) {
       return AppErrorCard(
         message: conversationState.errorMessage!,
-        onRetry: () => ref.read(conversationsNotifierProvider.notifier).load(),
+        onRetry: () => ref
+            .read(conversationsNotifierProvider.notifier)
+            .load(forceRefresh: true),
       );
     }
 

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 
 import '../constants/api_constants.dart';
 import '../models/models.dart';
@@ -87,14 +88,44 @@ class ChatApi {
 
   Future<MessageModel> createMessage(MessageCreateRequest request) async {
     try {
+      final payload = request.attachments.isEmpty
+          ? request.toJson()
+          : await _buildMultipartPayload(request);
       final response = await _dio.post(
         ApiEndpoints.messages,
-        data: request.toJson(),
+        data: payload,
       );
       return MessageModel.fromJson(_asMap(response.data));
     } on DioException catch (error) {
       throw ApiException.fromDioException(error);
     }
+  }
+
+  Future<FormData> _buildMultipartPayload(MessageCreateRequest request) async {
+    final data = <String, dynamic>{
+      'conversation': request.conversation.toString(),
+      'message_type': request.messageType,
+      'client_timestamp': request.clientTimestamp.toIso8601String(),
+      'files': await Future.wait(
+        request.attachments.map(
+          (attachment) => MultipartFile.fromFile(
+            attachment.path,
+            filename: attachment.fileName,
+            contentType: MediaType.parse(attachment.contentType),
+          ),
+        ),
+      ),
+    };
+    if (request.text != null && request.text!.trim().isNotEmpty) {
+      data['text'] = request.text!.trim();
+    }
+    if (request.product != null) {
+      data['product'] = request.product.toString();
+    }
+    if (request.replyTo != null) {
+      data['reply_to'] = request.replyTo.toString();
+    }
+    return FormData.fromMap(data);
   }
 
   Map<String, dynamic> _asMap(dynamic data) {
