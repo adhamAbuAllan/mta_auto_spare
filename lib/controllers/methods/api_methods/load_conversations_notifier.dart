@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,7 +21,7 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
     state = state.copyWith(
       isLoading: true,
       errorMessage: null,
-      nextPageUrl: forceRefresh ? state.nextPageUrl : null,
+      nextPageUrl: null,
       conversations: forceRefresh ? state.conversations : const [],
     );
 
@@ -45,7 +47,6 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
     if (!state.hasMore || state.isLoadingMore) {
       return;
     }
-
     state = state.copyWith(isLoadingMore: true, errorMessage: null);
 
     try {
@@ -81,11 +82,13 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
       (conversation) => conversation.id == conversationId,
     );
     if (index == -1) {
+      unawaited(load(forceRefresh: true));
       return;
     }
 
     final currentConversation = state.conversations[index];
-    final nextUnreadCount = isActiveConversation || message.sender.id == currentUserId
+    final nextUnreadCount =
+        isActiveConversation || message.sender.id == currentUserId
         ? 0
         : currentConversation.unreadCount + 1;
     final updatedConversation = currentConversation.copyWith(
@@ -116,5 +119,38 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
     final updatedList = [...state.conversations];
     updatedList[index] = updatedList[index].copyWith(unreadCount: 0);
     state = state.copyWith(conversations: updatedList);
+  }
+
+  void updateUserPresence({
+    required int userId,
+    required bool isOnline,
+    DateTime? lastSeenAt,
+  }) {
+    var didChange = false;
+    final updatedConversations = state.conversations
+        .map((conversation) {
+          final participants = conversation.participants
+              .map((participant) {
+                if (participant.user.id != userId) {
+                  return participant;
+                }
+                didChange = true;
+                return participant.copyWith(
+                  user: participant.user.copyWith(
+                    isOnline: isOnline,
+                    lastSeenAt: lastSeenAt,
+                  ),
+                );
+              })
+              .toList(growable: false);
+          return conversation.copyWith(participants: participants);
+        })
+        .toList(growable: false);
+
+    if (!didChange) {
+      return;
+    }
+
+    state = state.copyWith(conversations: updatedConversations);
   }
 }

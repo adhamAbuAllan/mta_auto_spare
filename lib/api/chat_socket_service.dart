@@ -149,10 +149,22 @@ class ChatSocketService {
       _reconnectAttempt = 0;
       _startHeartbeat();
       _setStatus(ChatConnectionStatus.connected);
-    } catch (_) {
+    } catch (error) {
       _setStatus(ChatConnectionStatus.failed);
+      if (_isTerminalHandshakeFailure(error)) {
+        return;
+      }
       _scheduleReconnect();
     }
+  }
+
+  bool _isTerminalHandshakeFailure(Object error) {
+    final message = error.toString().toLowerCase();
+    return message.contains(' 401') ||
+        message.contains(' 403') ||
+        message.contains('unauthorized') ||
+        message.contains('forbidden') ||
+        message.contains('access denied');
   }
 
   void _handleSocketData(dynamic data) {

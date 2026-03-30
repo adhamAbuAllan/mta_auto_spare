@@ -13,7 +13,9 @@ class MessageState {
     this.connectionStatus = ChatConnectionStatus.disconnected,
     this.connectedUserIds = const [],
     this.typingUserIds = const [],
+    this.onlineUserIds = const [],
     this.lastSeenByUserId = const {},
+    this.presenceLastSeenByUserId = const {},
   });
 
   final bool isLoading;
@@ -26,9 +28,11 @@ class MessageState {
   final ChatConnectionStatus connectionStatus;
   final List<int> connectedUserIds;
   final List<int> typingUserIds;
+  final List<int> onlineUserIds;
   final Map<int, DateTime?> lastSeenByUserId;
+  final Map<int, DateTime?> presenceLastSeenByUserId;
 
-  bool get hasMore => nextPageUrl != null && nextPageUrl!.isNotEmpty;
+//  bool get hasMore => nextPageUrl != null && nextPageUrl!.isNotEmpty;
   bool get isSending => pendingMessageCount > 0;
   bool get isLive => connectionStatus == ChatConnectionStatus.connected;
 
@@ -43,7 +47,9 @@ class MessageState {
     ChatConnectionStatus? connectionStatus,
     List<int>? connectedUserIds,
     List<int>? typingUserIds,
+    List<int>? onlineUserIds,
     Map<int, DateTime?>? lastSeenByUserId,
+    Map<int, DateTime?>? presenceLastSeenByUserId,
   }) {
     return MessageState(
       isLoading: isLoading ?? this.isLoading,
@@ -62,7 +68,10 @@ class MessageState {
       connectionStatus: connectionStatus ?? this.connectionStatus,
       connectedUserIds: connectedUserIds ?? this.connectedUserIds,
       typingUserIds: typingUserIds ?? this.typingUserIds,
+      onlineUserIds: onlineUserIds ?? this.onlineUserIds,
       lastSeenByUserId: lastSeenByUserId ?? this.lastSeenByUserId,
+      presenceLastSeenByUserId:
+          presenceLastSeenByUserId ?? this.presenceLastSeenByUserId,
     );
   }
 }

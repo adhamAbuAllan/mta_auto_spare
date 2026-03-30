@@ -68,3 +68,20 @@ List<int> intListFromJson(dynamic value) {
   }
   return value.map(intFromJson).whereType<int>().toList(growable: false);
 }
+
+Map<int, DateTime?> dateTimeMapByIntKeyFromJson(dynamic value) {
+  final map = mapFromJson(value);
+  if (map == null || map.isEmpty) {
+    return const {};
+  }
+
+  final result = <int, DateTime?>{};
+  map.forEach((key, rawValue) {
+    final parsedKey = int.tryParse(key);
+    if (parsedKey == null) {
+      return;
+    }
+    result[parsedKey] = dateTimeFromJson(rawValue);
+  });
+  return result;
+}

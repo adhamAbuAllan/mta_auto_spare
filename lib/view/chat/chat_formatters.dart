@@ -1,4 +1,5 @@
 import '../../models/models.dart';
+import '../common_widgets/time_formatter.dart';
 
 String conversationDisplayName(
   ConversationListItem conversation,
@@ -40,4 +41,23 @@ ConversationParticipantRead? otherParticipant(
     }
   }
   return null;
+}
+
+String conversationPresenceLabel({
+  required bool isOnline,
+  DateTime? lastSeenAt,
+}) {
+  if (isOnline) {
+    return 'Online';
+  }
+  if (lastSeenAt == null) {
+    return 'Offline';
+  }
+
+  final localValue = lastSeenAt.toLocal();
+  final difference = DateTime.now().difference(localValue);
+  if (difference.inDays >= 3) {
+    return 'Last seen ${localValue.day}/${localValue.month}/${localValue.year}';
+  }
+  return 'Last seen ${formatRelativeTime(localValue)}';
 }

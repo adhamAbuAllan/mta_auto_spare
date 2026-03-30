@@ -23,6 +23,11 @@ class ConversationTileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final displayName = conversationDisplayName(conversation, currentUserId);
     final participant = otherParticipant(conversation, currentUserId);
+    final presenceColor = participant == null
+        ? null
+        : participant.user.isOnline
+        ? const Color(0xFF20A05A)
+        : const Color(0xFFB9B2A8);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
@@ -48,6 +53,7 @@ class ConversationTileCard extends StatelessWidget {
                   label: displayName,
                   imageUrl: participant?.user.avatar,
                   radius: 22,
+                  presenceColor: presenceColor,
                 ),
                 const SizedBox(width: 12),
                 Expanded(

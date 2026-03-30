@@ -104,7 +104,27 @@ class ConversationParticipantRead {
       'last_read_at': lastReadAt?.toIso8601String(),
     };
   }
+
+  ConversationParticipantRead copyWith({
+    int? id,
+    UserBrief? user,
+    Object? joinedAt = _conversationParticipantReadUnset,
+    Object? lastReadAt = _conversationParticipantReadUnset,
+  }) {
+    return ConversationParticipantRead(
+      id: id ?? this.id,
+      user: user ?? this.user,
+      joinedAt: identical(joinedAt, _conversationParticipantReadUnset)
+          ? this.joinedAt
+          : joinedAt as DateTime?,
+      lastReadAt: identical(lastReadAt, _conversationParticipantReadUnset)
+          ? this.lastReadAt
+          : lastReadAt as DateTime?,
+    );
+  }
 }
+
+const _conversationParticipantReadUnset = Object();
 
 class ConversationLastMessagePreview {
   const ConversationLastMessagePreview({

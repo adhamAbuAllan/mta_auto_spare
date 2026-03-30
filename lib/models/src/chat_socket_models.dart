@@ -6,17 +6,25 @@ class ConversationRuntimeState {
     required this.conversationId,
     required this.connectedUserIds,
     required this.typingUserIds,
+    required this.onlineUserIds,
+    required this.presenceLastSeenAtByUserId,
   });
 
   final int conversationId;
   final List<int> connectedUserIds;
   final List<int> typingUserIds;
+  final List<int> onlineUserIds;
+  final Map<int, DateTime?> presenceLastSeenAtByUserId;
 
   factory ConversationRuntimeState.fromJson(JsonMap json) {
     return ConversationRuntimeState(
       conversationId: intFromJson(json['conversation_id']) ?? 0,
       connectedUserIds: intListFromJson(json['connected_user_ids']),
       typingUserIds: intListFromJson(json['typing_user_ids']),
+      onlineUserIds: intListFromJson(json['online_user_ids']),
+      presenceLastSeenAtByUserId: dateTimeMapByIntKeyFromJson(
+        json['presence_last_seen_at_by_user_id'],
+      ),
     );
   }
 
@@ -25,6 +33,11 @@ class ConversationRuntimeState {
       'conversation_id': conversationId,
       'connected_user_ids': connectedUserIds,
       'typing_user_ids': typingUserIds,
+      'online_user_ids': onlineUserIds,
+      'presence_last_seen_at_by_user_id': {
+        for (final entry in presenceLastSeenAtByUserId.entries)
+          entry.key.toString(): entry.value?.toIso8601String(),
+      },
     };
   }
 }
@@ -47,6 +60,8 @@ abstract class ChatSocketEvent {
         return ConversationSeenSocketEvent.fromJson(json);
       case 'message.status':
         return MessageStatusSocketEvent.fromJson(json);
+      case 'user.presence':
+        return UserPresenceSocketEvent.fromJson(json);
       case 'pong':
         return PongSocketEvent.fromJson(json);
       case 'error':
@@ -169,6 +184,36 @@ class MessageStatusSocketEvent extends ChatSocketEvent {
   }
 }
 
+class UserPresenceSocketEvent extends ChatSocketEvent {
+  UserPresenceSocketEvent({
+    required this.userId,
+    required this.isOnline,
+    this.lastSeenAt,
+  }) : super('user.presence');
+
+  final int userId;
+  final bool isOnline;
+  final DateTime? lastSeenAt;
+
+  factory UserPresenceSocketEvent.fromJson(JsonMap json) {
+    return UserPresenceSocketEvent(
+      userId: intFromJson(json['user_id']) ?? 0,
+      isOnline: boolFromJson(json['is_online']) ?? false,
+      lastSeenAt: dateTimeFromJson(json['last_seen_at']),
+    );
+  }
+
+  @override
+  JsonMap toJson() {
+    return {
+      'type': type,
+      'user_id': userId,
+      'is_online': isOnline,
+      'last_seen_at': lastSeenAt?.toIso8601String(),
+    };
+  }
+}
+
 class PongSocketEvent extends ChatSocketEvent {
   PongSocketEvent({required this.conversationId, this.serverTimestamp})
     : super('pong');
@@ -280,6 +325,12 @@ class TypingStartSocketRequest {
   const TypingStartSocketRequest();
 
   JsonMap toJson() => const {'type': 'typing_start'};
+}
+
+class TypingSocketRequest {
+  const TypingSocketRequest();
+
+  JsonMap toJson() => const {'type': 'typing'};
 }
 
 class TypingStopSocketRequest {

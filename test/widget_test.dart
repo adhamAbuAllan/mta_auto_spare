@@ -5,19 +5,24 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mta_auto_spare/api/chat_api.dart';
+import 'package:mta_auto_spare/api/chat_socket_service.dart';
 import 'package:mta_auto_spare/api/request_api.dart';
 import 'package:mta_auto_spare/controllers/methods/api_methods/ensure_conversation_notifier.dart';
 import 'package:mta_auto_spare/controllers/methods/api_methods/load_conversations_notifier.dart';
+import 'package:mta_auto_spare/controllers/methods/api_methods/load_messages_notifier.dart';
 import 'package:mta_auto_spare/controllers/methods/api_methods/load_requests_notifier.dart';
+import 'package:mta_auto_spare/controllers/methods/local_methods/chat_message_cache_store.dart';
 import 'package:mta_auto_spare/controllers/providers/auth_provider.dart';
 import 'package:mta_auto_spare/controllers/providers/chat_provider.dart';
 import 'package:mta_auto_spare/controllers/providers/request_provider.dart';
 import 'package:mta_auto_spare/controllers/statuses/conversation_state.dart';
+import 'package:mta_auto_spare/controllers/statuses/message_state.dart';
 import 'package:mta_auto_spare/controllers/statuses/request_state.dart';
 import 'package:mta_auto_spare/main.dart';
 import 'package:mta_auto_spare/models/models.dart';
 import 'package:mta_auto_spare/session/session_notifier.dart';
 import 'package:mta_auto_spare/session/session_state.dart';
+import 'package:mta_auto_spare/view/chat/chat_detail_page.dart';
 import 'package:mta_auto_spare/view/requests/requests_view.dart';
 
 void main() {
@@ -185,6 +190,46 @@ void main() {
     expect(find.text('Requests'), findsOneWidget);
     expect(find.text('Conversations'), findsOneWidget);
   });
+
+  testWidgets('chat detail loads messages and deactivates on dispose', (
+    WidgetTester tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    final messagesNotifier = TestLoadMessagesNotifier(preferences);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(preferences),
+          currentSessionProvider.overrideWithValue(_signedInSession()),
+          conversationsNotifierProvider.overrideWith(
+            (ref) => TestLoadConversationsNotifier(
+              ConversationState(
+                conversations: [_conversationListItem(id: 77, title: 'Chat A')],
+              ),
+            ),
+          ),
+          messagesNotifierProvider.overrideWith((ref) => messagesNotifier),
+        ],
+        child: const MaterialApp(home: ChatDetailPage(conversationId: 77)),
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.text('Loaded from backend'), findsOneWidget);
+    expect(messagesNotifier.loadedConversationIds, contains(77));
+    expect(messagesNotifier.activatedConversationIds, contains(77));
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+
+    expect(messagesNotifier.deactivatedConversationIds, contains(77));
+    expect(tester.takeException(), isNull);
+  });
 }
 
 Future<Widget> _buildApp({List<Override> overrides = const []}) async {
@@ -294,4 +339,96 @@ class TestEnsureConversationNotifier extends EnsureConversationNotifier {
     );
     return resultConversationId;
   }
+}
+
+class TestLoadMessagesNotifier extends LoadMessagesNotifier {
+  TestLoadMessagesNotifier(SharedPreferences preferences)
+    : super(
+        ChatApi(Dio()),
+        ChatSocketService(),
+        cacheStore: ChatMessageCacheStore(preferences),
+        resolveLiveAccessToken: () async => 'access-token',
+        resolveCacheUserId: () => 1,
+      );
+
+  final List<int> loadedConversationIds = [];
+  final List<int> activatedConversationIds = [];
+  final List<int> deactivatedConversationIds = [];
+
+  @override
+  Future<void> load(int conversationId, {bool forceRefresh = false}) async {
+    loadedConversationIds.add(conversationId);
+    state = MessageState(
+      conversationId: conversationId,
+      messages: [
+        MessageModel(
+          id: 501,
+          conversationId: conversationId,
+          sender: const UserBrief(id: 2, name: 'Seller User'),
+          messageType: 'text',
+          text: 'Loaded from backend',
+          media: const [],
+          clientTimestamp: DateTime.utc(2026, 3, 30, 8),
+          serverTimestamp: DateTime.utc(2026, 3, 30, 8),
+          statuses: const [],
+        ),
+      ],
+    );
+  }
+
+  @override
+  Future<void> activateConversation({
+    required int conversationId,
+    required int currentUserId,
+    required String accessToken,
+  }) async {
+    activatedConversationIds.add(conversationId);
+    state = state.copyWith(
+      conversationId: conversationId,
+      connectionStatus: ChatConnectionStatus.connected,
+    );
+  }
+
+  @override
+  Future<void> deactivateConversation([int? conversationId]) async {
+    final targetConversationId = conversationId ?? state.conversationId;
+    if (targetConversationId == null) {
+      return;
+    }
+    deactivatedConversationIds.add(targetConversationId);
+    state = state.copyWith(
+      conversationId: null,
+      connectionStatus: ChatConnectionStatus.disconnected,
+    );
+  }
+
+  @override
+  Future<void> pauseLiveSync() async {}
+
+  @override
+  Future<void> resumeLiveSync() async {}
+
+  @override
+  Future<void> refreshConnectionWithToken(String? accessToken) async {}
+}
+
+ConversationListItem _conversationListItem({
+  required int id,
+  required String title,
+}) {
+  return ConversationListItem(
+    id: id,
+    title: title,
+    participants: const [
+      ConversationParticipantRead(
+        id: 1,
+        user: UserBrief(id: 1, name: 'Buyer User'),
+      ),
+      ConversationParticipantRead(
+        id: 2,
+        user: UserBrief(id: 2, name: 'Seller User'),
+      ),
+    ],
+    unreadCount: 0,
+  );
 }

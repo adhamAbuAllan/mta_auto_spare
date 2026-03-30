@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,11 +8,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 
 import '../../api/chat_socket_service.dart';
+import '../../controllers/methods/api_methods/load_messages_notifier.dart';
 import '../../controllers/providers/auth_provider.dart';
 import '../../controllers/providers/chat_provider.dart';
 import '../../controllers/providers/request_provider.dart';
 import '../../controllers/statuses/message_state.dart';
 import '../../models/models.dart';
+import '../../session/session_state.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/empty_state_card.dart';
 import '../common_widgets/user_avatar.dart';
@@ -39,11 +43,18 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   final ScrollController _scrollController = ScrollController();
   final FocusNode _composerFocusNode = FocusNode();
   final ImagePicker _imagePicker = ImagePicker();
+  late final LoadMessagesNotifier _messagesNotifier;
 
   List<ChatUploadImage> _selectedImages = const [];
   MessageModel? _replyTarget;
   PartRequestBrief? _selectedProduct;
   int _lastKnownMessageCount = 0;
+  double _lastKeyboardInset = 0;
+  bool _lastKnownOtherTyping = false;
+  int _conversationLoadCycle = 0;
+  MessageState _messageState = const MessageState(isLoading: true);
+  ProviderSubscription<MessageState>? _messageSubscription;
+  ProviderSubscription<SessionState>? _sessionSubscription;
 
   @override
   void initState() {
@@ -51,14 +62,40 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     WidgetsBinding.instance.addObserver(this);
     _messageController.addListener(_handleComposerChanged);
     _composerFocusNode.addListener(_handleComposerChanged);
+    _messagesNotifier = ref.read(messagesNotifierProvider.notifier);
+    _messageState = _resolveDisplayedMessageState(
+      ref.read(messagesNotifierProvider),
+    );
+    _messageSubscription = ref.listenManual<MessageState>(
+      messagesNotifierProvider,
+      (previous, next) {
+        if (!mounted) {
+          return;
+        }
+        setState(() {
+          _messageState = _resolveDisplayedMessageState(next);
+        });
+      },
+    );
+    _sessionSubscription = ref.listenManual<SessionState>(
+      currentSessionProvider,
+      (previous, next) {
+        if (previous?.accessToken != next.accessToken) {
+          _messagesNotifier.refreshConnectionWithToken(next.accessToken);
+        }
+      },
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) {
+        return;
+      }
+
       final pendingProduct = ref.read(pendingSharedProductProvider);
       if (pendingProduct != null) {
         setState(() => _selectedProduct = pendingProduct);
         ref.read(pendingSharedProductProvider.notifier).state = null;
       }
-      await _loadMessages();
-      await _activateLiveSync();
+      await _startConversationSession(forceRefresh: true);
     });
   }
 
@@ -67,67 +104,84 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.conversationId != widget.conversationId) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await ref
-            .read(messagesNotifierProvider.notifier)
-            .deactivateConversation(oldWidget.conversationId);
+        if (!mounted) {
+          return;
+        }
+
         setState(() {
           _selectedImages = const [];
           _replyTarget = null;
           _selectedProduct = null;
+          _messageState = _resolveDisplayedMessageState(
+            ref.read(messagesNotifierProvider),
+          );
         });
-        await _loadMessages(forceRefresh: true);
-        await _activateLiveSync();
+        await _startConversationSession(
+          forceRefresh: true,
+          previousConversationId: oldWidget.conversationId,
+        );
       });
     }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final notifier = ref.read(messagesNotifierProvider.notifier);
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive ||
         state == AppLifecycleState.detached) {
-      notifier.pauseLiveSync();
+      _messagesNotifier.pauseLiveSync();
       return;
     }
     if (state == AppLifecycleState.resumed) {
-      notifier.resumeLiveSync();
-      notifier.sendSeenIfNeeded();
+      _messagesNotifier.resumeLiveSync();
+      _messagesNotifier.sendSeenIfNeeded();
+    }
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    if (!mounted) {
+      return;
+    }
+    final view = View.of(context);
+    final nextKeyboardInset = view.viewInsets.bottom / view.devicePixelRatio;
+    final keyboardChanged = (_lastKeyboardInset - nextKeyboardInset).abs() > 1;
+    _lastKeyboardInset = nextKeyboardInset;
+
+    if (!keyboardChanged) {
+      return;
+    }
+    if (_composerFocusNode.hasFocus || nextKeyboardInset > 0) {
+      _keepLatestMessageVisible();
     }
   }
 
   @override
   void dispose() {
+    _conversationLoadCycle += 1;
     WidgetsBinding.instance.removeObserver(this);
+    _messageSubscription?.close();
+    _messageSubscription = null;
+    _sessionSubscription?.close();
+    _sessionSubscription = null;
     _messageController.removeListener(_handleComposerChanged);
     _composerFocusNode.removeListener(_handleComposerChanged);
     _composerFocusNode.dispose();
     _messageController.dispose();
     _scrollController.dispose();
-    ref.read(messagesNotifierProvider.notifier).deactivateConversation(
-      widget.conversationId,
-    );
+    unawaited(_messagesNotifier.deactivateConversation(widget.conversationId));
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final rawMessageState = ref.watch(messagesNotifierProvider);
-    final messagesNotifier = ref.read(messagesNotifierProvider.notifier);
     final conversationsState = ref.watch(conversationsNotifierProvider);
     final currentUserId = ref.watch(currentUserIdProvider) ?? 0;
-    final messageState = rawMessageState.conversationId == widget.conversationId
-        ? rawMessageState
-        : messagesNotifier.peek(widget.conversationId) ??
-              const MessageState(isLoading: true);
-
-    ref.listen(currentSessionProvider, (previous, next) {
-      if (previous?.accessToken != next.accessToken) {
-        ref
-            .read(messagesNotifierProvider.notifier)
-            .refreshConnectionWithToken(next.accessToken);
-      }
-    });
+    final messageState = _messageState.conversationId == widget.conversationId
+        ? _messageState
+        : _resolveDisplayedMessageState(_messageState);
 
     if (_lastKnownMessageCount != messageState.messages.length) {
       _lastKnownMessageCount = messageState.messages.length;
@@ -135,8 +189,8 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
         if (!mounted) {
           return;
         }
-        _scheduleScrollToBottom(animated: true);
-        ref.read(messagesNotifierProvider.notifier).sendSeenIfNeeded();
+        _keepLatestMessageVisible();
+        _messagesNotifier.sendSeenIfNeeded();
       });
     }
 
@@ -156,9 +210,30 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
         : otherParticipant(conversation, currentUserId);
     final otherUserId = participant?.user.id;
     final isOtherOnline =
-        otherUserId != null && messageState.connectedUserIds.contains(otherUserId);
+        otherUserId != null &&
+        (messageState.onlineUserIds.contains(otherUserId) ||
+            participant?.user.isOnline == true);
     final isOtherTyping =
         otherUserId != null && messageState.typingUserIds.contains(otherUserId);
+    final otherLastSeenAt = otherUserId == null
+        ? null
+        : messageState.presenceLastSeenByUserId[otherUserId] ??
+              participant?.user.lastSeenAt;
+    final presenceColor = participant == null
+        ? null
+        : isOtherOnline
+        ? const Color(0xFF20A05A)
+        : const Color(0xFFB9B2A8);
+
+    if (_lastKnownOtherTyping != isOtherTyping) {
+      _lastKnownOtherTyping = isOtherTyping;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        _keepLatestMessageVisible();
+      });
+    }
 
     final content = Column(
       children: [
@@ -167,17 +242,24 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
           connectionStatus: messageState.connectionStatus,
           statusLabel: isOtherTyping
               ? 'Typing...'
-              : isOtherOnline
-              ? 'Online now'
-              : 'Request conversation',
+              : conversationPresenceLabel(
+                  isOnline: isOtherOnline,
+                  lastSeenAt: otherLastSeenAt,
+                ),
           onBack: widget.onBack,
           showBack: widget.onBack != null || !widget.wideMode,
           avatarName: title,
           avatarUrl: participant?.user.avatar,
+          presenceColor: presenceColor,
         ),
         const SizedBox(height: 16),
         Expanded(
-          child: _buildMessagesBody(context, messageState, currentUserId),
+          child: _buildMessagesBody(
+            context,
+            messageState,
+            currentUserId,
+            showTypingIndicator: isOtherTyping,
+          ),
         ),
         if (messageState.errorMessage != null &&
             messageState.messages.isNotEmpty)
@@ -216,8 +298,9 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   Widget _buildMessagesBody(
     BuildContext context,
     MessageState messageState,
-    int currentUserId,
-  ) {
+    int currentUserId, {
+    required bool showTypingIndicator,
+  }) {
     if (messageState.isLoading && messageState.messages.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -225,7 +308,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     if (messageState.errorMessage != null && messageState.messages.isEmpty) {
       return AppErrorCard(
         message: messageState.errorMessage!,
-        onRetry: () => _loadMessages(forceRefresh: true),
+        onRetry: () => _loadMessages(widget.conversationId, forceRefresh: true),
       );
     }
 
@@ -237,27 +320,26 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       );
     }
 
-    return Column(
+    return Stack(
       children: [
-        if (messageState.hasMore)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: OutlinedButton(
-              onPressed: messageState.isLoadingMore
-                  ? null
-                  : () =>
-                        ref.read(messagesNotifierProvider.notifier).loadMore(),
-              child: Text(
-                messageState.isLoadingMore ? 'Loading...' : 'Load More',
-              ),
-            ),
-          ),
-        Expanded(
+        Positioned.fill(
           child: ListView.builder(
             controller: _scrollController,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemCount: messageState.messages.length,
+            padding: EdgeInsets.fromLTRB(
+              0,
+              8,
+              0,
+              //  messageState.hasMore ?
+              92,
+              //    :
+              //   8,
+            ),
+            itemCount:
+                messageState.messages.length + (showTypingIndicator ? 1 : 0),
             itemBuilder: (context, index) {
+              if (index == messageState.messages.length) {
+                return const _TypingIndicatorBubble();
+              }
               final message = messageState.messages[index];
               return MessageBubble(
                 message: message,
@@ -268,35 +350,96 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
             },
           ),
         ),
+        // Align(
+        //   alignment: Alignment.bottomCenter,
+        //   child: Padding(
+        //     padding: const EdgeInsets.only(bottom: 14),
+        //     child: _FloatingLoadMoreButton(
+        //       isVisible: messageState.hasMore,
+        //       isLoading: messageState.isLoadingMore,
+        //       onPressed: messageState.isLoadingMore
+        //           ? null
+        //           : () {
+        //         ref.read(messagesNotifierProvider.notifier).loadMore();
+        //         debugPrint("next page url is ${ref.read
+        //           (messagesNotifierProvider).nextPageUrl}!!!");
+        //       },
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
 
-  Future<void> _loadMessages({bool forceRefresh = false}) async {
-    await ref
-        .read(messagesNotifierProvider.notifier)
-        .load(widget.conversationId, forceRefresh: forceRefresh);
-    if (!mounted) {
+  Future<void> _startConversationSession({
+    required bool forceRefresh,
+    int? previousConversationId,
+  }) async {
+    final conversationId = widget.conversationId;
+    final loadCycle = ++_conversationLoadCycle;
+
+    if (previousConversationId != null &&
+        previousConversationId != conversationId) {
+      await _messagesNotifier.deactivateConversation(previousConversationId);
+      if (!_isConversationLoadCurrent(loadCycle, conversationId)) {
+        return;
+      }
+    }
+
+    await _loadMessages(conversationId, forceRefresh: forceRefresh);
+    if (!_isConversationLoadCurrent(loadCycle, conversationId)) {
       return;
     }
-    _scheduleScrollToBottom();
+
+    await _activateLiveSync(conversationId);
   }
 
-  Future<void> _activateLiveSync() async {
+  Future<void> _loadMessages(
+    int conversationId, {
+    bool forceRefresh = false,
+  }) async {
+    await _messagesNotifier.load(conversationId, forceRefresh: forceRefresh);
+    if (!mounted || widget.conversationId != conversationId) {
+      return;
+    }
+    _messageState = _resolveDisplayedMessageState(
+      ref.read(messagesNotifierProvider),
+    );
+    _keepLatestMessageVisible();
+  }
+
+  Future<void> _activateLiveSync(int conversationId) async {
     final session = ref.read(currentSessionProvider);
     final currentUserId = ref.read(currentUserIdProvider);
     final accessToken = session.accessToken;
     if (currentUserId == null || accessToken == null || accessToken.isEmpty) {
       return;
     }
-    await ref
-        .read(messagesNotifierProvider.notifier)
-        .activateConversation(
-          conversationId: widget.conversationId,
-          currentUserId: currentUserId,
-          accessToken: accessToken,
-        );
-    ref.read(messagesNotifierProvider.notifier).sendSeenIfNeeded();
+    await _messagesNotifier.activateConversation(
+      conversationId: conversationId,
+      currentUserId: currentUserId,
+      accessToken: accessToken,
+    );
+    if (!mounted || widget.conversationId != conversationId) {
+      return;
+    }
+    _messagesNotifier.sendSeenIfNeeded();
+  }
+
+  bool _isConversationLoadCurrent(int loadCycle, int conversationId) {
+    return mounted &&
+        _conversationLoadCycle == loadCycle &&
+        widget.conversationId == conversationId;
+  }
+
+  MessageState _resolveDisplayedMessageState([MessageState? nextState]) {
+    final MessageState activeState =
+        nextState ?? ref.read(messagesNotifierProvider);
+    if (activeState.conversationId == widget.conversationId) {
+      return activeState;
+    }
+    return _messagesNotifier.peek(widget.conversationId) ??
+        MessageState(conversationId: widget.conversationId, isLoading: true);
   }
 
   Future<void> _sendMessage({PartRequestBrief? sharedProduct}) async {
@@ -314,9 +457,9 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     final attachments = List<ChatUploadImage>.from(_selectedImages);
     final replyTarget = _replyTarget;
     _messageController.clear();
-    _scheduleScrollToBottom(animated: true);
+    _keepLatestMessageVisible();
 
-    final didSend = await ref.read(messagesNotifierProvider.notifier).send(
+    final didSend = await _messagesNotifier.send(
       request: MessageCreateRequest(
         conversation: widget.conversationId,
         messageType: productToSend != null
@@ -336,7 +479,9 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
         avatar: currentUser.avatar,
       ),
       optimisticProduct: productToSend,
-      optimisticReply: replyTarget == null ? null : _replyPreviewFromMessage(replyTarget),
+      optimisticReply: replyTarget == null
+          ? null
+          : _replyPreviewFromMessage(replyTarget),
     );
     if (!mounted) {
       return;
@@ -347,12 +492,9 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
         _replyTarget = null;
         _selectedProduct = null;
       });
-      ref.read(messagesNotifierProvider.notifier).sendTyping(
-        isTyping: false,
-        hasText: false,
-      );
+      _messagesNotifier.sendTyping(isTyping: false, hasText: false);
     }
-    _scheduleScrollToBottom(animated: true);
+    _keepLatestMessageVisible();
   }
 
   Future<void> _pickImages() async {
@@ -382,7 +524,10 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
 
   void _handleComposerChanged() {
     final hasText = _messageController.text.trim().isNotEmpty;
-    ref.read(messagesNotifierProvider.notifier).sendTyping(
+    if (_composerFocusNode.hasFocus) {
+      _keepLatestMessageVisible();
+    }
+    _messagesNotifier.sendTyping(
       isTyping: _composerFocusNode.hasFocus && hasText,
       hasText: hasText,
     );
@@ -443,6 +588,114 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       _scrollController.jumpTo(targetOffset);
     });
   }
+
+  void _keepLatestMessageVisible() {
+    _scheduleScrollToBottom(animated: true);
+    _scheduleDeferredBottomSync(const Duration(milliseconds: 120));
+    _scheduleDeferredBottomSync(const Duration(milliseconds: 260));
+    _scheduleDeferredBottomSync(const Duration(milliseconds: 420));
+  }
+
+  void _scheduleDeferredBottomSync(Duration delay) {
+    Future<void>.delayed(delay, () {
+      if (!mounted) {
+        return;
+      }
+      _scheduleScrollToBottom(animated: true);
+    });
+  }
+}
+
+class _TypingIndicatorBubble extends StatefulWidget {
+  const _TypingIndicatorBubble();
+
+  @override
+  State<_TypingIndicatorBubble> createState() => _TypingIndicatorBubbleState();
+}
+
+class _TypingIndicatorBubbleState extends State<_TypingIndicatorBubble>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1100),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 108),
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: const BoxDecoration(
+            color: Color(0xFFF2EEE7),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(22),
+              topRight: Radius.circular(22),
+              bottomLeft: Radius.circular(8),
+              bottomRight: Radius.circular(22),
+            ),
+          ),
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(
+                  3,
+                  (index) => _TypingIndicatorDot(
+                    progress: _controller.value,
+                    index: index,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TypingIndicatorDot extends StatelessWidget {
+  const _TypingIndicatorDot({required this.progress, required this.index});
+
+  final double progress;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    final shifted = (progress - (index * 0.16) + 1) % 1;
+    final wave = math.sin(shifted * math.pi).clamp(0.0, 1.0).toDouble();
+    final lift = wave * 5;
+    final opacity = 0.34 + (wave * 0.66);
+
+    return Padding(
+      padding: EdgeInsets.only(right: index == 2 ? 0 : 6),
+      child: Transform.translate(
+        offset: Offset(0, -lift),
+        child: Opacity(
+          opacity: opacity,
+          child: Container(
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(
+              color: Color(0xFF7B756D),
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _ChatHeader extends StatelessWidget {
@@ -452,6 +705,7 @@ class _ChatHeader extends StatelessWidget {
     required this.connectionStatus,
     required this.avatarName,
     required this.avatarUrl,
+    required this.presenceColor,
     required this.showBack,
     this.onBack,
   });
@@ -461,6 +715,7 @@ class _ChatHeader extends StatelessWidget {
   final ChatConnectionStatus connectionStatus;
   final String avatarName;
   final String? avatarUrl;
+  final Color? presenceColor;
   final bool showBack;
   final VoidCallback? onBack;
 
@@ -473,7 +728,11 @@ class _ChatHeader extends StatelessWidget {
             onPressed: onBack ?? () => Navigator.of(context).maybePop(),
             icon: const Icon(Icons.arrow_back_rounded),
           ),
-        UserAvatar(label: avatarName, imageUrl: avatarUrl),
+        UserAvatar(
+          label: avatarName,
+          imageUrl: avatarUrl,
+          //   presenceColor: presenceColor,
+        ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -488,11 +747,30 @@ class _ChatHeader extends StatelessWidget {
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 4),
-              Text(
-                _connectionLabel(statusLabel),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: const Color(0xFF6F6A63),
-                ),
+              Row(
+                children: [
+                  if (presenceColor != null) ...[
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: presenceColor,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  Expanded(
+                    child: Text(
+                      _connectionLabel(statusLabel),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xFF6F6A63),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -553,10 +831,7 @@ class _Composer extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (replyTarget != null) ...[
-              _ReplyPreviewCard(
-                message: replyTarget!,
-                onCancel: onCancelReply,
-              ),
+              _ReplyPreviewCard(message: replyTarget!, onCancel: onCancelReply),
               const SizedBox(height: 12),
             ],
             if (selectedProduct != null) ...[
@@ -649,10 +924,7 @@ class _Composer extends StatelessWidget {
 }
 
 class _ReplyPreviewCard extends StatelessWidget {
-  const _ReplyPreviewCard({
-    required this.message,
-    required this.onCancel,
-  });
+  const _ReplyPreviewCard({required this.message, required this.onCancel});
 
   final MessageModel message;
   final VoidCallback onCancel;
@@ -678,9 +950,9 @@ class _ReplyPreviewCard extends StatelessWidget {
               children: [
                 Text(
                   'Replying to ${message.sender.name}',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -705,10 +977,7 @@ class _ReplyPreviewCard extends StatelessWidget {
 }
 
 class _ProductPreviewCard extends StatelessWidget {
-  const _ProductPreviewCard({
-    required this.product,
-    required this.onCancel,
-  });
+  const _ProductPreviewCard({required this.product, required this.onCancel});
 
   final PartRequestBrief product;
   final VoidCallback onCancel;
@@ -750,9 +1019,9 @@ class _ProductPreviewCard extends StatelessWidget {
                   product.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 2),
                 Text(

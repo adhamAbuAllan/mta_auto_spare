@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../api/chat_socket_service.dart';
 import '../../models/models.dart';
+import '../../session/session_notifier.dart';
 import '../methods/api_methods/load_conversations_notifier.dart';
 import '../methods/api_methods/ensure_conversation_notifier.dart';
 import '../methods/api_methods/load_messages_notifier.dart';
+import '../methods/local_methods/chat_message_cache_store.dart';
 import '../statuses/conversation_state.dart';
 import '../statuses/message_state.dart';
 import 'api_provider.dart';
@@ -20,6 +22,10 @@ final chatSocketServiceProvider = Provider<ChatSocketService>((ref) {
   return service;
 });
 
+final chatMessageCacheStoreProvider = Provider<ChatMessageCacheStore>((ref) {
+  return ChatMessageCacheStore(ref.read(sharedPreferencesProvider));
+});
+
 final conversationsNotifierProvider =
     StateNotifierProvider<LoadConversationsNotifier, ConversationState>((ref) {
       return LoadConversationsNotifier(ref.read(chatApiProvider));
@@ -30,6 +36,31 @@ final messagesNotifierProvider =
       return LoadMessagesNotifier(
         ref.read(chatApiProvider),
         ref.read(chatSocketServiceProvider),
+        cacheStore: ref.read(chatMessageCacheStoreProvider),
+        resolveLiveAccessToken: () async {
+          final session = ref.read(sessionNotifierProvider);
+          final currentAccessToken = session.accessToken;
+          final refreshToken = session.refreshToken;
+
+          if (refreshToken == null || refreshToken.isEmpty) {
+            return currentAccessToken;
+          }
+
+          try {
+            final refreshedTokens = await ref
+                .read(authApiProvider)
+                .refresh(refreshToken: refreshToken);
+            await ref
+                .read(sessionNotifierProvider.notifier)
+                .saveTokens(refreshedTokens);
+            return refreshedTokens.access.isNotEmpty
+                ? refreshedTokens.access
+                : currentAccessToken;
+          } catch (_) {
+            return currentAccessToken;
+          }
+        },
+        resolveCacheUserId: () => ref.read(sessionNotifierProvider).profile?.id,
         onMessagePreviewChanged: ({
           required conversationId,
           required message,
@@ -49,6 +80,15 @@ final messagesNotifierProvider =
           ref.read(conversationsNotifierProvider.notifier).markConversationRead(
             conversationId,
           );
+        },
+        onUserPresenceChanged: ({required userId, required isOnline, lastSeenAt}) {
+          ref
+              .read(conversationsNotifierProvider.notifier)
+              .updateUserPresence(
+                userId: userId,
+                isOnline: isOnline,
+                lastSeenAt: lastSeenAt,
+              );
         },
       );
     });

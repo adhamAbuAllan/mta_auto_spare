@@ -22,16 +22,33 @@ class ConversationsView extends ConsumerStatefulWidget {
   ConsumerState<ConversationsView> createState() => _ConversationsViewState();
 }
 
-class _ConversationsViewState extends ConsumerState<ConversationsView> {
+class _ConversationsViewState extends ConsumerState<ConversationsView>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = ref.read(conversationsNotifierProvider);
       if (state.conversations.isEmpty && !state.isLoading) {
         ref.read(conversationsNotifierProvider.notifier).load();
       }
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      return;
+    }
+    final notifier = ref.read(conversationsNotifierProvider.notifier);
+    notifier.load(forceRefresh: true);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -143,10 +160,13 @@ class _ConversationsViewState extends ConsumerState<ConversationsView> {
           return Center(
             child: OutlinedButton(
               onPressed: conversationState.isLoadingMore
-                  ? null
-                  : () => ref
+                  ?
+              null
+                  :
+                  () => ref
                         .read(conversationsNotifierProvider.notifier)
-                        .loadMore(),
+                        .loadMore()
+              ,
               child: Text(
                 conversationState.isLoadingMore ? 'Loading...' : 'Load More',
               ),

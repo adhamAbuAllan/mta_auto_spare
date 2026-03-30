@@ -7,6 +7,7 @@ import '../../../api/api_exception.dart';
 import '../../../api/chat_api.dart';
 import '../../../api/chat_socket_service.dart';
 import '../../../models/models.dart';
+import '../local_methods/chat_message_cache_store.dart';
 import '../../statuses/message_state.dart';
 
 typedef MessagePreviewChanged =
@@ -18,14 +19,32 @@ typedef MessagePreviewChanged =
     });
 
 typedef ConversationReadChanged = void Function(int conversationId);
+typedef ResolveLiveAccessToken = Future<String?> Function();
+typedef ResolveCacheUserId = int? Function();
+typedef UserPresenceChanged =
+    void Function({
+      required int userId,
+      required bool isOnline,
+      DateTime? lastSeenAt,
+    });
 
 class LoadMessagesNotifier extends StateNotifier<MessageState> {
+  static const Duration _typingRefreshInterval = Duration(seconds: 3);
+  static const Duration _typingIdleStopDelay = Duration(seconds: 3);
+
   LoadMessagesNotifier(
     this._chatApi,
     this._socketService, {
+    required ChatMessageCacheStore cacheStore,
+    required ResolveLiveAccessToken resolveLiveAccessToken,
+    required ResolveCacheUserId resolveCacheUserId,
     this.onMessagePreviewChanged,
     this.onConversationReadChanged,
-  }) : super(const MessageState()) {
+    this.onUserPresenceChanged,
+  }) : _resolveLiveAccessToken = resolveLiveAccessToken,
+       _resolveCacheUserId = resolveCacheUserId,
+       _cacheStore = cacheStore,
+        super(const MessageState()) {
     _socketEventSubscription = _socketService.events.listen(_handleSocketEvent);
     _socketStatusSubscription = _socketService.statuses.listen(
       _handleSocketStatus,
@@ -34,14 +53,19 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
 
   final ChatApi _chatApi;
   final ChatSocketService _socketService;
+  final ResolveLiveAccessToken _resolveLiveAccessToken;
+  final ResolveCacheUserId _resolveCacheUserId;
+  final ChatMessageCacheStore _cacheStore;
   final MessagePreviewChanged? onMessagePreviewChanged;
   final ConversationReadChanged? onConversationReadChanged;
+  final UserPresenceChanged? onUserPresenceChanged;
 
   final Map<int, MessageState> _messageCache = {};
   final Map<int, DateTime> _pendingSeenMarkers = {};
   StreamSubscription<ChatSocketEvent>? _socketEventSubscription;
   StreamSubscription<ChatConnectionStatus>? _socketStatusSubscription;
   Timer? _typingRefreshTimer;
+  Timer? _typingStopTimer;
   int _tempMessageSeed = 0;
   int? _activeConversationId;
   int? _currentUserId;
@@ -53,7 +77,7 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
   @override
   void dispose() {
     _disposed = true;
-    _typingRefreshTimer?.cancel();
+    _cancelTypingTimers();
     _socketEventSubscription?.cancel();
     _socketStatusSubscription?.cancel();
     _socketService.disconnect();
@@ -61,19 +85,12 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
   }
 
   Future<void> load(int conversationId, {bool forceRefresh = false}) async {
-    final cachedState = _messageCache[conversationId];
-    if (!forceRefresh && cachedState != null) {
-      state = cachedState.copyWith(
-        conversationId: conversationId,
-        errorMessage: null,
-        isLoading: false,
-        isLoadingMore: false,
-      );
-      return;
-    }
+    final cachedState =
+        _messageCache[conversationId] ??
+        _restorePersistedConversationState(conversationId);
 
     state = (cachedState ?? state).copyWith(
-      isLoading: true,
+      isLoading: forceRefresh || cachedState == null,
       conversationId: conversationId,
       messages: cachedState?.messages ?? const [],
       nextPageUrl: cachedState?.nextPageUrl,
@@ -104,43 +121,43 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     }
   }
 
-  Future<void> loadMore() async {
-    final conversationId = state.conversationId;
-    if (conversationId == null || !state.hasMore || state.isLoadingMore) {
-      return;
-    }
-
-    state = state.copyWith(isLoadingMore: true, errorMessage: null);
-
-    try {
-      final page = await _chatApi.getMessages(
-        conversationId: conversationId,
-        pageUrl: state.nextPageUrl,
-      );
-      final mergedMessages = _sortMessages([...state.messages, ...page.results]);
-      final nextState = state.copyWith(
-        isLoadingMore: false,
-        messages: mergedMessages,
-        nextPageUrl: page.next,
-        errorMessage: null,
-      );
-      _cacheConversationState(conversationId, nextState);
-    } on ApiException catch (error) {
-      debugPrint(
-        '[Chat][Messages][LoadMore][$conversationId] ${error.message}',
-      );
-      state = state.copyWith(isLoadingMore: false, errorMessage: error.message);
-    } catch (error, stackTrace) {
-      debugPrint(
-        '[Chat][Messages][LoadMore][$conversationId][Unexpected] ${error.toString()}',
-      );
-      debugPrintStack(stackTrace: stackTrace);
-      state = state.copyWith(
-        isLoadingMore: false,
-        errorMessage: error.toString(),
-      );
-    }
-  }
+  // Future<void> loadMore() async {
+  //   final conversationId = state.conversationId;
+  //   if (conversationId == null || !state.hasMore || state.isLoadingMore) {
+  //     return;
+  //   }
+  //
+  //   state = state.copyWith(isLoadingMore: true, errorMessage: null);
+  //
+  //   try {
+  //     final page = await _chatApi.getMessages(
+  //       conversationId: conversationId,
+  //       pageUrl: state.nextPageUrl,
+  //     );
+  //     final mergedMessages = _sortMessages([...state.messages, ...page.results]);
+  //     final nextState = state.copyWith(
+  //       isLoadingMore: false,
+  //       messages: mergedMessages,
+  //       nextPageUrl: page.next,
+  //       errorMessage: null,
+  //     );
+  //     _cacheConversationState(conversationId, nextState);
+  //   } on ApiException catch (error) {
+  //     debugPrint(
+  //       '[Chat][Messages][LoadMore][$conversationId] ${error.message}',
+  //     );
+  //     state = state.copyWith(isLoadingMore: false, errorMessage: error.message);
+  //   } catch (error, stackTrace) {
+  //     debugPrint(
+  //       '[Chat][Messages][LoadMore][$conversationId][Unexpected] ${error.toString()}',
+  //     );
+  //     debugPrintStack(stackTrace: stackTrace);
+  //     state = state.copyWith(
+  //       isLoadingMore: false,
+  //       errorMessage: error.toString(),
+  //     );
+  //   }
+  // }
 
   Future<void> activateConversation({
     required int conversationId,
@@ -156,28 +173,43 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
       errorMessage: null,
     );
     _cacheConversationState(conversationId, currentState);
+    final liveAccessToken = await _resolveLiveAccessToken();
+    final tokenToUse = liveAccessToken?.trim().isNotEmpty == true
+        ? liveAccessToken!.trim()
+        : accessToken;
     await _socketService.connect(
       conversationId: conversationId,
-      token: accessToken,
+      token: tokenToUse,
     );
   }
 
   Future<void> deactivateConversation([int? conversationId]) async {
-    _typingRefreshTimer?.cancel();
-    _typingRefreshTimer = null;
-    if (_typingActive) {
-      await _socketService.sendJson(const TypingStopSocketRequest().toJson());
+    await _stopTyping(
+      sendStop: _socketService.status == ChatConnectionStatus.connected,
+    );
+    final targetConversationId = conversationId ?? _activeConversationId;
+    if (targetConversationId == null) {
+      return;
     }
-    _typingActive = false;
     if (conversationId == null || conversationId == _activeConversationId) {
+      final clearedState = _stateForConversation(targetConversationId).copyWith(
+        connectionStatus: ChatConnectionStatus.disconnected,
+        connectedUserIds: const [],
+        typingUserIds: const [],
+        onlineUserIds: const [],
+      );
+      _cacheConversationState(targetConversationId, clearedState);
+      if (state.conversationId == targetConversationId) {
+        state = state.copyWith(conversationId: null);
+      }
       _activeConversationId = null;
+      _currentUserId = null;
       await _socketService.disconnect();
     }
   }
 
   Future<void> pauseLiveSync() async {
-    _typingRefreshTimer?.cancel();
-    _typingRefreshTimer = null;
+    _cancelTypingTimers();
     _typingActive = false;
     await _socketService.pause();
   }
@@ -202,17 +234,18 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     required bool isTyping,
     required bool hasText,
   }) async {
-    if (_activeConversationId == null || _socketService.status != ChatConnectionStatus.connected) {
+    if (_activeConversationId == null) {
       return;
     }
 
     if (!isTyping || !hasText) {
-      _typingRefreshTimer?.cancel();
-      _typingRefreshTimer = null;
-      if (_typingActive) {
-        _typingActive = false;
-        await _socketService.sendJson(const TypingStopSocketRequest().toJson());
-      }
+      await _stopTyping(
+        sendStop: _socketService.status == ChatConnectionStatus.connected,
+      );
+      return;
+    }
+
+    if (_socketService.status != ChatConnectionStatus.connected) {
       return;
     }
 
@@ -221,9 +254,12 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
       await _socketService.sendJson(const TypingStartSocketRequest().toJson());
     }
 
-    _typingRefreshTimer?.cancel();
-    _typingRefreshTimer = Timer.periodic(const Duration(seconds: 3), (_) {
-      _socketService.sendJson(const TypingStartSocketRequest().toJson());
+    _typingRefreshTimer ??= Timer.periodic(_typingRefreshInterval, (_) {
+      _socketService.sendJson(const TypingSocketRequest().toJson());
+    });
+    _typingStopTimer?.cancel();
+    _typingStopTimer = Timer(_typingIdleStopDelay, () {
+      unawaited(_stopTyping(sendStop: true));
     });
   }
 
@@ -402,6 +438,8 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
         _applySeenEvent(event);
       case MessageStatusSocketEvent():
         _applyMessageStatus(event.status);
+      case UserPresenceSocketEvent():
+        _applyUserPresenceEvent(event);
       case ErrorSocketEvent():
         final conversationId = _activeConversationId;
         if (conversationId != null) {
@@ -418,7 +456,6 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
   void _handleSocketStatus(ChatConnectionStatus status) {
     final conversationId = _activeConversationId;
     if (conversationId == null) {
-      state = state.copyWith(connectionStatus: status);
       return;
     }
     final previousStatus = _stateForConversation(conversationId).connectionStatus;
@@ -437,15 +474,30 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
 
   void _applyRuntimeState(ConversationRuntimeState runtimeState) {
     final conversationId = runtimeState.conversationId;
+    if (conversationId != _activeConversationId) {
+      return;
+    }
     final currentState = _stateForConversation(conversationId).copyWith(
       connectedUserIds: runtimeState.connectedUserIds,
       typingUserIds: runtimeState.typingUserIds,
+      onlineUserIds: runtimeState.onlineUserIds,
+      presenceLastSeenByUserId: runtimeState.presenceLastSeenAtByUserId,
     );
     _cacheConversationState(conversationId, currentState);
+    for (final entry in runtimeState.presenceLastSeenAtByUserId.entries) {
+      onUserPresenceChanged?.call(
+        userId: entry.key,
+        isOnline: runtimeState.onlineUserIds.contains(entry.key),
+        lastSeenAt: entry.value,
+      );
+    }
   }
 
   void _applyIncomingMessage(MessageModel message) {
     final conversationId = message.conversationId;
+    if (conversationId != _activeConversationId) {
+      return;
+    }
     final currentState = _stateForConversation(conversationId);
     final mergedState = _mergeIncomingMessage(currentState, message);
     _cacheConversationState(conversationId, mergedState);
@@ -461,6 +513,9 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
 
   void _applyTypingEvent(ConversationTypingSocketEvent event) {
     final conversationId = event.conversationId;
+    if (conversationId != _activeConversationId) {
+      return;
+    }
     final currentState = _stateForConversation(conversationId);
     final currentTyping = currentState.typingUserIds.toSet();
     if (event.isTyping) {
@@ -476,6 +531,9 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
 
   void _applySeenEvent(ConversationSeenSocketEvent event) {
     final conversationId = event.conversationId;
+    if (conversationId != _activeConversationId) {
+      return;
+    }
     final currentState = _stateForConversation(conversationId);
     final nextSeen = Map<int, DateTime?>.from(currentState.lastSeenByUserId);
     nextSeen[event.userId] = event.seenAt;
@@ -509,6 +567,9 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
 
   void _applyMessageStatus(MessageStatusModel status) {
     final conversationId = status.conversationId;
+    if (conversationId != _activeConversationId) {
+      return;
+    }
     final currentState = _stateForConversation(conversationId);
     final updatedMessages = [
       for (final message in currentState.messages)
@@ -519,6 +580,37 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     ];
     final nextState = currentState.copyWith(messages: _sortMessages(updatedMessages));
     _cacheConversationState(conversationId, nextState);
+  }
+
+  void _applyUserPresenceEvent(UserPresenceSocketEvent event) {
+    final conversationId = _activeConversationId;
+    if (conversationId == null) {
+      return;
+    }
+
+    final currentState = _stateForConversation(conversationId);
+    final onlineUserIds = currentState.onlineUserIds.toSet();
+    if (event.isOnline) {
+      onlineUserIds.add(event.userId);
+    } else {
+      onlineUserIds.remove(event.userId);
+    }
+
+    final presenceLastSeen = Map<int, DateTime?>.from(
+      currentState.presenceLastSeenByUserId,
+    );
+    presenceLastSeen[event.userId] = event.lastSeenAt;
+
+    final nextState = currentState.copyWith(
+      onlineUserIds: onlineUserIds.toList()..sort(),
+      presenceLastSeenByUserId: presenceLastSeen,
+    );
+    _cacheConversationState(conversationId, nextState);
+    onUserPresenceChanged?.call(
+      userId: event.userId,
+      isOnline: event.isOnline,
+      lastSeenAt: event.lastSeenAt,
+    );
   }
 
   MessageModel _applyStatusToMessage(
@@ -636,6 +728,7 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     if (conversationId == _activeConversationId || state.conversationId == conversationId) {
       state = normalizedState;
     }
+    unawaited(_persistConversationState(conversationId, normalizedState));
   }
 
   int _nextTempMessageId() {
@@ -664,6 +757,54 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
       message: message,
       isActiveConversation: isActiveConversation,
       currentUserId: currentUserId,
+    );
+  }
+
+  void _cancelTypingTimers() {
+    _typingRefreshTimer?.cancel();
+    _typingRefreshTimer = null;
+    _typingStopTimer?.cancel();
+    _typingStopTimer = null;
+  }
+
+  Future<void> _stopTyping({required bool sendStop}) async {
+    _cancelTypingTimers();
+    final wasTyping = _typingActive;
+    _typingActive = false;
+    if (wasTyping && sendStop) {
+      await _socketService.sendJson(const TypingStopSocketRequest().toJson());
+    }
+  }
+
+  MessageState? _restorePersistedConversationState(int conversationId) {
+    final currentUserId = _resolveCacheUserId();
+    if (currentUserId == null) {
+      return null;
+    }
+
+    final restoredState = _cacheStore.readConversationState(
+      userId: currentUserId,
+      conversationId: conversationId,
+    );
+    if (restoredState != null) {
+      _messageCache[conversationId] = restoredState;
+    }
+    return restoredState;
+  }
+
+  Future<void> _persistConversationState(
+    int conversationId,
+    MessageState stateToPersist,
+  ) async {
+    final currentUserId = _resolveCacheUserId();
+    if (currentUserId == null) {
+      return;
+    }
+
+    await _cacheStore.writeConversationState(
+      userId: currentUserId,
+      conversationId: conversationId,
+      state: stateToPersist,
     );
   }
 }

@@ -76,24 +76,60 @@ class ApiUser {
 }
 
 class UserBrief {
-  const UserBrief({required this.id, required this.name, this.avatar});
+  const UserBrief({
+    required this.id,
+    required this.name,
+    this.avatar,
+    this.isOnline = false,
+    this.lastSeenAt,
+  });
 
   final int id;
   final String name;
   final String? avatar;
+  final bool isOnline;
+  final DateTime? lastSeenAt;
 
   factory UserBrief.fromJson(JsonMap json) {
     return UserBrief(
       id: intFromJson(json['id']) ?? 0,
       name: stringFromJson(json['name']) ?? '',
       avatar: stringFromJson(json['avatar']),
+      isOnline: boolFromJson(json['is_online']) ?? false,
+      lastSeenAt: dateTimeFromJson(json['last_seen_at']),
     );
   }
 
   JsonMap toJson() {
-    return {'id': id, 'name': name, 'avatar': avatar};
+    return {
+      'id': id,
+      'name': name,
+      'avatar': avatar,
+      'is_online': isOnline,
+      'last_seen_at': lastSeenAt?.toIso8601String(),
+    };
+  }
+
+  UserBrief copyWith({
+    int? id,
+    String? name,
+    Object? avatar = _userBriefUnset,
+    bool? isOnline,
+    Object? lastSeenAt = _userBriefUnset,
+  }) {
+    return UserBrief(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      avatar: identical(avatar, _userBriefUnset) ? this.avatar : avatar as String?,
+      isOnline: isOnline ?? this.isOnline,
+      lastSeenAt: identical(lastSeenAt, _userBriefUnset)
+          ? this.lastSeenAt
+          : lastSeenAt as DateTime?,
+    );
   }
 }
+
+const _userBriefUnset = Object();
 
 class MeProfile {
   const MeProfile({
