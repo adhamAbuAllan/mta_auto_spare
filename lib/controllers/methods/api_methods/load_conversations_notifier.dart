@@ -94,7 +94,7 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
     final updatedConversation = currentConversation.copyWith(
       lastMessage: ConversationLastMessagePreview(
         id: message.id,
-        text: message.text,
+        text: _buildPreviewText(message),
         senderId: message.sender.id,
         senderName: message.sender.name,
         timestamp: message.serverTimestamp ?? message.clientTimestamp,
@@ -107,6 +107,32 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
     updatedList.insert(0, updatedConversation);
 
     state = state.copyWith(conversations: updatedList);
+  }
+
+  String _buildPreviewText(MessageModel message) {
+    final trimmedText = message.text.trim();
+    if (trimmedText.isNotEmpty) {
+      return trimmedText;
+    }
+
+    switch (message.messageType) {
+      case 'product':
+        final title = message.product?.title.trim();
+        if (title != null && title.isNotEmpty) {
+          return 'Shared request: $title';
+        }
+        return 'Shared a request';
+      case 'media':
+        if (message.media.length > 1) {
+          return 'Sent ${message.media.length} attachments';
+        }
+        if (message.media.any((attachment) => attachment.isImage)) {
+          return 'Sent an image';
+        }
+        return 'Sent an attachment';
+      default:
+        return 'New message';
+    }
   }
 
   void markConversationRead(int conversationId) {

@@ -330,7 +330,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
               8,
               0,
               //  messageState.hasMore ?
-              92,
+              8,
               //    :
               //   8,
             ),
@@ -405,7 +405,29 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     _messageState = _resolveDisplayedMessageState(
       ref.read(messagesNotifierProvider),
     );
+    _syncConversationPreviewFromLoadedMessages(conversationId);
     _keepLatestMessageVisible();
+  }
+
+  void _syncConversationPreviewFromLoadedMessages(int conversationId) {
+    final currentUserId = ref.read(currentUserIdProvider);
+    if (currentUserId == null || _messageState.messages.isEmpty) {
+      return;
+    }
+
+    final latestMessage = _messageState.messages.last;
+    if (latestMessage.conversationId != conversationId) {
+      return;
+    }
+
+    ref
+        .read(conversationsNotifierProvider.notifier)
+        .touchConversationFromMessage(
+          conversationId: conversationId,
+          message: latestMessage,
+          isActiveConversation: true,
+          currentUserId: currentUserId,
+        );
   }
 
   Future<void> _activateLiveSync(int conversationId) async {
