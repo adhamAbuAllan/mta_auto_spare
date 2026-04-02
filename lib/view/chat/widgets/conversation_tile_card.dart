@@ -23,6 +23,9 @@ class ConversationTileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final displayName = conversationDisplayName(conversation, currentUserId);
     final participant = otherParticipant(conversation, currentUserId);
+    final lastMessage = conversation.lastMessage;
+    final isLastMessageMine =
+        lastMessage != null && lastMessage.senderId == currentUserId;
     final presenceColor = participant == null
         ? null
         : participant.user.isOnline
@@ -82,13 +85,27 @@ class ConversationTileCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        conversationPreview(conversation),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF6F6A63),
-                        ),
+                      Row(
+                        children: [
+                          if (isLastMessageMine) ...[
+                            _ConversationReceiptIcon(
+                              receiptState: lastMessage!.receiptStateFor(
+                                currentUserId,
+                              ),
+                              isOptimistic: lastMessage.isOptimistic,
+                            ),
+                            const SizedBox(width: 6),
+                          ],
+                          Expanded(
+                            child: Text(
+                              conversationPreview(conversation),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: const Color(0xFF6F6A63)),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -119,6 +136,49 @@ class ConversationTileCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ConversationReceiptIcon extends StatelessWidget {
+  const _ConversationReceiptIcon({
+    required this.receiptState,
+    required this.isOptimistic,
+  });
+
+  final MessageReceiptState receiptState;
+  final bool isOptimistic;
+
+  @override
+  Widget build(BuildContext context) {
+    final baseColor = const Color(0xFF8C867E);
+    final (icon, color) = switch (receiptState) {
+      MessageReceiptState.pending => (
+        Icons.done_rounded,
+        baseColor.withValues(alpha: 0.55),
+      ),
+      MessageReceiptState.sent => (
+        Icons.done_rounded,
+        baseColor.withValues(alpha: 0.82),
+      ),
+      MessageReceiptState.delivered => (
+        Icons.done_all_rounded,
+        baseColor.withValues(alpha: 0.88),
+      ),
+      MessageReceiptState.seen => (
+        Icons.done_all_rounded,
+        const Color(0xFF2B9CC3),
+      ),
+      MessageReceiptState.failed => (
+        Icons.error_outline_rounded,
+        const Color(0xFFD47C42),
+      ),
+    };
+
+    return AnimatedOpacity(
+      opacity: isOptimistic ? 0.9 : 1,
+      duration: const Duration(milliseconds: 180),
+      child: Icon(icon, size: 16, color: color),
     );
   }
 }

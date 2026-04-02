@@ -32,7 +32,7 @@ class MessageState {
   final Map<int, DateTime?> lastSeenByUserId;
   final Map<int, DateTime?> presenceLastSeenByUserId;
 
-//  bool get hasMore => nextPageUrl != null && nextPageUrl!.isNotEmpty;
+  //  bool get hasMore => nextPageUrl != null && nextPageUrl!.isNotEmpty;
   bool get isSending => pendingMessageCount > 0;
   bool get isLive => connectionStatus == ChatConnectionStatus.connected;
 

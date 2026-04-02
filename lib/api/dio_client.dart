@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,8 +7,12 @@ import '../constants/api_constants.dart';
 import '../models/models.dart';
 import '../session/session_notifier.dart';
 
+typedef RetryRequestDataBuilder = FutureOr<dynamic> Function();
+
 class AppDioClient {
   AppDioClient(this.ref);
+
+  static const String retryDataBuilderExtraKey = 'retryDataBuilder';
 
   final Ref ref;
   Future<AuthTokenPair?>? _refreshFuture;
@@ -38,10 +44,10 @@ class AppDioClient {
           }
 
           try {
-            final future = _refreshFuture ?? _refreshAccessToken(refreshToken);
-            _refreshFuture = future;
-            final tokens = await future;
-            _refreshFuture = null;
+            final tokens = await _refreshTokens(
+              refreshToken,
+              httpClientAdapter: dio.httpClientAdapter,
+            );
 
             if (tokens == null || tokens.access.isEmpty) {
               await ref.read(sessionNotifierProvider.notifier).clear();
@@ -50,16 +56,33 @@ class AppDioClient {
             }
 
             await ref.read(sessionNotifierProvider.notifier).saveTokens(tokens);
-
-            final requestOptions = error.requestOptions;
-            requestOptions.headers['Authorization'] = 'Bearer ${tokens.access}';
-            requestOptions.extra['hasRetried'] = true;
-
-            final response = await dio.fetch(requestOptions);
-            handler.resolve(response);
+            try {
+              final response = await _retryRequest(
+                dio: dio,
+                requestOptions: error.requestOptions,
+                accessToken: tokens.access,
+              );
+              handler.resolve(response);
+            } on DioException catch (retryError) {
+              if (_shouldClearSessionAfterRetryFailure(retryError)) {
+                await ref.read(sessionNotifierProvider.notifier).clear();
+              }
+              handler.next(retryError);
+            } catch (retryError, stackTrace) {
+              handler.next(
+                DioException(
+                  requestOptions: error.requestOptions,
+                  error: retryError,
+                  stackTrace: stackTrace,
+                ),
+              );
+            }
+          } on DioException catch (refreshError) {
+            if (_shouldClearSessionAfterRefreshFailure(refreshError)) {
+              await ref.read(sessionNotifierProvider.notifier).clear();
+            }
+            handler.next(error);
           } catch (_) {
-            _refreshFuture = null;
-            await ref.read(sessionNotifierProvider.notifier).clear();
             handler.next(error);
           }
         },
@@ -102,8 +125,68 @@ class AppDioClient {
     return true;
   }
 
-  Future<AuthTokenPair?> _refreshAccessToken(String refreshToken) async {
+  Future<AuthTokenPair?> _refreshTokens(
+    String refreshToken, {
+    required HttpClientAdapter httpClientAdapter,
+  }) async {
+    final activeRefresh =
+        _refreshFuture ??
+        _refreshAccessToken(refreshToken, httpClientAdapter: httpClientAdapter);
+    _refreshFuture = activeRefresh;
+    try {
+      return await activeRefresh;
+    } finally {
+      if (identical(_refreshFuture, activeRefresh)) {
+        _refreshFuture = null;
+      }
+    }
+  }
+
+  Future<Response<dynamic>> _retryRequest({
+    required Dio dio,
+    required RequestOptions requestOptions,
+    required String accessToken,
+  }) async {
+    final headers = Map<String, dynamic>.from(requestOptions.headers);
+    headers['Authorization'] = 'Bearer $accessToken';
+
+    final extra = Map<String, dynamic>.from(requestOptions.extra);
+    extra['hasRetried'] = true;
+
+    final retryData = await _buildRetryData(requestOptions);
+    final retryOptions = requestOptions.copyWith(
+      data: retryData,
+      headers: headers,
+      extra: extra,
+    );
+    return dio.fetch<dynamic>(retryOptions);
+  }
+
+  Future<dynamic> _buildRetryData(RequestOptions requestOptions) async {
+    final builder = requestOptions.extra[retryDataBuilderExtraKey];
+    if (builder is RetryRequestDataBuilder) {
+      return await Future<dynamic>.value(builder());
+    }
+    return requestOptions.data;
+  }
+
+  bool _shouldClearSessionAfterRefreshFailure(DioException error) {
+    return switch (error.response?.statusCode) {
+      400 || 401 || 403 => true,
+      _ => false,
+    };
+  }
+
+  bool _shouldClearSessionAfterRetryFailure(DioException error) {
+    return error.response?.statusCode == 401;
+  }
+
+  Future<AuthTokenPair?> _refreshAccessToken(
+    String refreshToken, {
+    required HttpClientAdapter httpClientAdapter,
+  }) async {
     final refreshDio = Dio(_baseOptions());
+    refreshDio.httpClientAdapter = httpClientAdapter;
     final response = await refreshDio.post(
       ApiEndpoints.refresh,
       data: {'refresh': refreshToken},

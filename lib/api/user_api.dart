@@ -20,6 +20,18 @@ class UserApi {
     }
   }
 
+  Future<MobileDevice> upsertMobileDevice(MobileDevice device) async {
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.mobileDevices,
+        data: device.toJson(),
+      );
+      return MobileDevice.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
   Map<String, dynamic> _asMap(dynamic data) {
     if (data is Map<String, dynamic>) {
       return data;

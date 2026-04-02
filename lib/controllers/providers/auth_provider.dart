@@ -9,6 +9,7 @@ import '../methods/local_methods/logout_notifier.dart';
 import '../statuses/auth_state.dart';
 import 'api_provider.dart';
 import 'chat_provider.dart';
+import 'notification_provider.dart';
 
 final registerNotifierProvider =
     StateNotifierProvider<RegisterNotifier, AuthState>((ref) {
@@ -36,6 +37,11 @@ final logoutNotifierProvider = StateNotifierProvider<LogoutNotifier, AuthState>(
   (ref) {
     return LogoutNotifier(
       ref.read(sessionNotifierProvider.notifier),
+      beforeLogout: () async {
+        await ref
+            .read(chatNotificationServiceProvider)
+            .deactivateCurrentDevice();
+      },
       onLogout: () async {
         await ref.read(chatSocketServiceProvider).disconnect();
         ref.invalidate(conversationsNotifierProvider);

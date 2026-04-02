@@ -61,35 +61,37 @@ final messagesNotifierProvider =
           }
         },
         resolveCacheUserId: () => ref.read(sessionNotifierProvider).profile?.id,
-        onMessagePreviewChanged: ({
-          required conversationId,
-          required message,
-          required isActiveConversation,
-          required currentUserId,
-        }) {
-          ref
-              .read(conversationsNotifierProvider.notifier)
-              .touchConversationFromMessage(
-                conversationId: conversationId,
-                message: message,
-                isActiveConversation: isActiveConversation,
-                currentUserId: currentUserId,
-              );
-        },
+        onMessagePreviewChanged:
+            ({
+              required conversationId,
+              required message,
+              required isActiveConversation,
+              required currentUserId,
+            }) {
+              ref
+                  .read(conversationsNotifierProvider.notifier)
+                  .touchConversationFromMessage(
+                    conversationId: conversationId,
+                    message: message,
+                    isActiveConversation: isActiveConversation,
+                    currentUserId: currentUserId,
+                  );
+            },
         onConversationReadChanged: (conversationId) {
-          ref.read(conversationsNotifierProvider.notifier).markConversationRead(
-            conversationId,
-          );
-        },
-        onUserPresenceChanged: ({required userId, required isOnline, lastSeenAt}) {
           ref
               .read(conversationsNotifierProvider.notifier)
-              .updateUserPresence(
-                userId: userId,
-                isOnline: isOnline,
-                lastSeenAt: lastSeenAt,
-              );
+              .markConversationRead(conversationId);
         },
+        onUserPresenceChanged:
+            ({required userId, required isOnline, lastSeenAt}) {
+              ref
+                  .read(conversationsNotifierProvider.notifier)
+                  .updateUserPresence(
+                    userId: userId,
+                    isOnline: isOnline,
+                    lastSeenAt: lastSeenAt,
+                  );
+            },
       );
     });
 

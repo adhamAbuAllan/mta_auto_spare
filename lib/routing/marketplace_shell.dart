@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../controllers/providers/auth_provider.dart';
 import '../controllers/providers/chat_provider.dart';
+import '../controllers/providers/notification_provider.dart';
+import '../notifications/chat_notification_service.dart';
 import '../view/chat/chat_detail_page.dart';
 import '../view/chat/conversations_view.dart';
 import '../view/common_widgets/app_panel.dart';
@@ -18,6 +20,61 @@ class MarketplaceShellPage extends ConsumerStatefulWidget {
 
 class _MarketplaceShellPageState extends ConsumerState<MarketplaceShellPage> {
   int _mobileIndex = 0;
+  ProviderSubscription<ChatNotificationNavigationRequest?>?
+  _notificationSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _notificationSubscription = ref
+        .listenManual<ChatNotificationNavigationRequest?>(
+          chatNotificationNavigationRequestProvider,
+          (previous, next) {
+            if (next == null) {
+              return;
+            }
+            _queueNotificationRoute(next);
+          },
+        );
+    final pendingRequest = ref.read(chatNotificationNavigationRequestProvider);
+    if (pendingRequest != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        _queueNotificationRoute(pendingRequest);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _notificationSubscription?.close();
+    _notificationSubscription = null;
+    super.dispose();
+  }
+
+  void _queueNotificationRoute(ChatNotificationNavigationRequest request) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      ref.read(chatNotificationNavigationRequestProvider.notifier).state = null;
+      final isWide = MediaQuery.sizeOf(context).width >= 980;
+      if (isWide) {
+        ref.read(selectedConversationIdProvider.notifier).state =
+            request.conversationId;
+        return;
+      }
+      setState(() => _mobileIndex = 1);
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) =>
+              ChatDetailPage(conversationId: request.conversationId),
+        ),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

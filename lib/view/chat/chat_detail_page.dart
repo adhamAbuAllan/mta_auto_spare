@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
 
 import '../../api/chat_socket_service.dart';
 import '../../controllers/methods/api_methods/load_messages_notifier.dart';
@@ -43,6 +45,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   final ScrollController _scrollController = ScrollController();
   final FocusNode _composerFocusNode = FocusNode();
   final ImagePicker _imagePicker = ImagePicker();
+  final AudioRecorder _audioRecorder = AudioRecorder();
   late final LoadMessagesNotifier _messagesNotifier;
 
   List<ChatUploadImage> _selectedImages = const [];
@@ -55,6 +58,11 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   MessageState _messageState = const MessageState(isLoading: true);
   ProviderSubscription<MessageState>? _messageSubscription;
   ProviderSubscription<SessionState>? _sessionSubscription;
+  Timer? _voiceRecordingTicker;
+  DateTime? _voiceRecordingStartedAt;
+  Duration _voiceRecordingDuration = Duration.zero;
+  bool _isVoiceRecording = false;
+  bool _isVoiceRecorderBusy = false;
 
   @override
   void initState() {
@@ -108,6 +116,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
           return;
         }
 
+        await _cancelVoiceRecording(silent: true);
         setState(() {
           _selectedImages = const [];
           _replyTarget = null;
@@ -129,6 +138,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive ||
         state == AppLifecycleState.detached) {
+      unawaited(_cancelVoiceRecording(silent: true));
       _messagesNotifier.pauseLiveSync();
       return;
     }
@@ -161,6 +171,8 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   void dispose() {
     _conversationLoadCycle += 1;
     WidgetsBinding.instance.removeObserver(this);
+    _voiceRecordingTicker?.cancel();
+    _voiceRecordingTicker = null;
     _messageSubscription?.close();
     _messageSubscription = null;
     _sessionSubscription?.close();
@@ -170,6 +182,8 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     _composerFocusNode.dispose();
     _messageController.dispose();
     _scrollController.dispose();
+    unawaited(_audioRecorder.cancel());
+    unawaited(_audioRecorder.dispose());
     unawaited(_messagesNotifier.deactivateConversation(widget.conversationId));
 
     super.dispose();
@@ -273,10 +287,16 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
           focusNode: _composerFocusNode,
           selectedImages: _selectedImages,
           isSending: messageState.isSending,
+          isVoiceRecording: _isVoiceRecording,
+          isVoiceRecorderBusy: _isVoiceRecorderBusy,
+          voiceRecordingDuration: _voiceRecordingDuration,
           replyTarget: _replyTarget,
           selectedProduct: _selectedProduct,
           onPickImages: _pickImages,
           onRemoveImage: _removeSelectedImage,
+          onStartVoiceRecording: _startVoiceRecording,
+          onCancelVoiceRecording: _cancelVoiceRecording,
+          onSendVoiceRecording: _stopAndSendVoiceMessage,
           onCancelReply: () => setState(() => _replyTarget = null),
           onCancelProduct: () => setState(() => _selectedProduct = null),
           onSend: _sendMessage,
@@ -313,10 +333,12 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     }
 
     if (messageState.messages.isEmpty) {
-      return const EmptyStateCard(
-        title: 'No messages yet',
-        message: 'Say hello and start the conversation.',
-        icon: Icons.forum_outlined,
+      return SingleChildScrollView(
+        child: const EmptyStateCard(
+          title: 'No messages yet',
+          message: 'Say hello and start the conversation.',
+          icon: Icons.forum_outlined,
+        ),
       );
     }
 
@@ -464,10 +486,15 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
         MessageState(conversationId: widget.conversationId, isLoading: true);
   }
 
-  Future<void> _sendMessage({PartRequestBrief? sharedProduct}) async {
+  Future<void> _sendMessage({
+    PartRequestBrief? sharedProduct,
+    List<ChatUploadImage>? attachmentsOverride,
+  }) async {
     final text = _messageController.text.trim();
     final productToSend = sharedProduct ?? _selectedProduct;
-    if (text.isEmpty && _selectedImages.isEmpty && productToSend == null) {
+    final attachments =
+        attachmentsOverride ?? List<ChatUploadImage>.from(_selectedImages);
+    if (text.isEmpty && attachments.isEmpty && productToSend == null) {
       return;
     }
 
@@ -476,7 +503,6 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       return;
     }
 
-    final attachments = List<ChatUploadImage>.from(_selectedImages);
     final replyTarget = _replyTarget;
     _messageController.clear();
     _keepLatestMessageVisible();
@@ -519,6 +545,147 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     _keepLatestMessageVisible();
   }
 
+  Future<void> _startVoiceRecording() async {
+    if (_isVoiceRecording || _isVoiceRecorderBusy) {
+      return;
+    }
+    if (_messageController.text.trim().isNotEmpty ||
+        _selectedImages.isNotEmpty ||
+        _selectedProduct != null) {
+      _showComposerSnackBar(
+        'Send or clear the current draft before recording a voice message.',
+      );
+      return;
+    }
+
+    setState(() {
+      _isVoiceRecorderBusy = true;
+    });
+
+    try {
+      final hasPermission = await _audioRecorder.hasPermission();
+      if (!hasPermission) {
+        _showComposerSnackBar(
+          'Microphone permission is required to record a voice message.',
+        );
+        return;
+      }
+
+      final tempDirectory = await getTemporaryDirectory();
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final filePath =
+          '${tempDirectory.path}${Platform.pathSeparator}voice-${widget.conversationId}-$timestamp.m4a';
+      await _audioRecorder.start(
+        const RecordConfig(
+          encoder: AudioEncoder.aacLc,
+          sampleRate: 24000,
+          numChannels: 1,
+          bitRate: 48000,
+          autoGain: true,
+          echoCancel: true,
+          noiseSuppress: true,
+        ),
+        path: filePath,
+      );
+      if (!mounted) {
+        await _audioRecorder.cancel();
+        return;
+      }
+
+      _composerFocusNode.unfocus();
+      _messagesNotifier.sendTyping(isTyping: false, hasText: false);
+      setState(() {
+        _isVoiceRecording = true;
+        _voiceRecordingStartedAt = DateTime.now();
+        _voiceRecordingDuration = Duration.zero;
+      });
+      _startVoiceRecordingTicker();
+      _keepLatestMessageVisible();
+    } catch (_) {
+      _showComposerSnackBar('Voice recording could not start on this device.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isVoiceRecorderBusy = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _cancelVoiceRecording({bool silent = false}) async {
+    if (_isVoiceRecorderBusy) {
+      return;
+    }
+
+    final shouldCancel = _isVoiceRecording || _voiceRecordingStartedAt != null;
+    if (!shouldCancel) {
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        _isVoiceRecorderBusy = true;
+      });
+    }
+
+    try {
+      await _audioRecorder.cancel();
+      if (!silent) {
+        _showComposerSnackBar('Voice message discarded.');
+      }
+    } catch (_) {
+      if (!silent) {
+        _showComposerSnackBar('Voice message could not be discarded cleanly.');
+      }
+    } finally {
+      _resetVoiceRecordingState();
+      if (mounted) {
+        setState(() {
+          _isVoiceRecorderBusy = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _stopAndSendVoiceMessage() async {
+    if (!_isVoiceRecording || _isVoiceRecorderBusy) {
+      return;
+    }
+
+    setState(() {
+      _isVoiceRecorderBusy = true;
+    });
+
+    try {
+      final recordedPath = await _audioRecorder.stop();
+      if (recordedPath == null || recordedPath.trim().isEmpty) {
+        _resetVoiceRecordingState();
+        _showComposerSnackBar('No voice message was captured.');
+        return;
+      }
+
+      final recordedFile = File(recordedPath);
+      final attachment = ChatUploadImage(
+        path: recordedPath,
+        fileName: recordedFile.path.split(Platform.pathSeparator).last,
+        contentType: 'audio/mp4',
+        size: await recordedFile.length(),
+      );
+
+      _resetVoiceRecordingState();
+      await _sendMessage(attachmentsOverride: [attachment]);
+    } catch (_) {
+      _showComposerSnackBar('Voice message could not be sent.');
+      _resetVoiceRecordingState();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isVoiceRecorderBusy = false;
+        });
+      }
+    }
+  }
+
   Future<void> _pickImages() async {
     final pickedFiles = await _imagePicker.pickMultiImage(
       imageQuality: 88,
@@ -545,6 +712,10 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   }
 
   void _handleComposerChanged() {
+    if (_isVoiceRecording) {
+      _messagesNotifier.sendTyping(isTyping: false, hasText: false);
+      return;
+    }
     final hasText = _messageController.text.trim().isNotEmpty;
     if (_composerFocusNode.hasFocus) {
       _keepLatestMessageVisible();
@@ -580,11 +751,47 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     return 'image/jpeg';
   }
 
+  void _startVoiceRecordingTicker() {
+    _voiceRecordingTicker?.cancel();
+    _voiceRecordingTicker = Timer.periodic(const Duration(seconds: 1), (_) {
+      final startedAt = _voiceRecordingStartedAt;
+      if (!mounted || startedAt == null) {
+        return;
+      }
+      setState(() {
+        _voiceRecordingDuration = DateTime.now().difference(startedAt);
+      });
+    });
+  }
+
+  void _resetVoiceRecordingState() {
+    _voiceRecordingTicker?.cancel();
+    _voiceRecordingTicker = null;
+    _voiceRecordingStartedAt = null;
+    _voiceRecordingDuration = Duration.zero;
+    _isVoiceRecording = false;
+  }
+
+  void _showComposerSnackBar(String message) {
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
   MessageReplyModel _replyPreviewFromMessage(MessageModel message) {
     return MessageReplyModel(
       id: message.id,
       sender: message.sender,
-      text: message.text,
+      text: message.text.trim().isNotEmpty
+          ? message.text
+          : message.media.any((attachment) => attachment.isAudio)
+          ? 'Voice message'
+          : message.media.any((attachment) => attachment.isImage)
+          ? 'Photo'
+          : message.product?.title ?? 'Attachment',
       product: message.product,
       clientTimestamp: message.clientTimestamp,
       serverTimestamp: message.serverTimestamp,
@@ -818,10 +1025,16 @@ class _Composer extends StatelessWidget {
     required this.focusNode,
     required this.selectedImages,
     required this.isSending,
+    required this.isVoiceRecording,
+    required this.isVoiceRecorderBusy,
+    required this.voiceRecordingDuration,
     required this.replyTarget,
     required this.selectedProduct,
     required this.onPickImages,
     required this.onRemoveImage,
+    required this.onStartVoiceRecording,
+    required this.onCancelVoiceRecording,
+    required this.onSendVoiceRecording,
     required this.onCancelReply,
     required this.onCancelProduct,
     required this.onSend,
@@ -831,10 +1044,16 @@ class _Composer extends StatelessWidget {
   final FocusNode focusNode;
   final List<ChatUploadImage> selectedImages;
   final bool isSending;
+  final bool isVoiceRecording;
+  final bool isVoiceRecorderBusy;
+  final Duration voiceRecordingDuration;
   final MessageModel? replyTarget;
   final PartRequestBrief? selectedProduct;
   final Future<void> Function() onPickImages;
   final void Function(ChatUploadImage image) onRemoveImage;
+  final Future<void> Function() onStartVoiceRecording;
+  final Future<void> Function({bool silent}) onCancelVoiceRecording;
+  final Future<void> Function() onSendVoiceRecording;
   final VoidCallback onCancelReply;
   final VoidCallback onCancelProduct;
   final Future<void> Function({PartRequestBrief? sharedProduct}) onSend;
@@ -882,65 +1101,247 @@ class _Composer extends StatelessWidget {
               ),
               const SizedBox(height: 12),
             ],
-            Row(
-              children: [
-                IconButton.filledTonal(
-                  tooltip: 'Upload images',
-                  onPressed: isSending ? null : onPickImages,
-                  icon: const Icon(Icons.photo_library_rounded),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    focusNode: focusNode,
-                    minLines: 1,
-                    maxLines: 4,
-                    textInputAction: TextInputAction.send,
-                    decoration: const InputDecoration(
-                      hintText: 'Write a message...',
-                      border: InputBorder.none,
-                      filled: false,
-                    ),
-                    onSubmitted: (_) => onSend(),
+            if (isVoiceRecording)
+              _VoiceRecordingComposer(
+                isBusy: isVoiceRecorderBusy || isSending,
+                duration: voiceRecordingDuration,
+                onCancel: () => onCancelVoiceRecording(silent: false),
+                onSend: onSendVoiceRecording,
+              )
+            else
+              Row(
+                children: [
+                  IconButton.filledTonal(
+                    tooltip: 'Upload images',
+                    onPressed: isSending || isVoiceRecorderBusy
+                        ? null
+                        : onPickImages,
+                    icon: const Icon(Icons.photo_library_rounded),
                   ),
-                ),
-                ValueListenableBuilder<TextEditingValue>(
-                  valueListenable: controller,
-                  builder: (context, value, child) {
-                    final hasText = value.text.trim().isNotEmpty;
-                    final canSend =
-                        hasText ||
-                        selectedImages.isNotEmpty ||
-                        selectedProduct != null;
-                    if (!canSend) {
-                      return const SizedBox.shrink();
-                    }
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(width: 8),
-                        IconButton.filled(
-                          onPressed: isSending ? null : () => onSend(),
-                          style: IconButton.styleFrom(
-                            padding: const EdgeInsets.all(14),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      minLines: 1,
+                      maxLines: 4,
+                      textInputAction: TextInputAction.send,
+                      enabled: !isVoiceRecorderBusy,
+                      decoration: const InputDecoration(
+                        hintText: 'Write a message...',
+                        border: InputBorder.none,
+                        filled: false,
+                      ),
+                      onSubmitted: (_) => onSend(),
+                    ),
+                  ),
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: controller,
+                    builder: (context, value, child) {
+                      final hasText = value.text.trim().isNotEmpty;
+                      final canSend =
+                          hasText ||
+                          selectedImages.isNotEmpty ||
+                          selectedProduct != null;
+                      if (canSend) {
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(width: 8),
+                            IconButton.filled(
+                              onPressed: isSending || isVoiceRecorderBusy
+                                  ? null
+                                  : () => onSend(),
+                              style: IconButton.styleFrom(
+                                padding: const EdgeInsets.all(14),
+                              ),
+                              icon: Icon(
+                                isSending
+                                    ? Icons.hourglass_top_rounded
+                                    : Icons.send_rounded,
+                              ),
+                              tooltip: isSending
+                                  ? 'Sending...'
+                                  : 'Send message',
+                            ),
+                          ],
+                        );
+                      }
+
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(width: 8),
+                          IconButton.filledTonal(
+                            onPressed: isVoiceRecorderBusy
+                                ? null
+                                : onStartVoiceRecording,
+                            style: IconButton.styleFrom(
+                              padding: const EdgeInsets.all(14),
+                            ),
+                            icon: Icon(
+                              isVoiceRecorderBusy
+                                  ? Icons.hourglass_top_rounded
+                                  : Icons.mic_rounded,
+                            ),
+                            tooltip: isVoiceRecorderBusy
+                                ? 'Preparing recorder...'
+                                : 'Record voice message',
                           ),
-                          icon: Icon(
-                            isSending
-                                ? Icons.hourglass_top_rounded
-                                : Icons.send_rounded,
-                          ),
-                          tooltip: isSending ? 'Sending...' : 'Send message',
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
-            ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _VoiceRecordingComposer extends StatelessWidget {
+  const _VoiceRecordingComposer({
+    required this.isBusy,
+    required this.duration,
+    required this.onCancel,
+    required this.onSend,
+  });
+
+  final bool isBusy;
+  final Duration duration;
+  final Future<void> Function() onCancel;
+  final Future<void> Function() onSend;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF3F0),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFFFD0C4)),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: isBusy ? null : onCancel,
+            icon: const Icon(Icons.delete_outline_rounded),
+            tooltip: 'Discard voice message',
+          ),
+          const SizedBox(width: 2),
+          Expanded(
+            child: Container(
+              height: 46,
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.52),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFD34C3E),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _RecordingWaveStrip(color: const Color(0xFFD34C3E)),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    _formatDuration(duration),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFF8A2D24),
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          IconButton.filled(
+            onPressed: isBusy ? null : onSend,
+            style: IconButton.styleFrom(
+              backgroundColor: const Color(0xFFD34C3E),
+              foregroundColor: Colors.white,
+            ),
+            icon: Icon(
+              isBusy ? Icons.hourglass_top_rounded : Icons.send_rounded,
+            ),
+            tooltip: isBusy ? 'Sending...' : 'Send voice message',
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDuration(Duration duration) {
+    final totalSeconds = duration.inSeconds;
+    final minutes = totalSeconds ~/ 60;
+    final seconds = totalSeconds % 60;
+    return '$minutes:${seconds.toString().padLeft(2, '0')}';
+  }
+}
+
+class _RecordingWaveStrip extends StatefulWidget {
+  const _RecordingWaveStrip({required this.color});
+
+  final Color color;
+
+  @override
+  State<_RecordingWaveStrip> createState() => _RecordingWaveStripState();
+}
+
+class _RecordingWaveStripState extends State<_RecordingWaveStrip>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1100),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final barCount = math.max(18, (constraints.maxWidth / 7).floor());
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: List.generate(barCount, (index) {
+                final shifted = (_controller.value + (index * 0.07)) % 1;
+                final wave = math.sin(shifted * math.pi).abs();
+                final height = 6 + (wave * 14);
+                return Container(
+                  width: 3,
+                  height: height,
+                  decoration: BoxDecoration(
+                    color: widget.color.withValues(alpha: 0.32 + (wave * 0.68)),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                );
+              }),
+            );
+          },
+        );
+      },
     );
   }
 }
@@ -955,6 +1356,10 @@ class _ReplyPreviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final preview = message.text.trim().isNotEmpty
         ? message.text
+        : message.media.any((attachment) => attachment.isAudio)
+        ? 'Voice message'
+        : message.media.any((attachment) => attachment.isImage)
+        ? 'Photo'
         : message.product?.title ?? 'Attachment';
     return Container(
       width: double.infinity,

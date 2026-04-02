@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../constants/api_constants.dart';
 import '../../../models/models.dart';
 import '../../common_widgets/time_formatter.dart';
+import 'voice_message_card.dart';
 
-class MessageBubble extends StatelessWidget {
+class MessageBubble extends StatefulWidget {
   const MessageBubble({
     super.key,
     required this.message,
@@ -21,149 +23,258 @@ class MessageBubble extends StatelessWidget {
   final VoidCallback? onReply;
 
   @override
+  State<MessageBubble> createState() => _MessageBubbleState();
+}
+
+class _MessageBubbleState extends State<MessageBubble> {
+  static const double _maxSwipeOffset = 78;
+  static const double _replyTriggerOffset = 52;
+
+  double _dragOffset = 0;
+  bool _didCrossReplyThreshold = false;
+
+  @override
   Widget build(BuildContext context) {
-    final bubbleColor = isMine
+    final bubbleColor = widget.isMine
         ? const Color(0xFF116466)
         : const Color(0xFFF2EEE7);
-    final foreground = isMine ? Colors.white : const Color(0xFF1C1B18);
-    final receiptState = message.receiptStateFor(currentUserId);
+    final foreground = widget.isMine ? Colors.white : const Color(0xFF1C1B18);
+    final receiptState = widget.message.receiptStateFor(widget.currentUserId);
+    final bodyText = _messageBody(widget.message);
+    final swipeProgress = (_dragOffset / _replyTriggerOffset).clamp(0.0, 1.0);
 
     return Align(
-      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: widget.isMine ? Alignment.centerRight : Alignment.centerLeft,
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 340),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onLongPress: onReply,
-            borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(22),
-              topRight: const Radius.circular(22),
-              bottomLeft: Radius.circular(isMine ? 22 : 8),
-              bottomRight: Radius.circular(isMine ? 8 : 22),
-            ),
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 6),
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: bubbleColor.withValues(
-                  alpha: message.isOptimistic ? 0.88 : 1,
-                ),
-                border: message.hasSendError
-                    ? Border.all(
-                        color: const Color(0xFFFFA552).withValues(alpha: 0.8),
-                      )
-                    : null,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(22),
-                  topRight: const Radius.circular(22),
-                  bottomLeft: Radius.circular(isMine ? 22 : 8),
-                  bottomRight: Radius.circular(isMine ? 8 : 22),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (!isMine)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Text(
-                        message.sender.name,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: foreground.withValues(alpha: 0.84),
-                          fontWeight: FontWeight.w800,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onHorizontalDragUpdate: widget.onReply == null
+              ? null
+              : _handleHorizontalDragUpdate,
+          onHorizontalDragEnd: widget.onReply == null
+              ? null
+              : _handleHorizontalDragEnd,
+          onHorizontalDragCancel: widget.onReply == null ? null : _resetSwipe,
+          child: Stack(
+            alignment: widget.isMine
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                left: 10,
+                child: IgnorePointer(
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 90),
+                    opacity: swipeProgress,
+                    child: Transform.scale(
+                      scale: 0.86 + (swipeProgress * 0.18),
+                      child: Container(
+                        width: 34,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE1F0EB),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: const Color(0xFFC2DDD4)),
+                        ),
+                        child: const Icon(
+                          Icons.reply_rounded,
+                          size: 18,
+                          color: Color(0xFF116466),
                         ),
                       ),
-                    ),
-                  if (message.replyTo != null) ...[
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: isMine
-                            ? Colors.white.withValues(alpha: 0.12)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Text(
-                        '${message.replyTo!.sender.name}: ${message.replyTo!.text}',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: foreground.withValues(alpha: 0.84),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  Text(
-                    _messageBody(message),
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: foreground,
-                      height: 1.32,
                     ),
                   ),
-                  if (message.media.isNotEmpty) ...[
-                    const SizedBox(height: 10),
-                    _MessageMediaGallery(
-                      attachments: message.media,
-                      isMine: isMine,
+                ),
+              ),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOutCubic,
+                transform: Matrix4.translationValues(_dragOffset, 0, 0),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(22),
+                      topRight: const Radius.circular(22),
+                      bottomLeft: Radius.circular(widget.isMine ? 22 : 8),
+                      bottomRight: Radius.circular(widget.isMine ? 8 : 22),
                     ),
-                  ],
-                  if (message.product != null) ...[
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 8,
-                      ),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: isMine
-                            ? Colors.white.withValues(alpha: 0.12)
-                            : const Color(0xFFFFFFFF),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Text(
-                        'Request: ${message.product!.title}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: foreground,
-                          fontWeight: FontWeight.w700,
+                        color: bubbleColor.withValues(
+                          alpha: widget.message.isOptimistic ? 0.88 : 1,
+                        ),
+                        border: widget.message.hasSendError
+                            ? Border.all(
+                                color: const Color(
+                                  0xFFFFA552,
+                                ).withValues(alpha: 0.8),
+                              )
+                            : null,
+                        borderRadius: BorderRadius.only(
+                          topLeft: const Radius.circular(22),
+                          topRight: const Radius.circular(22),
+                          bottomLeft: Radius.circular(widget.isMine ? 22 : 8),
+                          bottomRight: Radius.circular(widget.isMine ? 8 : 22),
                         ),
                       ),
-                    ),
-                  ],
-                  const SizedBox(height: 10),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          formatRelativeTime(
-                            message.serverTimestamp ?? message.clientTimestamp,
-                          ),
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: foreground.withValues(alpha: 0.74),
-                          ),
-                        ),
-                        if (isMine) ...[
-                          const SizedBox(width: 6),
-                          _MessageReceiptIcon(
-                            receiptState: receiptState,
-                            foreground: foreground,
-                            isOptimistic: message.isOptimistic,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (!widget.isMine)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 6),
+                              child: Text(
+                                widget.message.sender.name,
+                                style: Theme.of(context).textTheme.labelMedium
+                                    ?.copyWith(
+                                      color: foreground.withValues(alpha: 0.84),
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                              ),
+                            ),
+                          if (widget.message.replyTo != null) ...[
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: widget.isMine
+                                    ? Colors.white.withValues(alpha: 0.12)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Text(
+                                '${widget.message.replyTo!.sender.name}: ${widget.message.replyTo!.text}',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: foreground.withValues(alpha: 0.84),
+                                    ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                          if (bodyText.isNotEmpty)
+                            Text(
+                              bodyText,
+                              style: Theme.of(context).textTheme.bodyLarge
+                                  ?.copyWith(color: foreground, height: 1.32),
+                            ),
+                          if (widget.message.media.isNotEmpty) ...[
+                            if (bodyText.isNotEmpty) const SizedBox(height: 10),
+                            _MessageMediaGallery(
+                              attachments: widget.message.media,
+                              isMine: widget.isMine,
+                            ),
+                          ],
+                          if (widget.message.product != null) ...[
+                            const SizedBox(height: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: widget.isMine
+                                    ? Colors.white.withValues(alpha: 0.12)
+                                    : const Color(0xFFFFFFFF),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Text(
+                                'Request: ${widget.message.product!.title}',
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: foreground,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 10),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  formatRelativeTime(
+                                    widget.message.serverTimestamp ??
+                                        widget.message.clientTimestamp,
+                                  ),
+                                  style: Theme.of(context).textTheme.labelSmall
+                                      ?.copyWith(
+                                        color: foreground.withValues(
+                                          alpha: 0.74,
+                                        ),
+                                      ),
+                                ),
+                                if (widget.isMine) ...[
+                                  const SizedBox(width: 6),
+                                  _MessageReceiptIcon(
+                                    receiptState: receiptState,
+                                    foreground: foreground,
+                                    isOptimistic: widget.message.isOptimistic,
+                                  ),
+                                ],
+                              ],
+                            ),
                           ),
                         ],
-                      ],
+                      ),
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  void _handleHorizontalDragUpdate(DragUpdateDetails details) {
+    final delta = details.primaryDelta ?? 0;
+    final nextOffset = (_dragOffset + delta).clamp(0.0, _maxSwipeOffset);
+    if (nextOffset == _dragOffset) {
+      return;
+    }
+
+    if (nextOffset >= _replyTriggerOffset && !_didCrossReplyThreshold) {
+      _didCrossReplyThreshold = true;
+      HapticFeedback.lightImpact();
+    } else if (nextOffset < _replyTriggerOffset) {
+      _didCrossReplyThreshold = false;
+    }
+
+    setState(() {
+      _dragOffset = nextOffset;
+    });
+  }
+
+  void _handleHorizontalDragEnd(DragEndDetails details) {
+    final shouldReply = _dragOffset >= _replyTriggerOffset;
+    _resetSwipe();
+    if (shouldReply) {
+      widget.onReply?.call();
+    }
+  }
+
+  void _resetSwipe() {
+    if (!mounted) {
+      return;
+    }
+    _didCrossReplyThreshold = false;
+    if (_dragOffset == 0) {
+      return;
+    }
+    setState(() {
+      _dragOffset = 0;
+    });
   }
 
   String _messageBody(MessageModel message) {
@@ -171,8 +282,13 @@ class MessageBubble extends StatelessWidget {
       return message.text;
     }
     if (message.messageType == 'media' && message.media.isNotEmpty) {
+      if (message.media.every((attachment) => attachment.isAudio)) {
+        return '';
+      }
       return message.media.every((attachment) => attachment.isImage)
-          ? 'Photo'
+          ? message.media.length == 1
+                ? 'Photo'
+                : '${message.media.length} photos'
           : 'Sent ${message.media.length} attachment(s)';
     }
     if (message.messageType == 'product' && message.product != null) {
@@ -183,10 +299,7 @@ class MessageBubble extends StatelessWidget {
 }
 
 class _MessageMediaGallery extends StatelessWidget {
-  const _MessageMediaGallery({
-    required this.attachments,
-    required this.isMine,
-  });
+  const _MessageMediaGallery({required this.attachments, required this.isMine});
 
   final List<MessageAttachmentModel> attachments;
   final bool isMine;
@@ -196,40 +309,87 @@ class _MessageMediaGallery extends StatelessWidget {
     final imageAttachments = attachments
         .where((attachment) => attachment.isImage)
         .toList(growable: false);
+    final nonImageAttachments = attachments
+        .where((attachment) => !attachment.isImage)
+        .toList(growable: false);
+
     if (imageAttachments.isEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final attachment in attachments)
-            Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: isMine
-                    ? Colors.white.withValues(alpha: 0.12)
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Text(
-                attachment.fileUrl ?? attachment.localPath ?? 'Attachment',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: isMine ? Colors.white : const Color(0xFF1C1B18),
-                ),
-              ),
-            ),
+          for (
+            var index = 0;
+            index < nonImageAttachments.length;
+            index += 1
+          ) ...[
+            _buildNonImageAttachment(context, nonImageAttachments[index]),
+            if (index != nonImageAttachments.length - 1)
+              const SizedBox(height: 8),
+          ],
         ],
       );
     }
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final attachment in imageAttachments)
-          _MessageImageTile(attachment: attachment),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final attachment in imageAttachments)
+              _MessageImageTile(attachment: attachment),
+          ],
+        ),
+        if (nonImageAttachments.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          for (
+            var index = 0;
+            index < nonImageAttachments.length;
+            index += 1
+          ) ...[
+            _buildNonImageAttachment(context, nonImageAttachments[index]),
+            if (index != nonImageAttachments.length - 1)
+              const SizedBox(height: 8),
+          ],
+        ],
       ],
+    );
+  }
+
+  Widget _buildNonImageAttachment(
+    BuildContext context,
+    MessageAttachmentModel attachment,
+  ) {
+    if (attachment.isAudio) {
+      return VoiceMessageCard(attachment: attachment, isMine: isMine);
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: isMine ? Colors.white.withValues(alpha: 0.12) : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.attach_file_rounded,
+            color: isMine ? Colors.white : const Color(0xFF116466),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              attachment.fileName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: isMine ? Colors.white : const Color(0xFF1C1B18),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -263,10 +423,7 @@ class _MessageImageTile extends StatelessWidget {
 
   Widget _buildImage() {
     if (attachment.localPath != null && attachment.localPath!.isNotEmpty) {
-      return Image.file(
-        File(attachment.localPath!),
-        fit: BoxFit.cover,
-      );
+      return Image.file(File(attachment.localPath!), fit: BoxFit.cover);
     }
     if (attachment.fileUrl != null && attachment.fileUrl!.isNotEmpty) {
       return Image.network(
@@ -314,10 +471,7 @@ class _MessageImageTile extends StatelessWidget {
 
   Widget _buildViewerImage() {
     if (attachment.localPath != null && attachment.localPath!.isNotEmpty) {
-      return Image.file(
-        File(attachment.localPath!),
-        fit: BoxFit.contain,
-      );
+      return Image.file(File(attachment.localPath!), fit: BoxFit.contain);
     }
     if (attachment.fileUrl != null && attachment.fileUrl!.isNotEmpty) {
       return Image.network(

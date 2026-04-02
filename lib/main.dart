@@ -1,12 +1,34 @@
+import 'dart:async';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'controllers/providers/auth_provider.dart';
+import 'controllers/providers/notification_provider.dart';
+import 'notifications/chat_notification_service.dart';
 import 'routing/app_router.dart';
 import 'session/session_notifier.dart';
+import 'session/session_state.dart';
+
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp();
+  }
+  await showChatNotificationFromFirebaseMessage(message);
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  }
   final preferences = await SharedPreferences.getInstance();
 
   runApp(
@@ -17,8 +39,55 @@ Future<void> main() async {
   );
 }
 
-class AutoSpareApp extends StatelessWidget {
+class AutoSpareApp extends ConsumerStatefulWidget {
   const AutoSpareApp({super.key});
+
+  @override
+  ConsumerState<AutoSpareApp> createState() => _AutoSpareAppState();
+}
+
+class _AutoSpareAppState extends ConsumerState<AutoSpareApp>
+    with WidgetsBindingObserver {
+  ProviderSubscription<SessionState>? _sessionSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _sessionSubscription = ref.listenManual<SessionState>(
+      currentSessionProvider,
+      (previous, next) {
+        unawaited(_syncNotifications(next));
+      },
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_syncNotifications(ref.read(currentSessionProvider)));
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _sessionSubscription?.close();
+    _sessionSubscription = null;
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_syncNotifications(ref.read(currentSessionProvider)));
+    }
+  }
+
+  Future<void> _syncNotifications(SessionState session) async {
+    try {
+      await ref.read(chatNotificationServiceProvider).syncWithSession(session);
+    } catch (error, stackTrace) {
+      debugPrint('Chat notification setup failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

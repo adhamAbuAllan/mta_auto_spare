@@ -4,10 +4,14 @@ import '../../../session/session_notifier.dart';
 import '../../statuses/auth_state.dart';
 
 class LogoutNotifier extends StateNotifier<AuthState> {
-  LogoutNotifier(this._sessionNotifier, {required this.onLogout})
-    : super(const AuthState());
+  LogoutNotifier(
+    this._sessionNotifier, {
+    required this.beforeLogout,
+    required this.onLogout,
+  }) : super(const AuthState());
 
   final SessionNotifier _sessionNotifier;
+  final Future<void> Function() beforeLogout;
   final Future<void> Function() onLogout;
 
   Future<void> logout() async {
@@ -19,8 +23,15 @@ class LogoutNotifier extends StateNotifier<AuthState> {
       clearRegisteredUser: true,
     );
 
+    try {
+      await beforeLogout();
+    } catch (_) {}
+
     await _sessionNotifier.clear();
-    await onLogout();
+
+    try {
+      await onLogout();
+    } catch (_) {}
 
     state = state.copyWith(
       isLoading: false,

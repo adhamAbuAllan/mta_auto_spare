@@ -1,4 +1,4 @@
-package com.example.mta_auto_spare
+package com.mta_auto_spare
 
 import io.flutter.embedding.android.FlutterActivity
 

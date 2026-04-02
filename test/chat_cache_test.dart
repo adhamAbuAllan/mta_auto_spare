@@ -83,6 +83,47 @@ void main() {
   );
 
   test(
+    'conversation preview keeps receipt state for the current user last message',
+    () async {
+      final api = FakeChatApi(
+        conversations: [_conversation(id: 2, title: 'Chat B')],
+      );
+      final notifier = LoadConversationsNotifier(api);
+
+      await notifier.load();
+
+      notifier.touchConversationFromMessage(
+        conversationId: 2,
+        message: _message(
+          id: 111,
+          conversationId: 2,
+          text: 'Seen by seller',
+          senderId: 1,
+          senderName: 'User A',
+          statuses: [
+            _status(
+              conversationId: 2,
+              messageId: 111,
+              userId: 1,
+              status: 'sent',
+            ),
+            _status(
+              conversationId: 2,
+              messageId: 111,
+              userId: 2,
+              status: 'seen',
+            ),
+          ],
+        ),
+        currentUserId: 1,
+      );
+
+      final preview = notifier.state.conversations.single.lastMessage;
+      expect(preview?.receiptStateFor(1), MessageReceiptState.seen);
+    },
+  );
+
+  test(
     'send adds a local message immediately and replaces it on success',
     () async {
       final completer = Completer<MessageModel>();

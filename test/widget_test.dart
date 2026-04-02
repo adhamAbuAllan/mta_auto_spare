@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:mta_auto_spare/api/api_exception.dart';
 import 'package:mta_auto_spare/api/chat_api.dart';
 import 'package:mta_auto_spare/api/chat_socket_service.dart';
 import 'package:mta_auto_spare/api/request_api.dart';
@@ -12,17 +13,22 @@ import 'package:mta_auto_spare/controllers/methods/api_methods/load_conversation
 import 'package:mta_auto_spare/controllers/methods/api_methods/load_messages_notifier.dart';
 import 'package:mta_auto_spare/controllers/methods/api_methods/load_requests_notifier.dart';
 import 'package:mta_auto_spare/controllers/methods/local_methods/chat_message_cache_store.dart';
+import 'package:mta_auto_spare/controllers/providers/api_provider.dart';
 import 'package:mta_auto_spare/controllers/providers/auth_provider.dart';
 import 'package:mta_auto_spare/controllers/providers/chat_provider.dart';
+import 'package:mta_auto_spare/controllers/providers/notification_provider.dart';
 import 'package:mta_auto_spare/controllers/providers/request_provider.dart';
 import 'package:mta_auto_spare/controllers/statuses/conversation_state.dart';
 import 'package:mta_auto_spare/controllers/statuses/message_state.dart';
 import 'package:mta_auto_spare/controllers/statuses/request_state.dart';
 import 'package:mta_auto_spare/main.dart';
 import 'package:mta_auto_spare/models/models.dart';
+import 'package:mta_auto_spare/notifications/chat_notification_service.dart';
+import 'package:mta_auto_spare/routing/marketplace_shell.dart';
 import 'package:mta_auto_spare/session/session_notifier.dart';
 import 'package:mta_auto_spare/session/session_state.dart';
 import 'package:mta_auto_spare/view/chat/chat_detail_page.dart';
+import 'package:mta_auto_spare/view/chat/conversations_view.dart';
 import 'package:mta_auto_spare/view/requests/requests_view.dart';
 
 void main() {
@@ -165,6 +171,87 @@ void main() {
     expect(openedConversationId, 77);
   });
 
+  testWidgets(
+    'chat button auto-sends the request for a newly created conversation',
+    (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(900, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final chatApi = RecordingChatApi();
+
+      await tester.pumpWidget(
+        await _buildRequestsHarness(
+          requestState: const RequestState(
+            requests: [
+              PartRequest(
+                id: 9,
+                requester: 5,
+                title: 'Headlight assembly',
+                description: 'Need left side headlight for Elantra.',
+                status: 1,
+                city: 'Cairo',
+              ),
+            ],
+          ),
+          ensureConversationNotifier: TestEnsureConversationNotifier(
+            77,
+            wasCreated: true,
+          ),
+          chatApi: chatApi,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final chatButton = find.widgetWithText(FilledButton, 'Chat Seller');
+      await tester.ensureVisible(chatButton);
+      await tester.tap(chatButton);
+      await tester.pumpAndSettle();
+
+      expect(chatApi.createdMessages, hasLength(1));
+      expect(chatApi.createdMessages.single.conversation, 77);
+      expect(chatApi.createdMessages.single.messageType, 'product');
+      expect(chatApi.createdMessages.single.product, 9);
+    },
+  );
+
+  testWidgets(
+    'chat button does not auto-send again for an existing conversation',
+    (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(900, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final chatApi = RecordingChatApi();
+
+      await tester.pumpWidget(
+        await _buildRequestsHarness(
+          requestState: const RequestState(
+            requests: [
+              PartRequest(
+                id: 9,
+                requester: 5,
+                title: 'Headlight assembly',
+                description: 'Need left side headlight for Elantra.',
+                status: 1,
+                city: 'Cairo',
+              ),
+            ],
+          ),
+          ensureConversationNotifier: TestEnsureConversationNotifier(
+            77,
+            wasCreated: false,
+          ),
+          chatApi: chatApi,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final chatButton = find.widgetWithText(FilledButton, 'Chat Seller');
+      await tester.ensureVisible(chatButton);
+      await tester.tap(chatButton);
+      await tester.pumpAndSettle();
+
+      expect(chatApi.createdMessages, isEmpty);
+    },
+  );
+
   testWidgets('wide layout shows requests and conversations side by side', (
     WidgetTester tester,
   ) async {
@@ -190,6 +277,110 @@ void main() {
     expect(find.text('Requests'), findsOneWidget);
     expect(find.text('Conversations'), findsOneWidget);
   });
+
+  testWidgets('notification request opens the target chat conversation', (
+    WidgetTester tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    final messagesNotifier = TestLoadMessagesNotifier(preferences);
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(preferences),
+        currentSessionProvider.overrideWithValue(_signedInSession()),
+        requestsNotifierProvider.overrideWith(
+          (ref) => TestLoadRequestsNotifier(const RequestState()),
+        ),
+        conversationsNotifierProvider.overrideWith(
+          (ref) => TestLoadConversationsNotifier(
+            ConversationState(
+              conversations: [_conversationListItem(id: 77, title: 'Chat A')],
+            ),
+          ),
+        ),
+        messagesNotifierProvider.overrideWith((ref) => messagesNotifier),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(home: MarketplaceShellPage()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    container
+        .read(chatNotificationNavigationRequestProvider.notifier)
+        .state = const ChatNotificationNavigationRequest(
+      conversationId: 77,
+      eventType: 'chat_message',
+      nonce: 1,
+    );
+
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ChatDetailPage), findsOneWidget);
+    expect(find.text('Loaded from backend'), findsOneWidget);
+  });
+
+  testWidgets(
+    'conversation list shows own receipt checks and clears unread bubble on open',
+    (WidgetTester tester) async {
+      int? openedConversationId;
+
+      await tester.pumpWidget(
+        await _buildConversationsHarness(
+          conversationState: ConversationState(
+            conversations: [
+              _conversationListItem(
+                id: 77,
+                title: 'Chat A',
+                unreadCount: 3,
+                lastMessage: const ConversationLastMessagePreview(
+                  id: 501,
+                  text: 'Ready for pickup',
+                  senderId: 1,
+                  senderName: 'Buyer User',
+                  statuses: [
+                    MessageStatusModel(
+                      conversationId: 77,
+                      messageId: 501,
+                      userId: 1,
+                      status: 'sent',
+                    ),
+                    MessageStatusModel(
+                      conversationId: 77,
+                      messageId: 501,
+                      userId: 2,
+                      status: 'seen',
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          onOpenConversation: (conversationId) {
+            openedConversationId = conversationId;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Ready for pickup'), findsOneWidget);
+      expect(find.text('Buyer User: Ready for pickup'), findsNothing);
+      expect(find.byIcon(Icons.done_all_rounded), findsOneWidget);
+      expect(find.text('3'), findsOneWidget);
+
+      await tester.tap(find.text('Seller User'));
+      await tester.pumpAndSettle();
+
+      expect(openedConversationId, 77);
+      expect(find.text('3'), findsNothing);
+    },
+  );
 
   testWidgets('chat detail loads messages and deactivates on dispose', (
     WidgetTester tester,
@@ -245,10 +436,37 @@ Future<Widget> _buildApp({List<Override> overrides = const []}) async {
   );
 }
 
+Future<Widget> _buildConversationsHarness({
+  required ConversationState conversationState,
+  ValueChanged<int>? onOpenConversation,
+}) async {
+  SharedPreferences.setMockInitialValues({});
+  final preferences = await SharedPreferences.getInstance();
+
+  return ProviderScope(
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(preferences),
+      currentSessionProvider.overrideWithValue(_signedInSession()),
+      conversationsNotifierProvider.overrideWith(
+        (ref) => TestLoadConversationsNotifier(conversationState),
+      ),
+    ],
+    child: MaterialApp(
+      home: Scaffold(
+        body: ConversationsView(
+          wideMode: false,
+          onOpenConversation: onOpenConversation ?? (_) {},
+        ),
+      ),
+    ),
+  );
+}
+
 Future<Widget> _buildRequestsHarness({
   required RequestState requestState,
   TestEnsureConversationNotifier? ensureConversationNotifier,
   ValueChanged<int>? onOpenConversation,
+  ChatApi? chatApi,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final preferences = await SharedPreferences.getInstance();
@@ -267,6 +485,7 @@ Future<Widget> _buildRequestsHarness({
         (ref) =>
             ensureConversationNotifier ?? TestEnsureConversationNotifier(44),
       ),
+      if (chatApi != null) chatApiProvider.overrideWithValue(chatApi),
     ],
     child: MaterialApp(
       home: Scaffold(
@@ -320,10 +539,13 @@ class TestLoadConversationsNotifier extends LoadConversationsNotifier {
 }
 
 class TestEnsureConversationNotifier extends EnsureConversationNotifier {
-  TestEnsureConversationNotifier(this.resultConversationId)
-    : super(ChatApi(Dio()));
+  TestEnsureConversationNotifier(
+    this.resultConversationId, {
+    this.wasCreated = false,
+  }) : super(ChatApi(Dio()));
 
   final int resultConversationId;
+  final bool wasCreated;
 
   @override
   Future<int?> ensureConversation({
@@ -335,9 +557,39 @@ class TestEnsureConversationNotifier extends EnsureConversationNotifier {
     state = EnsureConversationState(
       conversationId: resultConversationId,
       isLoading: false,
-      wasCreated: true,
+      wasCreated: wasCreated,
     );
     return resultConversationId;
+  }
+}
+
+class RecordingChatApi extends ChatApi {
+  RecordingChatApi({this.shouldFail = false}) : super(Dio());
+
+  final bool shouldFail;
+  final List<MessageCreateRequest> createdMessages = <MessageCreateRequest>[];
+
+  @override
+  Future<MessageModel> createMessage(MessageCreateRequest request) async {
+    createdMessages.add(request);
+    if (shouldFail) {
+      throw ApiException('Automatic send failed.');
+    }
+
+    return MessageModel(
+      id: 900 + createdMessages.length,
+      conversationId: request.conversation,
+      sender: const UserBrief(id: 1, name: 'Buyer User'),
+      messageType: request.messageType,
+      text: request.text ?? '',
+      media: const [],
+      product: request.product == null
+          ? null
+          : PartRequestBrief(id: request.product!, title: 'Shared request'),
+      clientTimestamp: request.clientTimestamp,
+      serverTimestamp: request.clientTimestamp,
+      statuses: const [],
+    );
   }
 }
 
@@ -415,6 +667,8 @@ class TestLoadMessagesNotifier extends LoadMessagesNotifier {
 ConversationListItem _conversationListItem({
   required int id,
   required String title,
+  ConversationLastMessagePreview? lastMessage,
+  int unreadCount = 0,
 }) {
   return ConversationListItem(
     id: id,
@@ -429,6 +683,7 @@ ConversationListItem _conversationListItem({
         user: UserBrief(id: 2, name: 'Seller User'),
       ),
     ],
-    unreadCount: 0,
+    lastMessage: lastMessage,
+    unreadCount: unreadCount,
   );
 }

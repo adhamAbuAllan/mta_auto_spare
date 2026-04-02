@@ -136,9 +136,9 @@ class ChatSocketService {
     );
 
     try {
-      final socket = await WebSocket.connect(uri.toString()).timeout(
-        ApiConstants.connectTimeout,
-      );
+      final socket = await WebSocket.connect(
+        uri.toString(),
+      ).timeout(ApiConstants.connectTimeout);
       _socket = socket;
       _socketSubscription = socket.listen(
         _handleSocketData,

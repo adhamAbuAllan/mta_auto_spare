@@ -120,7 +120,9 @@ class UserBrief {
     return UserBrief(
       id: id ?? this.id,
       name: name ?? this.name,
-      avatar: identical(avatar, _userBriefUnset) ? this.avatar : avatar as String?,
+      avatar: identical(avatar, _userBriefUnset)
+          ? this.avatar
+          : avatar as String?,
       isOnline: isOnline ?? this.isOnline,
       lastSeenAt: identical(lastSeenAt, _userBriefUnset)
           ? this.lastSeenAt
@@ -237,17 +239,34 @@ class MobileDevice {
   }
 
   JsonMap toJson() {
-    return {
-      'id': id,
+    final json = <String, dynamic>{
       'device_id': deviceId,
       'platform': platform,
-      'push_token': pushToken,
-      'device_name': deviceName,
-      'app_version': appVersion,
       'is_active': isActive,
-      'last_seen_at': lastSeenAt?.toIso8601String(),
-      'created_at': createdAt?.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
     };
+    if (id != null) {
+      json['id'] = id;
+    }
+    if (pushToken != null) {
+      json['push_token'] = pushToken;
+    } else if (!isActive) {
+      json['push_token'] = '';
+    }
+    if (deviceName != null && deviceName!.trim().isNotEmpty) {
+      json['device_name'] = deviceName!.trim();
+    }
+    if (appVersion != null && appVersion!.trim().isNotEmpty) {
+      json['app_version'] = appVersion!.trim();
+    }
+    if (lastSeenAt != null) {
+      json['last_seen_at'] = lastSeenAt!.toIso8601String();
+    }
+    if (createdAt != null) {
+      json['created_at'] = createdAt!.toIso8601String();
+    }
+    if (updatedAt != null) {
+      json['updated_at'] = updatedAt!.toIso8601String();
+    }
+    return json;
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../api/api_exception.dart';
 import '../../controllers/providers/auth_provider.dart';
+import '../../controllers/providers/api_provider.dart';
 import '../../controllers/providers/chat_provider.dart';
 import '../../controllers/providers/request_provider.dart';
 import '../../controllers/statuses/request_state.dart';
@@ -248,17 +250,60 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
       return;
     }
 
+    final requestBrief = PartRequestBrief(
+      id: requestId,
+      title: request.title,
+      minPrice: request.minPrice,
+      maxPrice: request.maxPrice,
+    );
+    var shouldStageSharedRequest = true;
+
+    if (ensureState.wasCreated && requestId != null) {
+      try {
+        await ref
+            .read(chatApiProvider)
+            .createMessage(
+              MessageCreateRequest(
+                conversation: conversationId,
+                messageType: 'product',
+                product: requestId,
+                clientTimestamp: DateTime.now().toUtc(),
+              ),
+            );
+        shouldStageSharedRequest = false;
+      } on ApiException catch (error) {
+        if (!mounted) {
+          return;
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${error.message} The request is attached in the chat composer so you can resend it.',
+            ),
+          ),
+        );
+      } catch (_) {
+        if (!mounted) {
+          return;
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'The chat opened, but the initial request could not be sent automatically.',
+            ),
+          ),
+        );
+      }
+    }
+
     if (ensureState.wasCreated) {
       await ref
           .read(conversationsNotifierProvider.notifier)
           .load(forceRefresh: true);
     }
-    ref.read(pendingSharedProductProvider.notifier).state = PartRequestBrief(
-      id: request.id ?? 0,
-      title: request.title,
-      minPrice: request.minPrice,
-      maxPrice: request.maxPrice,
-    );
+
+    ref.read(pendingSharedProductProvider.notifier).state =
+        shouldStageSharedRequest ? requestBrief : null;
     widget.onOpenConversation(conversationId);
   }
 }

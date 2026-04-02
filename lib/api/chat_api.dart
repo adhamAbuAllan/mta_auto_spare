@@ -4,6 +4,7 @@ import 'package:http_parser/http_parser.dart';
 import '../constants/api_constants.dart';
 import '../models/models.dart';
 import 'api_exception.dart';
+import 'dio_client.dart';
 
 class ChatApi {
   const ChatApi(this._dio);
@@ -88,12 +89,22 @@ class ChatApi {
 
   Future<MessageModel> createMessage(MessageCreateRequest request) async {
     try {
-      final payload = request.attachments.isEmpty
+      final retryDataBuilder = request.attachments.isEmpty
+          ? null
+          : () => _buildMultipartPayload(request);
+      final payload = retryDataBuilder == null
           ? request.toJson()
-          : await _buildMultipartPayload(request);
+          : await retryDataBuilder();
       final response = await _dio.post(
         ApiEndpoints.messages,
         data: payload,
+        options: retryDataBuilder == null
+            ? null
+            : Options(
+                extra: {
+                  AppDioClient.retryDataBuilderExtraKey: retryDataBuilder,
+                },
+              ),
       );
       return MessageModel.fromJson(_asMap(response.data));
     } on DioException catch (error) {

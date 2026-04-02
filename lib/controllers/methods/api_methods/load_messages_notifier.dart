@@ -44,7 +44,7 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
   }) : _resolveLiveAccessToken = resolveLiveAccessToken,
        _resolveCacheUserId = resolveCacheUserId,
        _cacheStore = cacheStore,
-        super(const MessageState()) {
+       super(const MessageState()) {
     _socketEventSubscription = _socketService.events.listen(_handleSocketEvent);
     _socketStatusSubscription = _socketService.statuses.listen(
       _handleSocketStatus,
@@ -227,7 +227,10 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
       await _socketService.disconnect();
       return;
     }
-    await _socketService.connect(conversationId: conversationId, token: accessToken);
+    await _socketService.connect(
+      conversationId: conversationId,
+      token: accessToken,
+    );
   }
 
   Future<void> sendTyping({
@@ -275,29 +278,28 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     final conversationState = _stateForConversation(conversationId);
     final latestIncomingMessage = conversationState.messages
         .where((message) => message.sender.id != currentUserId)
-        .fold<MessageModel?>(
-          null,
-          (latest, message) {
-            final messageTime = message.serverTimestamp ?? message.clientTimestamp;
-            final latestTime = latest?.serverTimestamp ?? latest?.clientTimestamp;
-            if (latest == null) {
-              return message;
-            }
-            if ((messageTime ?? DateTime.fromMillisecondsSinceEpoch(0)).isAfter(
-              latestTime ?? DateTime.fromMillisecondsSinceEpoch(0),
-            )) {
-              return message;
-            }
-            return latest;
-          },
-        );
+        .fold<MessageModel?>(null, (latest, message) {
+          final messageTime =
+              message.serverTimestamp ?? message.clientTimestamp;
+          final latestTime = latest?.serverTimestamp ?? latest?.clientTimestamp;
+          if (latest == null) {
+            return message;
+          }
+          if ((messageTime ?? DateTime.fromMillisecondsSinceEpoch(0)).isAfter(
+            latestTime ?? DateTime.fromMillisecondsSinceEpoch(0),
+          )) {
+            return message;
+          }
+          return latest;
+        });
     if (latestIncomingMessage == null) {
       return;
     }
 
     final latestSeenAt = conversationState.lastSeenByUserId[currentUserId];
     final messageTime =
-        latestIncomingMessage.serverTimestamp ?? latestIncomingMessage.clientTimestamp;
+        latestIncomingMessage.serverTimestamp ??
+        latestIncomingMessage.clientTimestamp;
     if (messageTime == null) {
       return;
     }
@@ -323,7 +325,9 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     final tempId = _nextTempMessageId();
     final optimisticAttachments = <MessageAttachmentModel>[
       for (var index = 0; index < request.attachments.length; index += 1)
-        request.attachments[index].toOptimisticAttachment(id: tempId - index - 1),
+        request.attachments[index].toOptimisticAttachment(
+          id: tempId - index - 1,
+        ),
     ];
     final optimisticMessage = MessageModel.optimistic(
       tempId: tempId,
@@ -443,9 +447,9 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
       case ErrorSocketEvent():
         final conversationId = _activeConversationId;
         if (conversationId != null) {
-          final currentState = _stateForConversation(conversationId).copyWith(
-            errorMessage: event.detail,
-          );
+          final currentState = _stateForConversation(
+            conversationId,
+          ).copyWith(errorMessage: event.detail);
           _cacheConversationState(conversationId, currentState);
         }
       case PongSocketEvent():
@@ -458,10 +462,12 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     if (conversationId == null) {
       return;
     }
-    final previousStatus = _stateForConversation(conversationId).connectionStatus;
-    final nextState = _stateForConversation(conversationId).copyWith(
-      connectionStatus: status,
-    );
+    final previousStatus = _stateForConversation(
+      conversationId,
+    ).connectionStatus;
+    final nextState = _stateForConversation(
+      conversationId,
+    ).copyWith(connectionStatus: status);
     _cacheConversationState(conversationId, nextState);
     if (previousStatus == ChatConnectionStatus.reconnecting &&
         status == ChatConnectionStatus.connected) {
@@ -578,7 +584,9 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
         else
           message,
     ];
-    final nextState = currentState.copyWith(messages: _sortMessages(updatedMessages));
+    final nextState = currentState.copyWith(
+      messages: _sortMessages(updatedMessages),
+    );
     _cacheConversationState(conversationId, nextState);
   }
 
@@ -619,7 +627,8 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
   ) {
     final statuses = [...message.statuses];
     final existingIndex = statuses.indexWhere(
-      (item) => item.userId == status.userId && item.messageId == status.messageId,
+      (item) =>
+          item.userId == status.userId && item.messageId == status.messageId,
     );
     if (existingIndex == -1) {
       statuses.add(status);
@@ -633,9 +642,14 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     );
   }
 
-  MessageState _mergeIncomingMessage(MessageState baseState, MessageModel incoming) {
+  MessageState _mergeIncomingMessage(
+    MessageState baseState,
+    MessageModel incoming,
+  ) {
     final messages = [...baseState.messages];
-    final exactIndex = messages.indexWhere((message) => message.id == incoming.id);
+    final exactIndex = messages.indexWhere(
+      (message) => message.id == incoming.id,
+    );
     if (exactIndex != -1) {
       messages[exactIndex] = incoming.copyWith(
         isOptimistic: false,
@@ -645,7 +659,8 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     }
 
     final optimisticIndex = messages.indexWhere(
-      (message) => message.isOptimistic && _matchesOptimisticMessage(message, incoming),
+      (message) =>
+          message.isOptimistic && _matchesOptimisticMessage(message, incoming),
     );
     if (optimisticIndex != -1) {
       messages[optimisticIndex] = incoming.copyWith(
@@ -658,7 +673,10 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     return baseState.copyWith(messages: _sortMessages(messages));
   }
 
-  bool _matchesOptimisticMessage(MessageModel optimistic, MessageModel incoming) {
+  bool _matchesOptimisticMessage(
+    MessageModel optimistic,
+    MessageModel incoming,
+  ) {
     if (optimistic.conversationId != incoming.conversationId ||
         optimistic.sender.id != incoming.sender.id ||
         optimistic.messageType != incoming.messageType) {
@@ -703,10 +721,15 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
       if (timeCompare != 0) {
         return timeCompare;
       }
-      final serverCompare = (left.serverTimestamp ?? leftTime ?? DateTime.fromMillisecondsSinceEpoch(0))
-          .compareTo(
-            right.serverTimestamp ?? rightTime ?? DateTime.fromMillisecondsSinceEpoch(0),
-          );
+      final serverCompare =
+          (left.serverTimestamp ??
+                  leftTime ??
+                  DateTime.fromMillisecondsSinceEpoch(0))
+              .compareTo(
+                right.serverTimestamp ??
+                    rightTime ??
+                    DateTime.fromMillisecondsSinceEpoch(0),
+              );
       if (serverCompare != 0) {
         return serverCompare;
       }
@@ -725,7 +748,8 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
   void _cacheConversationState(int conversationId, MessageState nextState) {
     final normalizedState = nextState.copyWith(conversationId: conversationId);
     _messageCache[conversationId] = normalizedState;
-    if (conversationId == _activeConversationId || state.conversationId == conversationId) {
+    if (conversationId == _activeConversationId ||
+        state.conversationId == conversationId) {
       state = normalizedState;
     }
     unawaited(_persistConversationState(conversationId, normalizedState));

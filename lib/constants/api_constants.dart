@@ -10,6 +10,8 @@ abstract final class ApiConstants {
   static const Duration chatHeartbeatInterval = Duration(seconds: 20);
   static const Duration chatReconnectBaseDelay = Duration(seconds: 1);
   static const Duration chatReconnectMaxDelay = Duration(seconds: 8);
+  static const String chatMessageNotificationChannelId = 'chat_messages';
+  static const String chatActivityNotificationChannelId = 'chat_activity';
 
   static String resolveUrl(String url) {
     final trimmed = url.trim();
@@ -48,6 +50,7 @@ abstract final class ApiEndpoints {
   static const String login = '/api/token/';
   static const String refresh = '/api/token/refresh/';
   static const String me = '/api/me/';
+  static const String mobileDevices = '/api/mobile-devices/';
   static const String users = '/api/users/';
   static const String partRequests = '/api/part-requests/';
   static const String partRequestStatuses = '/api/part-request-statuses/';

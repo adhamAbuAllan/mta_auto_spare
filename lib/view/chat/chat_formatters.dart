@@ -25,13 +25,9 @@ String conversationPreview(ConversationListItem conversation) {
   if (lastMessage == null) {
     return 'No messages yet';
   }
-  final previewText = lastMessage.text.trim().isEmpty
+  return lastMessage.text.trim().isEmpty
       ? 'New message'
       : lastMessage.text.trim();
-  final prefix = lastMessage.senderName.trim().isEmpty
-      ? ''
-      : '${lastMessage.senderName}: ';
-  return '$prefix$previewText'.trim();
 }
 
 ConversationParticipantRead? otherParticipant(

@@ -98,6 +98,9 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
         senderId: message.sender.id,
         senderName: message.sender.name,
         timestamp: message.serverTimestamp ?? message.clientTimestamp,
+        statuses: message.statuses,
+        isOptimistic: message.isOptimistic,
+        hasSendError: message.hasSendError,
       ),
       unreadCount: nextUnreadCount,
     );
@@ -124,7 +127,13 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
         return 'Shared a request';
       case 'media':
         if (message.media.length > 1) {
+          if (message.media.every((attachment) => attachment.isAudio)) {
+            return 'Sent ${message.media.length} voice messages';
+          }
           return 'Sent ${message.media.length} attachments';
+        }
+        if (message.media.any((attachment) => attachment.isAudio)) {
+          return 'Sent a voice message';
         }
         if (message.media.any((attachment) => attachment.isImage)) {
           return 'Sent an image';

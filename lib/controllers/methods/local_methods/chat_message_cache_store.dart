@@ -52,7 +52,9 @@ class ChatMessageCacheStore {
 
     final payload = <String, dynamic>{
       'conversation_id': conversationId,
-      'messages': messages.map((message) => message.toJson()).toList(growable: false),
+      'messages': messages
+          .map((message) => message.toJson())
+          .toList(growable: false),
       'next_page_url': state.nextPageUrl,
       'last_seen_by_user_id': _serializeDateMap(state.lastSeenByUserId),
       'presence_last_seen_at_by_user_id': _serializeDateMap(

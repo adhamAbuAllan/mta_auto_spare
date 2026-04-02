@@ -72,26 +72,11 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Pick up any request-based conversation and continue from where you left off.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: const Color(0xFF6F6A63),
-                    ),
-                  ),
+                  const SizedBox(height: 12),
                 ],
               ),
             ),
             const SizedBox(width: 12),
-            IconButton.filledTonal(
-              tooltip: 'Refresh conversations',
-              onPressed: conversationState.isLoading
-                  ? null
-                  : () => ref
-                        .read(conversationsNotifierProvider.notifier)
-                        .load(forceRefresh: true),
-              icon: const Icon(Icons.refresh_rounded),
-            ),
           ],
         ),
         if (conversationState.errorMessage != null &&
@@ -160,13 +145,10 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
           return Center(
             child: OutlinedButton(
               onPressed: conversationState.isLoadingMore
-                  ?
-              null
-                  :
-                  () => ref
+                  ? null
+                  : () => ref
                         .read(conversationsNotifierProvider.notifier)
-                        .loadMore()
-              ,
+                        .loadMore(),
               child: Text(
                 conversationState.isLoadingMore ? 'Loading...' : 'Load More',
               ),
@@ -179,7 +161,12 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
           conversation: conversation,
           currentUserId: currentUserId,
           isSelected: selectedConversationId == conversation.id,
-          onTap: () => widget.onOpenConversation(conversation.id),
+          onTap: () {
+            ref
+                .read(conversationsNotifierProvider.notifier)
+                .markConversationRead(conversation.id);
+            widget.onOpenConversation(conversation.id);
+          },
         );
       },
     );

@@ -27,6 +27,26 @@ void main() {
     );
   });
 
+  test('ApiException prefers the backend message over metadata fields', () {
+    final requestOptions = RequestOptions(path: '/api/users/');
+    final error = DioException(
+      requestOptions: requestOptions,
+      response: Response<Map<String, dynamic>>(
+        requestOptions: requestOptions,
+        statusCode: 400,
+        data: {
+          'email': ['A user with this email already exists.'],
+          'message': 'A user with this email already exists.',
+          'status_code': 400,
+        },
+      ),
+    );
+
+    final exception = ApiException.fromDioException(error);
+
+    expect(exception.message, 'A user with this email already exists.');
+  });
+
   test('ApiUser toJson omits optional null fields', () {
     const user = ApiUser(
       email: 'new@example.com',

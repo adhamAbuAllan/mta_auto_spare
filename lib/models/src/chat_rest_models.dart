@@ -133,6 +133,9 @@ class ConversationLastMessagePreview {
     required this.senderId,
     required this.senderName,
     this.timestamp,
+    this.statuses = const [],
+    this.isOptimistic = false,
+    this.hasSendError = false,
   });
 
   final int id;
@@ -140,6 +143,9 @@ class ConversationLastMessagePreview {
   final int senderId;
   final String senderName;
   final DateTime? timestamp;
+  final List<MessageStatusModel> statuses;
+  final bool isOptimistic;
+  final bool hasSendError;
 
   factory ConversationLastMessagePreview.fromJson(JsonMap json) {
     final senderJson = mapFromJson(json['sender']) ?? const {};
@@ -149,6 +155,9 @@ class ConversationLastMessagePreview {
       senderId: intFromJson(senderJson['id']) ?? 0,
       senderName: stringFromJson(senderJson['name']) ?? '',
       timestamp: dateTimeFromJson(json['timestamp']),
+      statuses: listFromJson(json['statuses'], MessageStatusModel.fromJson),
+      isOptimistic: boolFromJson(json['is_optimistic']) ?? false,
+      hasSendError: boolFromJson(json['has_send_error']) ?? false,
     );
   }
 
@@ -158,7 +167,19 @@ class ConversationLastMessagePreview {
       'text': text,
       'sender': {'id': senderId, 'name': senderName},
       'timestamp': timestamp?.toIso8601String(),
+      'statuses': statuses.map((item) => item.toJson()).toList(growable: false),
+      'is_optimistic': isOptimistic,
+      'has_send_error': hasSendError,
     };
+  }
+
+  MessageReceiptState receiptStateFor(int currentUserId) {
+    return _resolveReceiptState(
+      statuses: statuses,
+      currentUserId: currentUserId,
+      isOptimistic: isOptimistic,
+      hasSendError: hasSendError,
+    );
   }
 
   ConversationLastMessagePreview copyWith({
@@ -166,17 +187,27 @@ class ConversationLastMessagePreview {
     String? text,
     int? senderId,
     String? senderName,
-    DateTime? timestamp,
+    Object? timestamp = _conversationLastMessagePreviewUnset,
+    List<MessageStatusModel>? statuses,
+    bool? isOptimistic,
+    bool? hasSendError,
   }) {
     return ConversationLastMessagePreview(
       id: id ?? this.id,
       text: text ?? this.text,
       senderId: senderId ?? this.senderId,
       senderName: senderName ?? this.senderName,
-      timestamp: timestamp ?? this.timestamp,
+      timestamp: identical(timestamp, _conversationLastMessagePreviewUnset)
+          ? this.timestamp
+          : timestamp as DateTime?,
+      statuses: statuses ?? this.statuses,
+      isOptimistic: isOptimistic ?? this.isOptimistic,
+      hasSendError: hasSendError ?? this.hasSendError,
     );
   }
 }
+
+const _conversationLastMessagePreviewUnset = Object();
 
 class ConversationListItem {
   const ConversationListItem({
@@ -261,6 +292,27 @@ class MessageAttachmentModel {
   final DateTime? createdAt;
 
   bool get isImage => (contentType ?? '').toLowerCase().startsWith('image/');
+  bool get isAudio => (contentType ?? '').toLowerCase().startsWith('audio/');
+
+  String get fileName {
+    final local = localPath?.trim();
+    if (local != null && local.isNotEmpty) {
+      final normalized = local.replaceAll('\\', '/');
+      return normalized.split('/').last;
+    }
+
+    final remote = fileUrl?.trim();
+    if (remote == null || remote.isEmpty) {
+      return 'Attachment';
+    }
+
+    final parsed = Uri.tryParse(remote);
+    final segments = parsed?.pathSegments ?? const <String>[];
+    if (segments.isNotEmpty) {
+      return segments.last;
+    }
+    return remote;
+  }
 
   factory MessageAttachmentModel.fromJson(JsonMap json) {
     return MessageAttachmentModel(
@@ -572,26 +624,40 @@ class MessageModel {
   }
 
   MessageReceiptState receiptStateFor(int currentUserId) {
-    if (hasSendError) {
-      return MessageReceiptState.failed;
-    }
-    if (isOptimistic) {
-      return MessageReceiptState.pending;
-    }
-
-    final participantStatuses = statuses
-        .where((status) => status.userId != currentUserId)
-        .map((status) => status.status)
-        .toSet();
-
-    if (participantStatuses.contains('seen')) {
-      return MessageReceiptState.seen;
-    }
-    if (participantStatuses.contains('delivered')) {
-      return MessageReceiptState.delivered;
-    }
-    return MessageReceiptState.sent;
+    return _resolveReceiptState(
+      statuses: statuses,
+      currentUserId: currentUserId,
+      isOptimistic: isOptimistic,
+      hasSendError: hasSendError,
+    );
   }
+}
+
+MessageReceiptState _resolveReceiptState({
+  required List<MessageStatusModel> statuses,
+  required int currentUserId,
+  required bool isOptimistic,
+  required bool hasSendError,
+}) {
+  if (hasSendError) {
+    return MessageReceiptState.failed;
+  }
+  if (isOptimistic) {
+    return MessageReceiptState.pending;
+  }
+
+  final participantStatuses = statuses
+      .where((status) => status.userId != currentUserId)
+      .map((status) => status.status)
+      .toSet();
+
+  if (participantStatuses.contains('seen')) {
+    return MessageReceiptState.seen;
+  }
+  if (participantStatuses.contains('delivered')) {
+    return MessageReceiptState.delivered;
+  }
+  return MessageReceiptState.sent;
 }
 
 const _messageModelUnset = Object();

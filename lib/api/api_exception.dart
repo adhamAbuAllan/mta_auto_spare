@@ -16,6 +16,12 @@ class ApiException implements Exception {
       if (map['detail'] != null) {
         return ApiException(map['detail'].toString());
       }
+      if (map['message'] != null) {
+        final message = map['message'].toString().trim();
+        if (message.isNotEmpty) {
+          return ApiException(message);
+        }
+      }
       final formatted = _formatValidationMap(map);
       if (formatted.isNotEmpty) {
         return ApiException(formatted);
@@ -37,9 +43,10 @@ class ApiException implements Exception {
 
   static String _formatValidationMap(Map<String, dynamic> responseData) {
     final lines = <String>[];
+    const ignoredKeys = {'message', 'status_code', 'code'};
 
     responseData.forEach((key, value) {
-      if (value == null) {
+      if (ignoredKeys.contains(key) || value == null) {
         return;
       }
 
