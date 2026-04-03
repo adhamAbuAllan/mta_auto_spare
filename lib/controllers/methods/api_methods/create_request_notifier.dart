@@ -63,6 +63,7 @@ class CreateRequestNotifier extends StateNotifier<CreateRequestState> {
     required String? city,
     required String? minPrice,
     required String? maxPrice,
+    List<RequestUploadImage> images = const [],
   }) async {
     if (!state.canSubmit || state.selectedStatusId == null) {
       state = state.copyWith(
@@ -90,6 +91,7 @@ class CreateRequestNotifier extends StateNotifier<CreateRequestState> {
           status: state.selectedStatusId!,
           city: _normalizeOptionalText(city),
         ),
+        images: images,
       );
 
       state = state.copyWith(

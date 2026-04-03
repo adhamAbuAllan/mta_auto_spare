@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../api/api_exception.dart';
 import '../../../api/request_api.dart';
+import '../../../constants/api_constants.dart';
 import '../../../models/models.dart';
 import '../../statuses/request_state.dart';
 
@@ -15,6 +17,7 @@ class LoadRequestsNotifier extends StateNotifier<RequestState> {
 
     try {
       final requests = await _requestApi.getAllRequests();
+      _logLoadedRequestImages(requests);
       state = state.copyWith(
         isLoading: false,
         requests: requests,
@@ -33,5 +36,31 @@ class LoadRequestsNotifier extends StateNotifier<RequestState> {
 
   void prependRequest(PartRequest request) {
     state = state.copyWith(requests: [request, ...state.requests]);
+  }
+
+  void _logLoadedRequestImages(List<PartRequest> requests) {
+    if (requests.isEmpty) {
+      debugPrint('[Requests][Images] No requests were loaded.');
+      return;
+    }
+
+    for (final request in requests) {
+      if (request.images.isEmpty) {
+        debugPrint(
+          '[Requests][Images] Request #${request.id ?? 0} '
+          '"${request.title}" has no images.',
+        );
+        continue;
+      }
+
+      for (final image in request.images) {
+        final rawUrl = image.image.trim();
+        final resolvedUrl = ApiConstants.resolveUrl(rawUrl);
+        debugPrint(
+          '[Requests][Images] Request #${request.id ?? 0} '
+          '"${request.title}" image: raw="$rawUrl" resolved="$resolvedUrl"',
+        );
+      }
+    }
   }
 }

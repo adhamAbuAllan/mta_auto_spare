@@ -134,6 +134,131 @@ void main() {
     expect(find.text('Chat Seller'), findsNothing);
   });
 
+  testWidgets('request cards render uploaded images in the list', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      await _buildRequestsHarness(
+        requestState: const RequestState(
+          requests: [
+            PartRequest(
+              id: 10,
+              requester: 5,
+              title: 'Door mirror',
+              description: 'Need a clean side mirror.',
+              status: 1,
+              city: null,
+              images: [
+                PartImage(
+                  id: 4,
+                  partRequest: 10,
+                  image: '/media/part_requests/sample_part.jpg',
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Door mirror'), findsOneWidget);
+    expect(find.text('City not set'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Image &&
+            widget.image is NetworkImage &&
+            (widget.image as NetworkImage).url.contains(
+              '/media/part_requests/sample_part.jpg',
+            ),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('tapping a request image opens a zoomable viewer', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      await _buildRequestsHarness(
+        requestState: const RequestState(
+          requests: [
+            PartRequest(
+              id: 10,
+              requester: 5,
+              title: 'Door mirror',
+              description: 'Need a clean side mirror.',
+              status: 1,
+              city: null,
+              images: [
+                PartImage(
+                  id: 4,
+                  partRequest: 10,
+                  image: '/media/part_requests/sample_part.jpg',
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.byKey(const ValueKey('request-image-thumbnail-10-0')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(InteractiveViewer), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('zoomable-image-viewer-close')),
+      findsOneWidget,
+    );
+    expect(find.text('1 / 1'), findsOneWidget);
+
+    final imageFinder = find.byKey(const ValueKey('zoomable-gallery-image-0'));
+    final interactiveFinder = find.byKey(
+      const ValueKey('zoomable-image-viewer-interactive'),
+    );
+
+    var interactiveViewer = tester.widget<InteractiveViewer>(interactiveFinder);
+    expect(
+      interactiveViewer.transformationController!.value.getMaxScaleOnAxis(),
+      closeTo(1, 0.001),
+    );
+    expect(
+      tester.widget<PageView>(find.byType(PageView)).physics,
+      isA<BouncingScrollPhysics>(),
+    );
+
+    await _doubleTap(tester, imageFinder);
+    await tester.pumpAndSettle();
+
+    interactiveViewer = tester.widget<InteractiveViewer>(interactiveFinder);
+    expect(
+      interactiveViewer.transformationController!.value.getMaxScaleOnAxis(),
+      greaterThan(1.5),
+    );
+    expect(
+      tester.widget<PageView>(find.byType(PageView)).physics,
+      isA<NeverScrollableScrollPhysics>(),
+    );
+
+    await _doubleTap(tester, imageFinder);
+    await tester.pumpAndSettle();
+
+    interactiveViewer = tester.widget<InteractiveViewer>(interactiveFinder);
+    expect(
+      interactiveViewer.transformationController!.value.getMaxScaleOnAxis(),
+      closeTo(1, 0.001),
+    );
+    expect(
+      tester.widget<PageView>(find.byType(PageView)).physics,
+      isA<BouncingScrollPhysics>(),
+    );
+  });
+
   testWidgets('chat button opens a conversation for another user request', (
     WidgetTester tester,
   ) async {
@@ -686,4 +811,11 @@ ConversationListItem _conversationListItem({
     lastMessage: lastMessage,
     unreadCount: unreadCount,
   );
+}
+
+Future<void> _doubleTap(WidgetTester tester, Finder finder) async {
+  final center = tester.getCenter(finder);
+  await tester.tapAt(center);
+  await tester.pump(const Duration(milliseconds: 40));
+  await tester.tapAt(center);
 }

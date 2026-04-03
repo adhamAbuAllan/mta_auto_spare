@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 
 import '../../controllers/providers/request_provider.dart';
 import '../../controllers/statuses/request_state.dart';
@@ -21,6 +25,9 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
   final _cityController = TextEditingController();
   final _minPriceController = TextEditingController();
   final _maxPriceController = TextEditingController();
+  final ImagePicker _imagePicker = ImagePicker();
+
+  List<RequestUploadImage> _selectedImages = const [];
 
   @override
   void initState() {
@@ -162,16 +169,47 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                         controller: _cityController,
                         textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
-                          labelText: 'City',
+                          labelText: 'City (Optional)',
                           hintText: 'Riyadh',
                         ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Enter a city.';
-                          }
-                          return null;
-                        },
                       ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: createState.isSubmitting
+                                  ? null
+                                  : _pickImages,
+                              icon: const Icon(Icons.photo_library_outlined),
+                              label: Text(
+                                _selectedImages.isEmpty
+                                    ? 'Add Photos'
+                                    : 'Add More Photos',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_selectedImages.isNotEmpty) ...[
+                        const SizedBox(height: 14),
+                        SizedBox(
+                          height: 92,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _selectedImages.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(width: 10),
+                            itemBuilder: (context, index) {
+                              final image = _selectedImages[index];
+                              return _SelectedRequestImageCard(
+                                image: image,
+                                onRemove: () => _removeSelectedImage(image),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 14),
                       Row(
                         children: [
@@ -284,7 +322,35 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
           city: _cityController.text,
           minPrice: _minPriceController.text,
           maxPrice: _maxPriceController.text,
+          images: _selectedImages,
         );
+  }
+
+  Future<void> _pickImages() async {
+    final pickedFiles = await _imagePicker.pickMultiImage();
+    if (!mounted || pickedFiles.isEmpty) {
+      return;
+    }
+
+    final nextImages = <RequestUploadImage>[
+      ..._selectedImages,
+      for (final file in pickedFiles)
+        RequestUploadImage(
+          path: file.path,
+          fileName: file.name,
+          contentType: lookupMimeType(file.path) ?? 'image/jpeg',
+        ),
+    ];
+
+    setState(() => _selectedImages = nextImages);
+  }
+
+  void _removeSelectedImage(RequestUploadImage image) {
+    setState(() {
+      _selectedImages = _selectedImages
+          .where((item) => item.path != image.path)
+          .toList(growable: false);
+    });
   }
 }
 
@@ -341,6 +407,53 @@ class _StatusNotice extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SelectedRequestImageCard extends StatelessWidget {
+  const _SelectedRequestImageCard({
+    required this.image,
+    required this.onRemove,
+  });
+
+  final RequestUploadImage image;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: SizedBox(
+            width: 92,
+            height: 92,
+            child: Image.file(File(image.path), fit: BoxFit.cover),
+          ),
+        ),
+        Positioned(
+          top: 6,
+          right: 6,
+          child: InkWell(
+            onTap: onRemove,
+            borderRadius: BorderRadius.circular(999),
+            child: Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.54),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.close_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -82,6 +82,7 @@ class PartRequest {
     this.maxPrice,
     required this.status,
     this.city,
+    this.images = const [],
     this.createdAt,
     this.updatedAt,
   });
@@ -94,6 +95,7 @@ class PartRequest {
   final String? maxPrice;
   final int status;
   final String? city;
+  final List<PartImage> images;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -107,6 +109,7 @@ class PartRequest {
       maxPrice: stringFromJson(json['max_price']),
       status: intFromJson(json['status']) ?? 0,
       city: stringFromJson(json['city']),
+      images: listFromJson(json['images'], PartImage.fromJson),
       createdAt: dateTimeFromJson(json['created_at']),
       updatedAt: dateTimeFromJson(json['updated_at']),
     );
@@ -122,10 +125,23 @@ class PartRequest {
       'max_price': maxPrice,
       'status': status,
       'city': city,
+      'images': images.map((item) => item.toJson()).toList(growable: false),
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
   }
+}
+
+class RequestUploadImage {
+  const RequestUploadImage({
+    required this.path,
+    required this.fileName,
+    required this.contentType,
+  });
+
+  final String path;
+  final String fileName;
+  final String contentType;
 }
 
 class PartImage {

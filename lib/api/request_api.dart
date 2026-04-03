@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 
 import '../constants/api_constants.dart';
 import '../models/models.dart';
@@ -59,16 +60,53 @@ class RequestApi {
     return statuses;
   }
 
-  Future<PartRequest> createRequest(PartRequest request) async {
+  Future<PartRequest> createRequest(
+    PartRequest request, {
+    List<RequestUploadImage> images = const [],
+  }) async {
     try {
+      final payload = images.isEmpty
+          ? request.toJson()
+          : await _buildMultipartPayload(request, images);
       final response = await _dio.post(
         ApiEndpoints.partRequests,
-        data: request.toJson(),
+        data: payload,
       );
       return PartRequest.fromJson(_asMap(response.data));
     } on DioException catch (error) {
       throw ApiException.fromDioException(error);
     }
+  }
+
+  Future<FormData> _buildMultipartPayload(
+    PartRequest request,
+    List<RequestUploadImage> images,
+  ) async {
+    final data = <String, dynamic>{
+      'requester': request.requester.toString(),
+      'title': request.title,
+      'description': request.description,
+      'status': request.status.toString(),
+      'images': await Future.wait(
+        images.map(
+          (image) => MultipartFile.fromFile(
+            image.path,
+            filename: image.fileName,
+            contentType: MediaType.parse(image.contentType),
+          ),
+        ),
+      ),
+    };
+    if (request.minPrice != null && request.minPrice!.trim().isNotEmpty) {
+      data['min_price'] = request.minPrice!.trim();
+    }
+    if (request.maxPrice != null && request.maxPrice!.trim().isNotEmpty) {
+      data['max_price'] = request.maxPrice!.trim();
+    }
+    if (request.city != null && request.city!.trim().isNotEmpty) {
+      data['city'] = request.city!.trim();
+    }
+    return FormData.fromMap(data);
   }
 
   Map<String, dynamic> _asMap(dynamic data) {

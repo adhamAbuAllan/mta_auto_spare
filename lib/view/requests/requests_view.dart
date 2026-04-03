@@ -347,14 +347,6 @@ class _RequestsHero extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              'Browse seller requests, publish your own request post, and turn any card into a conversation.',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Colors.white.withValues(alpha: 0.86),
-                height: 1.35,
-              ),
-            ),
-            const SizedBox(height: 18),
             Wrap(
               spacing: 12,
               runSpacing: 12,

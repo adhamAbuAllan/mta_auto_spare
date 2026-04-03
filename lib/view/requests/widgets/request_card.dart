@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../constants/api_constants.dart';
 import '../../../models/models.dart';
 import '../../common_widgets/app_panel.dart';
 import '../../common_widgets/time_formatter.dart';
+import '../../common_widgets/zoomable_network_gallery_page.dart';
 
 class RequestCard extends StatelessWidget {
   const RequestCard({
@@ -20,11 +22,73 @@ class RequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final resolvedImageUrls = request.images
+        .map((image) => ApiConstants.resolveUrl(image.image))
+        .toList(growable: false);
+
     return AppPanel(
       padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (request.images.isNotEmpty) ...[
+            SizedBox(
+              height: 158,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: request.images.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  final resolvedImageUrl = resolvedImageUrls[index];
+
+                  return GestureDetector(
+                    key: ValueKey(
+                      'request-image-thumbnail-${request.id ?? 0}-$index',
+                    ),
+                    onTap: () => _openImageGallery(
+                      context,
+                      resolvedImageUrls: resolvedImageUrls,
+                      initialIndex: index,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: AspectRatio(
+                        aspectRatio: 1.3,
+                        child: Hero(
+                          tag: _heroTagForIndex(index),
+                          child: Image.network(
+                            resolvedImageUrl,
+                            fit: BoxFit.cover,
+                            headers: const {
+                              ApiConstants.ngrokHeaderKey:
+                                  ApiConstants.ngrokHeaderValue,
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              debugPrint(
+                                '[Requests][Images] Failed to render image for '
+                                'request #${request.id ?? 0}: '
+                                '$resolvedImageUrl '
+                                'error=$error',
+                              );
+                              return Container(
+                                color: const Color(0xFFF2EEE7),
+                                alignment: Alignment.center,
+                                child: const Icon(
+                                  Icons.image_not_supported_outlined,
+                                  color: Color(0xFF7A746C),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -113,6 +177,29 @@ class RequestCard extends StatelessWidget {
       return 'Up to $maxPrice';
     }
     return 'Open budget';
+  }
+
+  Object _heroTagForIndex(int index) {
+    return 'request-image-${request.id ?? 'new'}-$index';
+  }
+
+  void _openImageGallery(
+    BuildContext context, {
+    required List<String> resolvedImageUrls,
+    required int initialIndex,
+  }) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ZoomableNetworkGalleryPage(
+          imageUrls: resolvedImageUrls,
+          initialIndex: initialIndex,
+          headers: const {
+            ApiConstants.ngrokHeaderKey: ApiConstants.ngrokHeaderValue,
+          },
+          heroTagBuilder: _heroTagForIndex,
+        ),
+      ),
+    );
   }
 }
 
