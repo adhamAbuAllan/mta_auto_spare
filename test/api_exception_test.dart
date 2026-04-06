@@ -47,6 +47,36 @@ void main() {
     expect(exception.message, 'A user with this email already exists.');
   });
 
+  test('ApiException maps upload send timeout to a helpful message', () {
+    final requestOptions = RequestOptions(path: '/api/part-requests/');
+    final error = DioException(
+      requestOptions: requestOptions,
+      type: DioExceptionType.sendTimeout,
+    );
+
+    final exception = ApiException.fromDioException(error);
+
+    expect(
+      exception.message,
+      'The upload took too long. Try fewer or smaller images, or use a stronger connection.',
+    );
+  });
+
+  test('ApiException maps connection errors to a helpful message', () {
+    final requestOptions = RequestOptions(path: '/api/part-requests/');
+    final error = DioException(
+      requestOptions: requestOptions,
+      type: DioExceptionType.connectionError,
+    );
+
+    final exception = ApiException.fromDioException(error);
+
+    expect(
+      exception.message,
+      'Could not reach the server. Check your connection and API URL.',
+    );
+  });
+
   test('ApiUser toJson omits optional null fields', () {
     const user = ApiUser(
       email: 'new@example.com',

@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../api/chat_socket_service.dart';
+import '../../api/inbox_socket_service.dart';
 import '../../models/models.dart';
 import '../../session/session_notifier.dart';
 import '../methods/api_methods/load_conversations_notifier.dart';
@@ -22,13 +25,27 @@ final chatSocketServiceProvider = Provider<ChatSocketService>((ref) {
   return service;
 });
 
+final inboxSocketServiceProvider = Provider<InboxSocketService>((ref) {
+  final service = InboxSocketService();
+  ref.onDispose(service.dispose);
+  return service;
+});
+
 final chatMessageCacheStoreProvider = Provider<ChatMessageCacheStore>((ref) {
   return ChatMessageCacheStore(ref.read(sharedPreferencesProvider));
 });
 
 final conversationsNotifierProvider =
     StateNotifierProvider<LoadConversationsNotifier, ConversationState>((ref) {
-      return LoadConversationsNotifier(ref.read(chatApiProvider));
+      final notifier = LoadConversationsNotifier(
+        ref.read(chatApiProvider),
+        ref.read(inboxSocketServiceProvider),
+      );
+      ref.listen(sessionNotifierProvider, (previous, next) {
+        unawaited(notifier.syncWithSession(next));
+      });
+      unawaited(notifier.syncWithSession(ref.read(sessionNotifierProvider)));
+      return notifier;
     });
 
 final messagesNotifierProvider =
@@ -75,6 +92,22 @@ final messagesNotifierProvider =
                     message: message,
                     isActiveConversation: isActiveConversation,
                     currentUserId: currentUserId,
+                  );
+            },
+        onConversationMessagesChanged:
+            ({
+              required conversationId,
+              required messages,
+              required isActiveConversation,
+              required currentUserId,
+            }) {
+              ref
+                  .read(conversationsNotifierProvider.notifier)
+                  .syncConversationFromMessages(
+                    conversationId: conversationId,
+                    messages: messages,
+                    currentUserId: currentUserId,
+                    isActiveConversation: isActiveConversation,
                   );
             },
         onConversationReadChanged: (conversationId) {

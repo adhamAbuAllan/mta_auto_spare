@@ -5,13 +5,55 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../api/api_exception.dart';
 import '../../../api/chat_api.dart';
+import '../../../api/chat_socket_service.dart';
+import '../../../api/inbox_socket_service.dart';
 import '../../../models/models.dart';
+import '../../../session/session_state.dart';
 import '../../statuses/conversation_state.dart';
 
 class LoadConversationsNotifier extends StateNotifier<ConversationState> {
-  LoadConversationsNotifier(this._chatApi) : super(const ConversationState());
+  LoadConversationsNotifier(this._chatApi, this._inboxSocketService)
+    : super(const ConversationState()) {
+    _inboxMessageSubscription = _inboxSocketService.messages.listen(
+      _handleInboxMessage,
+    );
+    _inboxStatusSubscription = _inboxSocketService.statuses.listen(
+      _handleInboxStatus,
+    );
+  }
 
   final ChatApi _chatApi;
+  final InboxSocketService _inboxSocketService;
+  StreamSubscription<MessageModel>? _inboxMessageSubscription;
+  StreamSubscription<ChatConnectionStatus>? _inboxStatusSubscription;
+  ChatConnectionStatus _inboxStatus = ChatConnectionStatus.disconnected;
+  int? _currentUserId;
+  int? _activeConversationId;
+
+  @override
+  void dispose() {
+    _inboxMessageSubscription?.cancel();
+    _inboxStatusSubscription?.cancel();
+    unawaited(_inboxSocketService.disconnect());
+    super.dispose();
+  }
+
+  Future<void> syncWithSession(SessionState session) async {
+    _currentUserId = session.profile?.id;
+    final accessToken = session.accessToken?.trim() ?? '';
+    if (!session.isAuthenticated ||
+        _currentUserId == null ||
+        accessToken.isEmpty) {
+      await _inboxSocketService.disconnect();
+      return;
+    }
+
+    await _inboxSocketService.connect(token: accessToken);
+  }
+
+  void setActiveConversationId(int? conversationId) {
+    _activeConversationId = conversationId;
+  }
 
   Future<void> load({bool forceRefresh = false}) async {
     if (!forceRefresh && state.conversations.isNotEmpty) {
@@ -29,7 +71,7 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
       final page = await _chatApi.getConversations();
       state = state.copyWith(
         isLoading: false,
-        conversations: page.results,
+        conversations: _sortConversationsByActivity(page.results),
         nextPageUrl: page.next,
         errorMessage: null,
       );
@@ -53,7 +95,10 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
       final page = await _chatApi.getConversations(pageUrl: state.nextPageUrl);
       state = state.copyWith(
         isLoadingMore: false,
-        conversations: [...state.conversations, ...page.results],
+        conversations: _sortConversationsByActivity([
+          ...state.conversations,
+          ...page.results,
+        ]),
         nextPageUrl: page.next,
         errorMessage: null,
       );
@@ -91,28 +136,78 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
         isActiveConversation || message.sender.id == currentUserId
         ? 0
         : currentConversation.unreadCount + 1;
+    final nextLastMessage =
+        _shouldReplaceConversationPreview(
+          currentConversation.lastMessage,
+          message,
+        )
+        ? _buildLastMessagePreview(message)
+        : currentConversation.lastMessage;
     final updatedConversation = currentConversation.copyWith(
-      lastMessage: ConversationLastMessagePreview(
-        id: message.id,
-        text: _buildPreviewText(message),
-        senderId: message.sender.id,
-        senderName: message.sender.name,
-        timestamp: message.serverTimestamp ?? message.clientTimestamp,
-        statuses: message.statuses,
-        isOptimistic: message.isOptimistic,
-        hasSendError: message.hasSendError,
-      ),
+      lastMessage: nextLastMessage,
       unreadCount: nextUnreadCount,
     );
 
     final updatedList = [...state.conversations];
-    updatedList.removeAt(index);
-    updatedList.insert(0, updatedConversation);
+    updatedList[index] = updatedConversation;
 
-    state = state.copyWith(conversations: updatedList);
+    state = state.copyWith(
+      conversations: _sortConversationsByActivity(updatedList),
+    );
+  }
+
+  void syncConversationFromMessages({
+    required int conversationId,
+    required List<MessageModel> messages,
+    required int currentUserId,
+    bool isActiveConversation = false,
+  }) {
+    final index = state.conversations.indexWhere(
+      (conversation) => conversation.id == conversationId,
+    );
+    if (index == -1) {
+      unawaited(load(forceRefresh: true));
+      return;
+    }
+
+    final currentConversation = state.conversations[index];
+    final latestMessage = messages.isEmpty ? null : messages.last;
+    final updatedConversation = currentConversation.copyWith(
+      lastMessage: latestMessage == null
+          ? null
+          : _buildLastMessagePreview(latestMessage),
+      unreadCount: isActiveConversation ? 0 : currentConversation.unreadCount,
+    );
+
+    final updatedList = [...state.conversations];
+    updatedList[index] = updatedConversation;
+    state = state.copyWith(
+      conversations: _sortConversationsByActivity(updatedList),
+    );
+  }
+
+  ConversationLastMessagePreview _buildLastMessagePreview(
+    MessageModel message,
+  ) {
+    return ConversationLastMessagePreview(
+      id: message.id,
+      text: _buildPreviewText(message),
+      senderId: message.sender.id,
+      senderName: message.sender.name,
+      timestamp: _messageActivityAt(message),
+      editedAt: message.editedAt,
+      isDeleted: message.isDeleted,
+      statuses: message.statuses,
+      isOptimistic: message.isOptimistic,
+      hasSendError: message.hasSendError,
+    );
   }
 
   String _buildPreviewText(MessageModel message) {
+    if (message.isDeleted) {
+      return 'This message was deleted';
+    }
+
     final trimmedText = message.text.trim();
     if (trimmedText.isNotEmpty) {
       return trimmedText;
@@ -142,6 +237,58 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
       default:
         return 'New message';
     }
+  }
+
+  bool _shouldReplaceConversationPreview(
+    ConversationLastMessagePreview? currentPreview,
+    MessageModel incomingMessage,
+  ) {
+    if (currentPreview == null || currentPreview.id == incomingMessage.id) {
+      return true;
+    }
+
+    return _compareActivity(
+          leftTimestamp: _messageActivityAt(incomingMessage),
+          leftId: incomingMessage.id,
+          rightTimestamp: currentPreview.timestamp,
+          rightId: currentPreview.id,
+        ) >
+        0;
+  }
+
+  List<ConversationListItem> _sortConversationsByActivity(
+    List<ConversationListItem> conversations,
+  ) {
+    final sorted = [...conversations];
+    sorted.sort((left, right) {
+      return _compareActivity(
+        leftTimestamp: right.lastMessage?.timestamp,
+        leftId: right.lastMessage?.id ?? right.id,
+        rightTimestamp: left.lastMessage?.timestamp,
+        rightId: left.lastMessage?.id ?? left.id,
+      );
+    });
+    return sorted;
+  }
+
+  DateTime? _messageActivityAt(MessageModel message) {
+    return message.serverTimestamp ?? message.clientTimestamp;
+  }
+
+  int _compareActivity({
+    required DateTime? leftTimestamp,
+    required int leftId,
+    required DateTime? rightTimestamp,
+    required int rightId,
+  }) {
+    final epoch = DateTime.fromMillisecondsSinceEpoch(0);
+    final timestampCompare = (leftTimestamp ?? epoch).compareTo(
+      rightTimestamp ?? epoch,
+    );
+    if (timestampCompare != 0) {
+      return timestampCompare;
+    }
+    return leftId.compareTo(rightId);
   }
 
   void markConversationRead(int conversationId) {
@@ -186,6 +333,32 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
       return;
     }
 
-    state = state.copyWith(conversations: updatedConversations);
+    state = state.copyWith(
+      conversations: _sortConversationsByActivity(updatedConversations),
+    );
+  }
+
+  void _handleInboxMessage(MessageModel message) {
+    final currentUserId = _currentUserId;
+    if (currentUserId == null) {
+      return;
+    }
+
+    touchConversationFromMessage(
+      conversationId: message.conversationId,
+      message: message,
+      currentUserId: currentUserId,
+      isActiveConversation: _activeConversationId == message.conversationId,
+    );
+  }
+
+  void _handleInboxStatus(ChatConnectionStatus status) {
+    final previousStatus = _inboxStatus;
+    _inboxStatus = status;
+    if (previousStatus == ChatConnectionStatus.reconnecting &&
+        status == ChatConnectionStatus.connected &&
+        state.conversations.isNotEmpty) {
+      unawaited(load(forceRefresh: true));
+    }
   }
 }

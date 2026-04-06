@@ -18,6 +18,14 @@ typedef MessagePreviewChanged =
       required int currentUserId,
     });
 
+typedef ConversationMessagesChanged =
+    void Function({
+      required int conversationId,
+      required List<MessageModel> messages,
+      required bool isActiveConversation,
+      required int currentUserId,
+    });
+
 typedef ConversationReadChanged = void Function(int conversationId);
 typedef ResolveLiveAccessToken = Future<String?> Function();
 typedef ResolveCacheUserId = int? Function();
@@ -39,6 +47,7 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     required ResolveLiveAccessToken resolveLiveAccessToken,
     required ResolveCacheUserId resolveCacheUserId,
     this.onMessagePreviewChanged,
+    this.onConversationMessagesChanged,
     this.onConversationReadChanged,
     this.onUserPresenceChanged,
   }) : _resolveLiveAccessToken = resolveLiveAccessToken,
@@ -57,6 +66,7 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
   final ResolveCacheUserId _resolveCacheUserId;
   final ChatMessageCacheStore _cacheStore;
   final MessagePreviewChanged? onMessagePreviewChanged;
+  final ConversationMessagesChanged? onConversationMessagesChanged;
   final ConversationReadChanged? onConversationReadChanged;
   final UserPresenceChanged? onUserPresenceChanged;
 
@@ -183,29 +193,60 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     );
   }
 
-  Future<void> deactivateConversation([int? conversationId]) async {
-    await _stopTyping(
-      sendStop: _socketService.status == ChatConnectionStatus.connected,
-    );
+  Future<void> detachConversation([int? conversationId]) async {
     final targetConversationId = conversationId ?? _activeConversationId;
     if (targetConversationId == null) {
       return;
     }
-    if (conversationId == null || conversationId == _activeConversationId) {
-      final clearedState = _stateForConversation(targetConversationId).copyWith(
-        connectionStatus: ChatConnectionStatus.disconnected,
-        connectedUserIds: const [],
-        typingUserIds: const [],
-        onlineUserIds: const [],
-      );
-      _cacheConversationState(targetConversationId, clearedState);
-      if (state.conversationId == targetConversationId) {
-        state = state.copyWith(conversationId: null);
-      }
+
+    _cancelTypingTimers();
+    _typingActive = false;
+    if (_activeConversationId == targetConversationId) {
       _activeConversationId = null;
       _currentUserId = null;
-      await _socketService.disconnect();
     }
+    await _socketService.disconnect();
+  }
+
+  Future<void> deactivateConversation([int? conversationId]) async {
+    final targetConversationId = conversationId ?? _activeConversationId;
+    if (targetConversationId == null) {
+      return;
+    }
+
+    final wasActiveConversation = targetConversationId == _activeConversationId;
+    final hasConversationState =
+        _messageCache.containsKey(targetConversationId) ||
+        state.conversationId == targetConversationId;
+
+    if (!wasActiveConversation && !hasConversationState) {
+      return;
+    }
+
+    if (wasActiveConversation) {
+      await _stopTyping(
+        sendStop: _socketService.status == ChatConnectionStatus.connected,
+      );
+    } else {
+      _cancelTypingTimers();
+      _typingActive = false;
+    }
+
+    final clearedState = _stateForConversation(targetConversationId).copyWith(
+      connectionStatus: ChatConnectionStatus.disconnected,
+      connectedUserIds: const [],
+      typingUserIds: const [],
+      onlineUserIds: const [],
+    );
+    _cacheConversationState(targetConversationId, clearedState);
+    if (state.conversationId == targetConversationId) {
+      state = state.copyWith(conversationId: null);
+    }
+    if (wasActiveConversation) {
+      _activeConversationId = null;
+      _currentUserId = null;
+    }
+    await _socketService.disconnect();
   }
 
   Future<void> pauseLiveSync() async {
@@ -421,6 +462,117 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
         conversationId: request.conversation,
         message: failedMessage,
         isActiveConversation: request.conversation == _activeConversationId,
+      );
+    }
+
+    return false;
+  }
+
+  Future<MessageModel?> editMessage({
+    required MessageModel message,
+    required String text,
+  }) async {
+    if (message.id <= 0 || message.isOptimistic) {
+      return null;
+    }
+
+    final normalizedText = text.trim();
+    if (normalizedText.isEmpty) {
+      return null;
+    }
+
+    try {
+      final updatedMessage = await _chatApi.editMessage(
+        messageId: message.id,
+        text: normalizedText,
+      );
+      final currentState = _stateForConversation(message.conversationId);
+      final nextState = _mergeIncomingMessage(
+        currentState.copyWith(errorMessage: null),
+        updatedMessage,
+      );
+      _cacheConversationState(message.conversationId, nextState);
+      _syncConversationFromState(message.conversationId);
+      return updatedMessage;
+    } on ApiException catch (error) {
+      debugPrint(
+        '[Chat][Messages][Edit][conversation=${message.conversationId}] ${error.message}',
+      );
+      final currentState = _stateForConversation(message.conversationId);
+      _cacheConversationState(
+        message.conversationId,
+        currentState.copyWith(errorMessage: error.message),
+      );
+    } catch (error, stackTrace) {
+      debugPrint(
+        '[Chat][Messages][Edit][conversation=${message.conversationId}][Unexpected] ${error.toString()}',
+      );
+      debugPrintStack(stackTrace: stackTrace);
+      final currentState = _stateForConversation(message.conversationId);
+      _cacheConversationState(
+        message.conversationId,
+        currentState.copyWith(errorMessage: error.toString()),
+      );
+    }
+
+    return null;
+  }
+
+  Future<bool> deleteMessage({
+    required MessageModel message,
+    required String scope,
+  }) async {
+    if (message.id <= 0 || message.isOptimistic) {
+      return false;
+    }
+
+    try {
+      final response = await _chatApi.deleteMessage(
+        messageId: message.id,
+        scope: scope,
+      );
+      final currentState = _stateForConversation(message.conversationId);
+
+      if (response.scope == 'all' && response.message != null) {
+        final nextState = _mergeIncomingMessage(
+          currentState.copyWith(errorMessage: null),
+          response.message!,
+        );
+        _cacheConversationState(message.conversationId, nextState);
+      } else {
+        final nextMessages = [
+          for (final item in currentState.messages)
+            if (item.id != message.id) item,
+        ];
+        _cacheConversationState(
+          message.conversationId,
+          currentState.copyWith(
+            messages: _sortMessages(nextMessages),
+            errorMessage: null,
+          ),
+        );
+      }
+
+      _syncConversationFromState(message.conversationId);
+      return true;
+    } on ApiException catch (error) {
+      debugPrint(
+        '[Chat][Messages][Delete][conversation=${message.conversationId}] ${error.message}',
+      );
+      final currentState = _stateForConversation(message.conversationId);
+      _cacheConversationState(
+        message.conversationId,
+        currentState.copyWith(errorMessage: error.message),
+      );
+    } catch (error, stackTrace) {
+      debugPrint(
+        '[Chat][Messages][Delete][conversation=${message.conversationId}][Unexpected] ${error.toString()}',
+      );
+      debugPrintStack(stackTrace: stackTrace);
+      final currentState = _stateForConversation(message.conversationId);
+      _cacheConversationState(
+        message.conversationId,
+        currentState.copyWith(errorMessage: error.toString()),
       );
     }
 
@@ -780,6 +932,21 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
       conversationId: conversationId,
       message: message,
       isActiveConversation: isActiveConversation,
+      currentUserId: currentUserId,
+    );
+  }
+
+  void _syncConversationFromState(int conversationId) {
+    final currentUserId = _currentUserId;
+    if (currentUserId == null) {
+      return;
+    }
+
+    final conversationState = _stateForConversation(conversationId);
+    onConversationMessagesChanged?.call(
+      conversationId: conversationId,
+      messages: conversationState.messages,
+      isActiveConversation: conversationId == _activeConversationId,
       currentUserId: currentUserId,
     );
   }

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,6 +23,11 @@ const _chatMessageChannel = ChatNotificationChannel(
   name: 'Chat Messages',
   description: 'New messages from chat conversations',
 );
+const _marketplaceActivityChannel = ChatNotificationChannel(
+  id: ApiConstants.chatActivityNotificationChannelId,
+  name: 'Marketplace Updates',
+  description: 'New supplier requests and marketplace activity',
+);
 
 Future<void> showChatNotificationFromFirebaseMessage(
   RemoteMessage message,
@@ -44,19 +48,28 @@ Future<void> showChatNotificationFromFirebaseMessage(
   final client = FlutterLocalNotificationsClient();
   await client.initialize(onPayloadTap: (_) async {});
   await client.createChannel(_chatMessageChannel);
+  await client.createChannel(_marketplaceActivityChannel);
   await client.show(notification: notification);
 }
 
 class ChatNotificationNavigationRequest {
   const ChatNotificationNavigationRequest({
-    required this.conversationId,
     required this.eventType,
     required this.nonce,
+    this.conversationId,
+    this.requestId,
+    this.requesterId,
+    this.requestTitle,
+    this.sellerName,
   });
 
-  final int conversationId;
+  final int? conversationId;
   final String eventType;
   final int nonce;
+  final int? requestId;
+  final int? requesterId;
+  final String? requestTitle;
+  final String? sellerName;
 }
 
 class ChatNotificationChannel {
@@ -82,6 +95,7 @@ class ChatRemoteMessage {
 class ChatLocalNotification {
   const ChatLocalNotification({
     required this.id,
+    required this.eventType,
     required this.channel,
     required this.data,
     required this.appName,
@@ -92,6 +106,7 @@ class ChatLocalNotification {
   });
 
   final int id;
+  final String eventType;
   final ChatNotificationChannel channel;
   final Map<String, String> data;
   final String appName;
@@ -103,6 +118,7 @@ class ChatLocalNotification {
 
 class _ParsedChatNotification {
   const _ParsedChatNotification({
+    required this.eventType,
     required this.data,
     required this.appName,
     required this.senderName,
@@ -111,6 +127,7 @@ class _ParsedChatNotification {
     this.senderAvatarUrl,
   });
 
+  final String eventType;
   final Map<String, String> data;
   final String appName;
   final String senderName;
@@ -329,6 +346,32 @@ class FlutterLocalNotificationsClient implements LocalNotificationsClient {
 
   @override
   Future<void> show({required ChatLocalNotification notification}) async {
+    if (notification.eventType == 'request_created') {
+      final sellerName = (notification.data['seller_name'] ?? '').trim();
+      await _plugin.show(
+        id: notification.id,
+        title: notification.senderName,
+        body: sellerName.isEmpty
+            ? notification.body
+            : '$sellerName: ${notification.body}',
+        notificationDetails: NotificationDetails(
+          android: AndroidNotificationDetails(
+            notification.channel.id,
+            notification.channel.name,
+            channelDescription: notification.channel.description,
+            importance: Importance.high,
+            priority: Priority.high,
+            category: AndroidNotificationCategory.recommendation,
+            subText: notification.appName,
+            tag:
+                'request-${notification.data['request_id'] ?? notification.id}',
+          ),
+        ),
+        payload: jsonEncode(notification.data),
+      );
+      return;
+    }
+
     final avatarUrl = notification.senderAvatarUrl;
     final avatarBytes = avatarUrl == null || avatarUrl.isEmpty
         ? null
@@ -384,6 +427,7 @@ class ChatNotificationService {
     required void Function(ChatNotificationNavigationRequest request)
     onNavigationRequest,
     Future<void> Function(int conversationId)? onConversationMessageReceived,
+    Future<void> Function(int requestId)? onRequestCreatedReceived,
     int? Function()? resolveVisibleConversationId,
     String Function()? createDeviceId,
     Duration tokenRetryDelay = const Duration(seconds: 12),
@@ -394,6 +438,7 @@ class ChatNotificationService {
        _notificationsSupported = notificationsSupported,
        _onNavigationRequest = onNavigationRequest,
        _onConversationMessageReceived = onConversationMessageReceived,
+       _onRequestCreatedReceived = onRequestCreatedReceived,
        _resolveVisibleConversationId = resolveVisibleConversationId,
        _createDeviceId = createDeviceId ?? Uuid().v4,
        _tokenRetryDelay = tokenRetryDelay;
@@ -407,6 +452,7 @@ class ChatNotificationService {
   _onNavigationRequest;
   final Future<void> Function(int conversationId)?
   _onConversationMessageReceived;
+  final Future<void> Function(int requestId)? _onRequestCreatedReceived;
   final int? Function()? _resolveVisibleConversationId;
   final String Function() _createDeviceId;
   final Duration _tokenRetryDelay;
@@ -522,6 +568,7 @@ class ChatNotificationService {
     await _messagingClient.initialize();
     await _localNotificationsClient.initialize(onPayloadTap: _handlePayloadTap);
     await _localNotificationsClient.createChannel(_chatMessageChannel);
+    await _localNotificationsClient.createChannel(_marketplaceActivityChannel);
     await _messagingClient.requestPermission();
 
     _foregroundSubscription = _messagingClient.onForegroundMessage.listen((
@@ -556,16 +603,24 @@ class ChatNotificationService {
       if (notification == null) {
         return;
       }
-      final visibleConversationId = _resolveVisibleConversationId?.call();
+      final eventType = notification.eventType;
       final incomingConversationId = int.tryParse(
         notification.data['conversation_id'] ?? '',
       );
-      if (visibleConversationId != null &&
-          incomingConversationId != null &&
-          visibleConversationId == incomingConversationId) {
-        return;
+      final incomingRequestId = int.tryParse(
+        notification.data['request_id'] ?? '',
+      );
+      if (eventType == 'chat_message') {
+        final visibleConversationId = _resolveVisibleConversationId?.call();
+        if (visibleConversationId != null &&
+            incomingConversationId != null &&
+            visibleConversationId == incomingConversationId) {
+          return;
+        }
+        unawaited(_notifyConversationMessageReceived(incomingConversationId));
+      } else if (eventType == 'request_created') {
+        unawaited(_notifyRequestCreatedReceived(incomingRequestId));
       }
-      unawaited(_notifyConversationMessageReceived(incomingConversationId));
       await _localNotificationsClient.show(notification: notification);
     } catch (error, stackTrace) {
       debugPrint('Unable to show foreground chat notification: $error');
@@ -621,6 +676,8 @@ class ChatNotificationService {
     }
     if (request.eventType == 'chat_message') {
       unawaited(_notifyConversationMessageReceived(request.conversationId));
+    } else if (request.eventType == 'request_created') {
+      unawaited(_notifyRequestCreatedReceived(request.requestId));
     }
     _onNavigationRequest(request);
   }
@@ -634,6 +691,21 @@ class ChatNotificationService {
       await _onConversationMessageReceived?.call(conversationId);
     } catch (error, stackTrace) {
       debugPrint('Unable to refresh conversations after chat message: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
+  }
+
+  Future<void> _notifyRequestCreatedReceived(int? requestId) async {
+    if (requestId == null) {
+      return;
+    }
+
+    try {
+      await _onRequestCreatedReceived?.call(requestId);
+    } catch (error, stackTrace) {
+      debugPrint(
+        'Unable to refresh requests after request notification: $error',
+      );
       debugPrintStack(stackTrace: stackTrace);
     }
   }
@@ -732,6 +804,19 @@ class ChatNotificationService {
   ChatNotificationNavigationRequest? _navigationRequestFromData(
     Map<String, String> data,
   ) {
+    final eventType = data['event_type'] ?? 'chat_message';
+    final requestId = int.tryParse(data['request_id'] ?? '');
+    if (eventType == 'request_created' && requestId != null) {
+      return ChatNotificationNavigationRequest(
+        eventType: eventType,
+        nonce: DateTime.now().microsecondsSinceEpoch,
+        requestId: requestId,
+        requesterId: int.tryParse(data['requester_id'] ?? ''),
+        requestTitle: _firstNonEmpty(data['request_title'], data['title']),
+        sellerName: _firstNonEmpty(data['seller_name']),
+      );
+    }
+
     final conversationId = int.tryParse(data['conversation_id'] ?? '');
     if (conversationId == null) {
       return null;
@@ -739,7 +824,7 @@ class ChatNotificationService {
 
     return ChatNotificationNavigationRequest(
       conversationId: conversationId,
-      eventType: data['event_type'] ?? 'chat_message',
+      eventType: eventType,
       nonce: DateTime.now().microsecondsSinceEpoch,
     );
   }
@@ -748,7 +833,7 @@ class ChatNotificationService {
 ChatLocalNotification? _notificationFromRemoteMessage(
   ChatRemoteMessage message,
 ) {
-  final parsed = _parseChatNotification(
+  final parsed = _parseNotification(
     message.data,
     fallbackTitle: message.title,
     fallbackBody: message.body,
@@ -759,13 +844,37 @@ ChatLocalNotification? _notificationFromRemoteMessage(
 
   return ChatLocalNotification(
     id: _resolveNotificationId(parsed.data),
-    channel: _chatMessageChannel,
+    eventType: parsed.eventType,
+    channel: parsed.eventType == 'request_created'
+        ? _marketplaceActivityChannel
+        : _chatMessageChannel,
     data: parsed.data,
     appName: parsed.appName,
     senderName: parsed.senderName,
     body: parsed.body,
     timestamp: parsed.timestamp,
     senderAvatarUrl: parsed.senderAvatarUrl,
+  );
+}
+
+_ParsedChatNotification? _parseNotification(
+  Map<String, String> data, {
+  String? fallbackTitle,
+  String? fallbackBody,
+}) {
+  final normalizedEventType = (data['event_type'] ?? '').trim().toLowerCase();
+  if (normalizedEventType == 'request_created') {
+    return _parseRequestNotification(
+      data,
+      fallbackTitle: fallbackTitle,
+      fallbackBody: fallbackBody,
+    );
+  }
+
+  return _parseChatNotification(
+    data,
+    fallbackTitle: fallbackTitle,
+    fallbackBody: fallbackBody,
   );
 }
 
@@ -796,6 +905,7 @@ _ParsedChatNotification? _parseChatNotification(
   final timestamp = _parseTimestamp(data['server_timestamp']) ?? DateTime.now();
 
   return _ParsedChatNotification(
+    eventType: normalizedEventType,
     data: Map<String, String>.from(data),
     appName: appName,
     senderName: senderName,
@@ -805,7 +915,50 @@ _ParsedChatNotification? _parseChatNotification(
   );
 }
 
+_ParsedChatNotification? _parseRequestNotification(
+  Map<String, String> data, {
+  String? fallbackTitle,
+  String? fallbackBody,
+}) {
+  final requestId = int.tryParse(data['request_id'] ?? '');
+  if (requestId == null) {
+    return null;
+  }
+
+  final requestTitle = _firstNonEmpty(
+    data['request_title'],
+    data['title'],
+    fallbackTitle,
+    'New seller request',
+  );
+  final sellerName = _firstNonEmpty(
+    data['seller_name'],
+    data['requester_name'],
+    'Supplier',
+  );
+  final body = _firstNonEmpty(
+    data['body'],
+    data['request_description'],
+    fallbackBody,
+    'A supplier posted a new request.',
+  );
+
+  return _ParsedChatNotification(
+    eventType: 'request_created',
+    data: Map<String, String>.from(data),
+    appName: sellerName,
+    senderName: requestTitle,
+    body: body,
+    timestamp: _parseTimestamp(data['server_timestamp']) ?? DateTime.now(),
+  );
+}
+
 int _resolveNotificationId(Map<String, String> data) {
+  final requestId = int.tryParse(data['request_id'] ?? '');
+  if (requestId != null) {
+    return requestId;
+  }
+
   final conversationId = int.tryParse(data['conversation_id'] ?? '');
   if (conversationId != null) {
     return conversationId;

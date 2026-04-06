@@ -10,7 +10,7 @@ class CreateRequestNotifier extends StateNotifier<CreateRequestState> {
 
   final RequestApi _requestApi;
 
-  Future<void> loadStatuses() async {
+  Future<void> loadStatuses({int? preferredStatusId}) async {
     state = state.copyWith(
       isLoadingStatuses: true,
       errorMessage: null,
@@ -32,8 +32,11 @@ class CreateRequestNotifier extends StateNotifier<CreateRequestState> {
       }
 
       final preferredStatus = statuses.firstWhere(
-        (status) => !status.isTerminal,
-        orElse: () => statuses.first,
+        (status) => status.id == preferredStatusId,
+        orElse: () => statuses.firstWhere(
+          (status) => !status.isTerminal,
+          orElse: () => statuses.first,
+        ),
       );
 
       state = state.copyWith(
@@ -92,6 +95,62 @@ class CreateRequestNotifier extends StateNotifier<CreateRequestState> {
           city: _normalizeOptionalText(city),
         ),
         images: images,
+      );
+
+      state = state.copyWith(
+        isSubmitting: false,
+        createdRequest: request,
+        errorMessage: null,
+      );
+    } on ApiException catch (error) {
+      state = state.copyWith(isSubmitting: false, errorMessage: error.message);
+    } catch (error) {
+      state = state.copyWith(
+        isSubmitting: false,
+        errorMessage: error.toString(),
+      );
+    }
+  }
+
+  Future<void> update({
+    required int requestId,
+    required int requesterId,
+    required String title,
+    required String description,
+    required String? city,
+    required String? minPrice,
+    required String? maxPrice,
+    required List<int> keepImageIds,
+    List<RequestUploadImage> newImages = const [],
+  }) async {
+    if (!state.canSubmit || state.selectedStatusId == null) {
+      state = state.copyWith(
+        errorMessage:
+            state.blockedMessage ?? 'Request update is currently unavailable.',
+      );
+      return;
+    }
+
+    state = state.copyWith(
+      isSubmitting: true,
+      errorMessage: null,
+      createdRequest: null,
+    );
+
+    try {
+      final request = await _requestApi.updateRequest(
+        PartRequest(
+          id: requestId,
+          requester: requesterId,
+          title: title.trim(),
+          description: description.trim(),
+          minPrice: _normalizeOptionalDecimal(minPrice),
+          maxPrice: _normalizeOptionalDecimal(maxPrice),
+          status: state.selectedStatusId!,
+          city: _normalizeOptionalText(city),
+        ),
+        keepImageIds: keepImageIds,
+        newImages: newImages,
       );
 
       state = state.copyWith(

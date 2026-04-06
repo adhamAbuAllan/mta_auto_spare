@@ -5,6 +5,8 @@ import '../../session/session_notifier.dart';
 import '../methods/api_methods/load_profile_notifier.dart';
 import '../methods/api_methods/login_notifier.dart';
 import '../methods/api_methods/register_notifier.dart';
+import '../methods/api_methods/session_bootstrapper.dart';
+import '../methods/api_methods/update_profile_notifier.dart';
 import '../methods/local_methods/logout_notifier.dart';
 import '../statuses/auth_state.dart';
 import 'api_provider.dart';
@@ -33,6 +35,14 @@ final loadProfileNotifierProvider =
       );
     });
 
+final updateProfileNotifierProvider =
+    StateNotifierProvider.autoDispose<UpdateProfileNotifier, AuthState>((ref) {
+      return UpdateProfileNotifier(
+        authApi: ref.read(authApiProvider),
+        sessionNotifier: ref.read(sessionNotifierProvider.notifier),
+      );
+    });
+
 final logoutNotifierProvider = StateNotifierProvider<LogoutNotifier, AuthState>(
   (ref) {
     return LogoutNotifier(
@@ -47,6 +57,7 @@ final logoutNotifierProvider = StateNotifierProvider<LogoutNotifier, AuthState>(
         ref.invalidate(conversationsNotifierProvider);
         ref.invalidate(messagesNotifierProvider);
         ref.invalidate(ensureConversationNotifierProvider);
+        ref.invalidate(inboxSocketServiceProvider);
         ref.invalidate(chatSocketServiceProvider);
         ref.read(selectedConversationIdProvider.notifier).state = null;
       },
@@ -56,6 +67,13 @@ final logoutNotifierProvider = StateNotifierProvider<LogoutNotifier, AuthState>(
 
 final currentSessionProvider = Provider((ref) {
   return ref.watch(sessionNotifierProvider);
+});
+
+final sessionBootstrapperProvider = Provider<SessionBootstrapper>((ref) {
+  return SessionBootstrapper(
+    authApi: ref.read(authApiProvider),
+    sessionNotifier: ref.read(sessionNotifierProvider.notifier),
+  );
 });
 
 final loginUsernameControllerProvider =

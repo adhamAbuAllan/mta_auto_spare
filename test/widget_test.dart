@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mta_auto_spare/api/api_exception.dart';
 import 'package:mta_auto_spare/api/chat_api.dart';
 import 'package:mta_auto_spare/api/chat_socket_service.dart';
+import 'package:mta_auto_spare/api/inbox_socket_service.dart';
 import 'package:mta_auto_spare/api/request_api.dart';
 import 'package:mta_auto_spare/controllers/methods/api_methods/ensure_conversation_notifier.dart';
 import 'package:mta_auto_spare/controllers/methods/api_methods/load_conversations_notifier.dart';
@@ -134,6 +135,75 @@ void main() {
     expect(find.text('Chat Seller'), findsNothing);
   });
 
+  testWidgets('own request cards show edit and delete actions', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      await _buildRequestsHarness(
+        requestState: const RequestState(
+          segment: RequestSegment.mine,
+          requests: [
+            PartRequest(
+              id: 3,
+              requester: 1,
+              title: 'Oil filter',
+              description: 'Looking for OEM filter.',
+              status: 1,
+              city: 'Dammam',
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.widgetWithText(OutlinedButton, 'Edit'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Delete'), findsOneWidget);
+  });
+
+  testWidgets('deleting a my request removes it from the list', (
+    WidgetTester tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(900, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final requestApi = RecordingRequestApi();
+
+    await tester.pumpWidget(
+      await _buildRequestsHarness(
+        requestState: const RequestState(
+          segment: RequestSegment.mine,
+          requests: [
+            PartRequest(
+              id: 3,
+              requester: 1,
+              title: 'Oil filter',
+              description: 'Looking for OEM filter.',
+              status: 1,
+              city: 'Dammam',
+            ),
+          ],
+        ),
+        requestApi: requestApi,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final deleteButton = find.widgetWithText(FilledButton, 'Delete').first;
+    await tester.ensureVisible(deleteButton);
+    await tester.tap(deleteButton);
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.widgetWithText(FilledButton, 'Delete'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(requestApi.deletedRequestIds, [3]);
+    expect(find.text('Oil filter'), findsNothing);
+  });
+
   testWidgets('request cards render uploaded images in the list', (
     WidgetTester tester,
   ) async {
@@ -164,6 +234,10 @@ void main() {
 
     expect(find.text('Door mirror'), findsOneWidget);
     expect(find.text('City not set'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('request-image-skeleton-10-0')),
+      findsOneWidget,
+    );
     expect(
       find.byWidgetPredicate(
         (widget) =>
@@ -403,6 +477,31 @@ void main() {
     expect(find.text('Conversations'), findsOneWidget);
   });
 
+  testWidgets('profile action opens the edit profile page', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      await _buildApp(
+        overrides: [
+          currentSessionProvider.overrideWithValue(_signedInSession()),
+          requestsNotifierProvider.overrideWith(
+            (ref) => TestLoadRequestsNotifier(const RequestState()),
+          ),
+          conversationsNotifierProvider.overrideWith(
+            (ref) => TestLoadConversationsNotifier(const ConversationState()),
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Edit profile'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Edit Profile'), findsOneWidget);
+    expect(find.text('Save Profile'), findsOneWidget);
+  });
+
   testWidgets('notification request opens the target chat conversation', (
     WidgetTester tester,
   ) async {
@@ -449,6 +548,65 @@ void main() {
 
     expect(find.byType(ChatDetailPage), findsOneWidget);
     expect(find.text('Loaded from backend'), findsOneWidget);
+  });
+
+  testWidgets('request notification opens the target request post', (
+    WidgetTester tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(preferences),
+        currentSessionProvider.overrideWithValue(_signedInSession()),
+        requestsNotifierProvider.overrideWith(
+          (ref) => TestLoadRequestsNotifier(
+            const RequestState(
+              requests: [
+                PartRequest(
+                  id: 15,
+                  requester: 3,
+                  title: 'Front bumper for Camry',
+                  description: 'OEM preferred and ready for pickup.',
+                  status: 1,
+                  city: 'Riyadh',
+                ),
+              ],
+            ),
+          ),
+        ),
+        conversationsNotifierProvider.overrideWith(
+          (ref) => TestLoadConversationsNotifier(const ConversationState()),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(home: MarketplaceShellPage()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    container
+        .read(chatNotificationNavigationRequestProvider.notifier)
+        .state = const ChatNotificationNavigationRequest(
+      eventType: 'request_created',
+      nonce: 2,
+      requestId: 15,
+      requesterId: 3,
+      requestTitle: 'Front bumper for Camry',
+      sellerName: 'Seller User',
+    );
+
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Request Post'), findsOneWidget);
+    expect(find.text('Front bumper for Camry'), findsOneWidget);
+    expect(find.text('Seller User'), findsOneWidget);
   });
 
   testWidgets(
@@ -513,6 +671,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final preferences = await SharedPreferences.getInstance();
     final messagesNotifier = TestLoadMessagesNotifier(preferences);
+    final hostKey = GlobalKey<_ChatDetailToggleHostState>();
 
     await tester.pumpWidget(
       ProviderScope(
@@ -528,7 +687,7 @@ void main() {
           ),
           messagesNotifierProvider.overrideWith((ref) => messagesNotifier),
         ],
-        child: const MaterialApp(home: ChatDetailPage(conversationId: 77)),
+        child: MaterialApp(home: _ChatDetailToggleHost(key: hostKey)),
       ),
     );
 
@@ -540,7 +699,8 @@ void main() {
     expect(messagesNotifier.loadedConversationIds, contains(77));
     expect(messagesNotifier.activatedConversationIds, contains(77));
 
-    await tester.pumpWidget(const SizedBox.shrink());
+    hostKey.currentState!.hideChat();
+    await tester.pump();
     await tester.pump();
 
     expect(messagesNotifier.deactivatedConversationIds, contains(77));
@@ -592,6 +752,7 @@ Future<Widget> _buildRequestsHarness({
   TestEnsureConversationNotifier? ensureConversationNotifier,
   ValueChanged<int>? onOpenConversation,
   ChatApi? chatApi,
+  RequestApi? requestApi,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final preferences = await SharedPreferences.getInstance();
@@ -611,6 +772,7 @@ Future<Widget> _buildRequestsHarness({
             ensureConversationNotifier ?? TestEnsureConversationNotifier(44),
       ),
       if (chatApi != null) chatApiProvider.overrideWithValue(chatApi),
+      if (requestApi != null) requestApiProvider.overrideWithValue(requestApi),
     ],
     child: MaterialApp(
       home: Scaffold(
@@ -652,7 +814,7 @@ class TestLoadRequestsNotifier extends LoadRequestsNotifier {
 
 class TestLoadConversationsNotifier extends LoadConversationsNotifier {
   TestLoadConversationsNotifier(ConversationState initialState)
-    : super(ChatApi(Dio())) {
+    : super(ChatApi(Dio()), _TestInboxSocketService()) {
     state = initialState;
   }
 
@@ -661,6 +823,17 @@ class TestLoadConversationsNotifier extends LoadConversationsNotifier {
 
   @override
   Future<void> loadMore() async {}
+}
+
+class _TestInboxSocketService extends InboxSocketService {
+  @override
+  Future<void> connect({required String token}) async {}
+
+  @override
+  Future<void> disconnect() async {}
+
+  @override
+  Future<void> dispose() async {}
 }
 
 class TestEnsureConversationNotifier extends EnsureConversationNotifier {
@@ -715,6 +888,17 @@ class RecordingChatApi extends ChatApi {
       serverTimestamp: request.clientTimestamp,
       statuses: const [],
     );
+  }
+}
+
+class RecordingRequestApi extends RequestApi {
+  RecordingRequestApi() : super(Dio());
+
+  final List<int> deletedRequestIds = <int>[];
+
+  @override
+  Future<void> deleteRequest(int requestId) async {
+    deletedRequestIds.add(requestId);
   }
 }
 
@@ -787,6 +971,29 @@ class TestLoadMessagesNotifier extends LoadMessagesNotifier {
 
   @override
   Future<void> refreshConnectionWithToken(String? accessToken) async {}
+}
+
+class _ChatDetailToggleHost extends StatefulWidget {
+  const _ChatDetailToggleHost({super.key});
+
+  @override
+  State<_ChatDetailToggleHost> createState() => _ChatDetailToggleHostState();
+}
+
+class _ChatDetailToggleHostState extends State<_ChatDetailToggleHost> {
+  bool _showChat = true;
+
+  void hideChat() {
+    setState(() => _showChat = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_showChat) {
+      return const SizedBox.shrink();
+    }
+    return const ChatDetailPage(conversationId: 77);
+  }
 }
 
 ConversationListItem _conversationListItem({

@@ -25,6 +25,9 @@ String conversationPreview(ConversationListItem conversation) {
   if (lastMessage == null) {
     return 'No messages yet';
   }
+  if (lastMessage.isDeleted) {
+    return 'This message was deleted';
+  }
   return lastMessage.text.trim().isEmpty
       ? 'New message'
       : lastMessage.text.trim();

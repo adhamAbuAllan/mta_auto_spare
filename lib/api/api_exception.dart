@@ -1,41 +1,57 @@
 import 'package:dio/dio.dart';
 
 class ApiException implements Exception {
-  ApiException(this.message);
+  ApiException(this.message, {this.statusCode});
 
   final String message;
+  final int? statusCode;
 
   factory ApiException.fromDioException(DioException error) {
+    final statusCode = error.response?.statusCode;
     final responseData = error.response?.data;
     if (responseData == null) {
-      return ApiException(error.message ?? 'Unexpected network error.');
+      final timeoutMessage = _timeoutMessage(error);
+      if (timeoutMessage != null) {
+        return ApiException(timeoutMessage, statusCode: statusCode);
+      }
+      final connectionMessage = _connectionMessage(error);
+      if (connectionMessage != null) {
+        return ApiException(connectionMessage, statusCode: statusCode);
+      }
+      return ApiException(
+        error.message ?? 'Unexpected network error.',
+        statusCode: statusCode,
+      );
     }
 
     if (responseData is Map) {
       final map = Map<String, dynamic>.from(responseData);
       if (map['detail'] != null) {
-        return ApiException(map['detail'].toString());
+        return ApiException(map['detail'].toString(), statusCode: statusCode);
       }
       if (map['message'] != null) {
         final message = map['message'].toString().trim();
         if (message.isNotEmpty) {
-          return ApiException(message);
+          return ApiException(message, statusCode: statusCode);
         }
       }
       final formatted = _formatValidationMap(map);
       if (formatted.isNotEmpty) {
-        return ApiException(formatted);
+        return ApiException(formatted, statusCode: statusCode);
       }
     }
 
     if (responseData is List) {
       final formatted = responseData.map(_stringifyValue).join('\n');
       if (formatted.isNotEmpty) {
-        return ApiException(formatted);
+        return ApiException(formatted, statusCode: statusCode);
       }
     }
 
-    return ApiException(error.message ?? 'Unexpected network error.');
+    return ApiException(
+      error.message ?? 'Unexpected network error.',
+      statusCode: statusCode,
+    );
   }
 
   @override
@@ -116,5 +132,24 @@ class ApiException implements Exception {
     }
 
     return normalized[0].toUpperCase() + normalized.substring(1);
+  }
+
+  static String? _timeoutMessage(DioException error) {
+    return switch (error.type) {
+      DioExceptionType.connectionTimeout =>
+        'The server took too long to connect.',
+      DioExceptionType.sendTimeout =>
+        'The upload took too long. Try fewer or smaller images, or use a stronger connection.',
+      DioExceptionType.receiveTimeout => 'The server took too long to respond.',
+      _ => null,
+    };
+  }
+
+  static String? _connectionMessage(DioException error) {
+    return switch (error.type) {
+      DioExceptionType.connectionError =>
+        'Could not reach the server. Check your connection and API URL.',
+      _ => null,
+    };
   }
 }

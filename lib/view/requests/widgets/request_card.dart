@@ -13,12 +13,18 @@ class RequestCard extends StatelessWidget {
     required this.isMine,
     required this.onChatTap,
     this.isChatLoading = false,
+    this.onEditTap,
+    this.onDeleteTap,
+    this.isDeleteLoading = false,
   });
 
   final PartRequest request;
   final bool isMine;
   final VoidCallback onChatTap;
   final bool isChatLoading;
+  final VoidCallback? onEditTap;
+  final VoidCallback? onDeleteTap;
+  final bool isDeleteLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +39,7 @@ class RequestCard extends StatelessWidget {
         children: [
           if (request.images.isNotEmpty) ...[
             SizedBox(
-              height: 158,
+              height: 258,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: request.images.length,
@@ -53,32 +59,13 @@ class RequestCard extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(18),
                       child: AspectRatio(
-                        aspectRatio: 1.3,
+                        aspectRatio: 1.1,
                         child: Hero(
                           tag: _heroTagForIndex(index),
-                          child: Image.network(
-                            resolvedImageUrl,
-                            fit: BoxFit.cover,
-                            headers: const {
-                              ApiConstants.ngrokHeaderKey:
-                                  ApiConstants.ngrokHeaderValue,
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              debugPrint(
-                                '[Requests][Images] Failed to render image for '
-                                'request #${request.id ?? 0}: '
-                                '$resolvedImageUrl '
-                                'error=$error',
-                              );
-                              return Container(
-                                color: const Color(0xFFF2EEE7),
-                                alignment: Alignment.center,
-                                child: const Icon(
-                                  Icons.image_not_supported_outlined,
-                                  color: Color(0xFF7A746C),
-                                ),
-                              );
-                            },
+                          child: _RequestCardImageThumbnail(
+                            imageUrl: resolvedImageUrl,
+                            requestId: request.id ?? 0,
+                            imageIndex: index,
                           ),
                         ),
                       ),
@@ -129,32 +116,52 @@ class RequestCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  isMine
-                      ? 'This request belongs to you.'
-                      : 'Open a chat with the seller behind this request.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: const Color(0xFF7A746C),
-                  ),
+          Text(
+            isMine
+                ? 'This request belongs to you.'
+                : 'Open a chat with the seller behind this request.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: const Color(0xFF7A746C)),
+          ),
+          const SizedBox(height: 12),
+          if (isMine)
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: onEditTap,
+                  icon: const Icon(Icons.edit_outlined),
+                  label: const Text('Edit'),
                 ),
-              ),
-              if (!isMine) ...[
-                const SizedBox(width: 12),
-                FilledButton.icon(
-                  onPressed: isChatLoading ? null : onChatTap,
-                  icon: Icon(
-                    isChatLoading
-                        ? Icons.hourglass_top_rounded
-                        : Icons.chat_bubble_outline_rounded,
+                FilledButton.tonalIcon(
+                  onPressed: isDeleteLoading ? null : onDeleteTap,
+                  style: FilledButton.styleFrom(
+                    //   foregroundColor: const Color(0xFF9F2D2D),
                   ),
-                  label: Text(isChatLoading ? 'Opening...' : 'Chat Seller'),
+                  icon: Icon(
+                    isDeleteLoading
+                        ? Icons.hourglass_top_rounded
+                        : Icons.delete_outline_rounded,
+                  ),
+                  label: Text(isDeleteLoading ? 'Deleting...' : 'Delete'),
                 ),
               ],
-            ],
-          ),
+            )
+          else
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.icon(
+                onPressed: isChatLoading ? null : onChatTap,
+                icon: Icon(
+                  isChatLoading
+                      ? Icons.hourglass_top_rounded
+                      : Icons.chat_bubble_outline_rounded,
+                ),
+                label: Text(isChatLoading ? 'Opening...' : 'Chat Seller'),
+              ),
+            ),
         ],
       ),
     );
@@ -198,6 +205,86 @@ class RequestCard extends StatelessWidget {
           },
           heroTagBuilder: _heroTagForIndex,
         ),
+      ),
+    );
+  }
+}
+
+class _RequestCardImageThumbnail extends StatelessWidget {
+  const _RequestCardImageThumbnail({
+    required this.imageUrl,
+    required this.requestId,
+    required this.imageIndex,
+  });
+
+  final String imageUrl;
+  final int requestId;
+  final int imageIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _RequestImageSkeleton(
+          key: ValueKey('request-image-skeleton-$requestId-$imageIndex'),
+        ),
+        Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          headers: const {
+            ApiConstants.ngrokHeaderKey: ApiConstants.ngrokHeaderValue,
+          },
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+            final hasLoadedImage = wasSynchronouslyLoaded || frame != null;
+            return AnimatedOpacity(
+              opacity: hasLoadedImage ? 1 : 0,
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOut,
+              child: KeyedSubtree(
+                key: ValueKey('request-image-loaded-$requestId-$imageIndex'),
+                child: child,
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            debugPrint(
+              '[Requests][Images] Failed to render image for '
+              'request #$requestId: '
+              '$imageUrl '
+              'error=$error',
+            );
+            return Container(
+              color: const Color(0xFFF2EEE7),
+              alignment: Alignment.center,
+              child: const Icon(
+                Icons.image_not_supported_outlined,
+                color: Color(0xFF7A746C),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _RequestImageSkeleton extends StatelessWidget {
+  const _RequestImageSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFE4DBD0), Color(0xFFF4EEE5), Color(0xFFE4DBD0)],
+          stops: [0.08, 0.42, 1],
+        ),
+      ),
+      child: const Center(
+        child: Icon(Icons.image_outlined, color: Color(0xFFB9AFA2)),
       ),
     );
   }

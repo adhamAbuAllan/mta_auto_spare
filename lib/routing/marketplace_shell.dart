@@ -4,10 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/providers/auth_provider.dart';
 import '../controllers/providers/chat_provider.dart';
 import '../controllers/providers/notification_provider.dart';
+import '../controllers/providers/request_provider.dart';
+import '../models/models.dart';
 import '../notifications/chat_notification_service.dart';
 import '../view/chat/chat_detail_page.dart';
 import '../view/chat/conversations_view.dart';
 import '../view/common_widgets/app_panel.dart';
+import '../view/profile/edit_profile_page.dart';
+import '../view/requests/request_post_page.dart';
 import '../view/requests/requests_view.dart';
 
 class MarketplaceShellPage extends ConsumerStatefulWidget {
@@ -26,6 +30,7 @@ class _MarketplaceShellPageState extends ConsumerState<MarketplaceShellPage> {
   @override
   void initState() {
     super.initState();
+    ref.read(conversationsNotifierProvider.notifier);
     _notificationSubscription = ref
         .listenManual<ChatNotificationNavigationRequest?>(
           chatNotificationNavigationRequestProvider,
@@ -61,19 +66,47 @@ class _MarketplaceShellPageState extends ConsumerState<MarketplaceShellPage> {
       }
       ref.read(chatNotificationNavigationRequestProvider.notifier).state = null;
       final isWide = MediaQuery.sizeOf(context).width >= 980;
+      final requestId = request.requestId;
+      if (requestId != null) {
+        if (!isWide) {
+          setState(() => _mobileIndex = 0);
+        }
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => RequestPostPage(
+              requestId: requestId,
+              initialRequest: _findRequestById(requestId),
+              sellerName: request.sellerName,
+            ),
+          ),
+        );
+        return;
+      }
+      final conversationId = request.conversationId;
+      if (conversationId == null) {
+        return;
+      }
       if (isWide) {
         ref.read(selectedConversationIdProvider.notifier).state =
-            request.conversationId;
+            conversationId;
         return;
       }
       setState(() => _mobileIndex = 1);
       Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (_) =>
-              ChatDetailPage(conversationId: request.conversationId),
+          builder: (_) => ChatDetailPage(conversationId: conversationId),
         ),
       );
     });
+  }
+
+  PartRequest? _findRequestById(int requestId) {
+    for (final request in ref.read(requestsNotifierProvider).requests) {
+      if (request.id == requestId) {
+        return request;
+      }
+    }
+    return null;
   }
 
   @override
@@ -120,6 +153,11 @@ class _WideMarketplaceLayout extends ConsumerWidget {
                 ).textTheme.labelLarge?.copyWith(color: Colors.white70),
               ),
             ),
+          ),
+          IconButton(
+            tooltip: 'Edit profile',
+            onPressed: () => _openEditProfile(context),
+            icon: const Icon(Icons.manage_accounts_outlined),
           ),
           TextButton(
             onPressed: () => ref.read(logoutNotifierProvider.notifier).logout(),
@@ -184,6 +222,12 @@ class _WideMarketplaceLayout extends ConsumerWidget {
       ),
     );
   }
+
+  void _openEditProfile(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const EditProfilePage()));
+  }
 }
 
 class _MobileMarketplaceLayout extends ConsumerWidget {
@@ -213,6 +257,11 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
                 ).textTheme.labelLarge?.copyWith(color: Colors.white70),
               ),
             ),
+          ),
+          IconButton(
+            tooltip: 'Edit profile',
+            onPressed: () => _openEditProfile(context),
+            icon: const Icon(Icons.manage_accounts_outlined),
           ),
           IconButton(
             tooltip: 'Logout',
@@ -268,5 +317,11 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  void _openEditProfile(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const EditProfilePage()));
   }
 }

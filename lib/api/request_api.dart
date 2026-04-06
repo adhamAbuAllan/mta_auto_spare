@@ -4,6 +4,7 @@ import 'package:http_parser/http_parser.dart';
 import '../constants/api_constants.dart';
 import '../models/models.dart';
 import 'api_exception.dart';
+import 'dio_client.dart';
 
 class RequestApi {
   const RequestApi(this._dio);
@@ -60,17 +61,10 @@ class RequestApi {
     return statuses;
   }
 
-  Future<PartRequest> createRequest(
-    PartRequest request, {
-    List<RequestUploadImage> images = const [],
-  }) async {
+  Future<PartRequest> getRequestById(int requestId) async {
     try {
-      final payload = images.isEmpty
-          ? request.toJson()
-          : await _buildMultipartPayload(request, images);
-      final response = await _dio.post(
-        ApiEndpoints.partRequests,
-        data: payload,
+      final response = await _dio.get(
+        '${ApiEndpoints.partRequests}$requestId/',
       );
       return PartRequest.fromJson(_asMap(response.data));
     } on DioException catch (error) {
@@ -78,16 +72,88 @@ class RequestApi {
     }
   }
 
+  Future<PartRequest> createRequest(
+    PartRequest request, {
+    List<RequestUploadImage> images = const [],
+  }) async {
+    try {
+      final retryDataBuilder = images.isEmpty
+          ? null
+          : () => _buildMultipartPayload(request, images: images);
+      final payload = retryDataBuilder == null
+          ? request.toJson()
+          : await retryDataBuilder();
+      final response = await _dio.post(
+        ApiEndpoints.partRequests,
+        data: payload,
+        options: retryDataBuilder == null
+            ? null
+            : Options(
+                sendTimeout: ApiConstants.requestUploadSendTimeout,
+                extra: {
+                  AppDioClient.retryDataBuilderExtraKey: retryDataBuilder,
+                },
+              ),
+      );
+      return PartRequest.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
+  Future<PartRequest> updateRequest(
+    PartRequest request, {
+    required List<int> keepImageIds,
+    List<RequestUploadImage> newImages = const [],
+  }) async {
+    final requestId = request.id;
+    if (requestId == null) {
+      throw ApiException('Request id is required for updates.');
+    }
+
+    try {
+      final retryDataBuilder = () => _buildMultipartPayload(
+        request,
+        images: newImages,
+        keepImageIds: keepImageIds,
+        syncImages: true,
+      );
+      final response = await _dio.patch(
+        '${ApiEndpoints.partRequests}$requestId/',
+        data: await retryDataBuilder(),
+        options: Options(
+          sendTimeout: ApiConstants.requestUploadSendTimeout,
+          extra: {AppDioClient.retryDataBuilderExtraKey: retryDataBuilder},
+        ),
+      );
+      return PartRequest.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
+  Future<void> deleteRequest(int requestId) async {
+    try {
+      await _dio.delete('${ApiEndpoints.partRequests}$requestId/');
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
   Future<FormData> _buildMultipartPayload(
-    PartRequest request,
-    List<RequestUploadImage> images,
-  ) async {
+    PartRequest request, {
+    List<RequestUploadImage> images = const [],
+    List<int> keepImageIds = const [],
+    bool syncImages = false,
+  }) async {
     final data = <String, dynamic>{
       'requester': request.requester.toString(),
       'title': request.title,
       'description': request.description,
       'status': request.status.toString(),
-      'images': await Future.wait(
+    };
+    if (images.isNotEmpty) {
+      data['images'] = await Future.wait(
         images.map(
           (image) => MultipartFile.fromFile(
             image.path,
@@ -95,16 +161,25 @@ class RequestApi {
             contentType: MediaType.parse(image.contentType),
           ),
         ),
-      ),
-    };
-    if (request.minPrice != null && request.minPrice!.trim().isNotEmpty) {
-      data['min_price'] = request.minPrice!.trim();
+      );
     }
-    if (request.maxPrice != null && request.maxPrice!.trim().isNotEmpty) {
-      data['max_price'] = request.maxPrice!.trim();
+    if (syncImages) {
+      data['sync_images'] = 'true';
+      data['keep_image_ids'] = keepImageIds
+          .map((id) => id.toString())
+          .toList(growable: false);
     }
-    if (request.city != null && request.city!.trim().isNotEmpty) {
-      data['city'] = request.city!.trim();
+    final minPrice = request.minPrice?.trim() ?? '';
+    final maxPrice = request.maxPrice?.trim() ?? '';
+    final city = request.city?.trim() ?? '';
+    if (minPrice.isNotEmpty || syncImages) {
+      data['min_price'] = minPrice;
+    }
+    if (maxPrice.isNotEmpty || syncImages) {
+      data['max_price'] = maxPrice;
+    }
+    if (city.isNotEmpty || syncImages) {
+      data['city'] = city;
     }
     return FormData.fromMap(data);
   }

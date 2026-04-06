@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 
+import '../../constants/api_constants.dart';
 import '../../controllers/providers/request_provider.dart';
 import '../../controllers/statuses/request_state.dart';
 import '../../models/models.dart';
@@ -12,13 +13,20 @@ import '../common_widgets/app_error_card.dart';
 import '../common_widgets/app_panel.dart';
 
 class CreateRequestPage extends ConsumerStatefulWidget {
-  const CreateRequestPage({super.key});
+  const CreateRequestPage({super.key, this.initialRequest});
+
+  final PartRequest? initialRequest;
+
+  bool get isEditing => initialRequest != null;
 
   @override
   ConsumerState<CreateRequestPage> createState() => _CreateRequestPageState();
 }
 
 class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
+  static const int _requestImageQuality = 82;
+  static const double _requestImageMaxDimension = 1600;
+
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -27,13 +35,25 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
   final _maxPriceController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
 
+  List<PartImage> _existingImages = const [];
   List<RequestUploadImage> _selectedImages = const [];
 
   @override
   void initState() {
     super.initState();
+    final initialRequest = widget.initialRequest;
+    if (initialRequest != null) {
+      _titleController.text = initialRequest.title;
+      _descriptionController.text = initialRequest.description;
+      _cityController.text = initialRequest.city ?? '';
+      _minPriceController.text = initialRequest.minPrice ?? '';
+      _maxPriceController.text = initialRequest.maxPrice ?? '';
+      _existingImages = List<PartImage>.from(initialRequest.images);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(createRequestNotifierProvider.notifier).loadStatuses();
+      ref
+          .read(createRequestNotifierProvider.notifier)
+          .loadStatuses(preferredStatusId: initialRequest?.status);
     });
   }
 
@@ -58,14 +78,24 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
         return;
       }
 
-      ref.read(requestsNotifierProvider.notifier).prependRequest(request);
+      if (widget.isEditing) {
+        ref.read(requestsNotifierProvider.notifier).replaceRequest(request);
+      } else {
+        ref.read(requestsNotifierProvider.notifier).prependRequest(request);
+      }
       ref
           .read(requestsNotifierProvider.notifier)
           .setSegment(RequestSegment.mine);
       ref.read(createRequestNotifierProvider.notifier).clearCreatedRequest();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Request created successfully.')),
+        SnackBar(
+          content: Text(
+            widget.isEditing
+                ? 'Request updated successfully.'
+                : 'Request created successfully.',
+          ),
+        ),
       );
       Navigator.of(context).pop();
     });
@@ -81,7 +111,9 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Request')),
+      appBar: AppBar(
+        title: Text(widget.isEditing ? 'Edit Request' : 'Create Request'),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -95,13 +127,17 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Post a new request',
+                        widget.isEditing
+                            ? 'Update your request'
+                            : 'Post a new request',
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.w900),
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Create a request that buyers can browse and open chats from.',
+                        widget.isEditing
+                            ? 'Refresh the request details and the photos you want buyers to see.'
+                            : 'Create a request that buyers can browse and open chats from.',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: const Color(0xFF6F6A63),
                         ),
@@ -121,9 +157,12 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                         const SizedBox(height: 16),
                       ] else if (selectedStatus != null) ...[
                         _StatusNotice(
-                          title: 'Initial status',
-                          message:
-                              'New requests will start as "${selectedStatus.label}".',
+                          title: widget.isEditing
+                              ? 'Current status'
+                              : 'Initial status',
+                          message: widget.isEditing
+                              ? 'This request is currently marked as "${selectedStatus.label}".'
+                              : 'New requests will start as "${selectedStatus.label}".',
                           tone: _NoticeTone.info,
                         ),
                         const SizedBox(height: 16),
@@ -191,17 +230,29 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                           ),
                         ],
                       ),
-                      if (_selectedImages.isNotEmpty) ...[
+                      if (_existingImages.isNotEmpty ||
+                          _selectedImages.isNotEmpty) ...[
                         const SizedBox(height: 14),
                         SizedBox(
                           height: 92,
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
-                            itemCount: _selectedImages.length,
+                            itemCount:
+                                _existingImages.length + _selectedImages.length,
                             separatorBuilder: (context, index) =>
                                 const SizedBox(width: 10),
                             itemBuilder: (context, index) {
-                              final image = _selectedImages[index];
+                              if (index < _existingImages.length) {
+                                final image = _existingImages[index];
+                                return _ExistingRequestImageCard(
+                                  image: image,
+                                  onRemove: () => _removeExistingImage(image),
+                                );
+                              }
+
+                              final image =
+                                  _selectedImages[index -
+                                      _existingImages.length];
                               return _SelectedRequestImageCard(
                                 image: image,
                                 onRemove: () => _removeSelectedImage(image),
@@ -277,7 +328,11 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                                   : null,
                               child: Text(
                                 createState.isSubmitting
-                                    ? 'Creating...'
+                                    ? widget.isEditing
+                                          ? 'Saving...'
+                                          : 'Creating...'
+                                    : widget.isEditing
+                                    ? 'Save Changes'
                                     : 'Create Request',
                               ),
                             ),
@@ -313,21 +368,43 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
       return;
     }
 
-    ref
-        .read(createRequestNotifierProvider.notifier)
-        .create(
-          requesterId: requesterId,
-          title: _titleController.text,
-          description: _descriptionController.text,
-          city: _cityController.text,
-          minPrice: _minPriceController.text,
-          maxPrice: _maxPriceController.text,
-          images: _selectedImages,
-        );
+    final notifier = ref.read(createRequestNotifierProvider.notifier);
+    final initialRequest = widget.initialRequest;
+    if (initialRequest != null && initialRequest.id != null) {
+      notifier.update(
+        requestId: initialRequest.id!,
+        requesterId: requesterId,
+        title: _titleController.text,
+        description: _descriptionController.text,
+        city: _cityController.text,
+        minPrice: _minPriceController.text,
+        maxPrice: _maxPriceController.text,
+        keepImageIds: _existingImages
+            .map((image) => image.id)
+            .whereType<int>()
+            .toList(growable: false),
+        newImages: _selectedImages,
+      );
+      return;
+    }
+
+    notifier.create(
+      requesterId: requesterId,
+      title: _titleController.text,
+      description: _descriptionController.text,
+      city: _cityController.text,
+      minPrice: _minPriceController.text,
+      maxPrice: _maxPriceController.text,
+      images: _selectedImages,
+    );
   }
 
   Future<void> _pickImages() async {
-    final pickedFiles = await _imagePicker.pickMultiImage();
+    final pickedFiles = await _imagePicker.pickMultiImage(
+      imageQuality: _requestImageQuality,
+      maxWidth: _requestImageMaxDimension,
+      maxHeight: _requestImageMaxDimension,
+    );
     if (!mounted || pickedFiles.isEmpty) {
       return;
     }
@@ -349,6 +426,14 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
     setState(() {
       _selectedImages = _selectedImages
           .where((item) => item.path != image.path)
+          .toList(growable: false);
+    });
+  }
+
+  void _removeExistingImage(PartImage image) {
+    setState(() {
+      _existingImages = _existingImages
+          .where((item) => item.id != image.id)
           .toList(growable: false);
     });
   }
@@ -430,6 +515,59 @@ class _SelectedRequestImageCard extends StatelessWidget {
             width: 92,
             height: 92,
             child: Image.file(File(image.path), fit: BoxFit.cover),
+          ),
+        ),
+        Positioned(
+          top: 6,
+          right: 6,
+          child: InkWell(
+            onTap: onRemove,
+            borderRadius: BorderRadius.circular(999),
+            child: Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.54),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.close_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ExistingRequestImageCard extends StatelessWidget {
+  const _ExistingRequestImageCard({
+    required this.image,
+    required this.onRemove,
+  });
+
+  final PartImage image;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: SizedBox(
+            width: 92,
+            height: 92,
+            child: Image.network(
+              ApiConstants.resolveUrl(image.image),
+              fit: BoxFit.cover,
+              headers: const {
+                ApiConstants.ngrokHeaderKey: ApiConstants.ngrokHeaderValue,
+              },
+            ),
           ),
         ),
         Positioned(

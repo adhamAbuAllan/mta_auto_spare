@@ -78,18 +78,63 @@ void main() {
 
     expect(replyCount, 0);
   });
+
+  testWidgets('deleted messages render a deleted placeholder', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: MessageBubble(
+              message: _sampleMessage(isDeleted: true, text: ''),
+              currentUserId: 1,
+              isMine: true,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('This message was deleted'), findsOneWidget);
+    expect(find.text('Hello'), findsNothing);
+  });
+
+  testWidgets('edited messages show the edited label', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: MessageBubble(
+              message: _sampleMessage(
+                editedAt: DateTime.parse('2026-03-31T18:05:00Z'),
+              ),
+              currentUserId: 1,
+              isMine: true,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Edited'), findsOneWidget);
+  });
 }
 
-MessageModel _sampleMessage() {
+MessageModel _sampleMessage({
+  String text = 'Hello',
+  DateTime? editedAt,
+  bool isDeleted = false,
+}) {
   return MessageModel(
     id: 1,
     conversationId: 2,
     sender: const UserBrief(id: 2, name: 'Seller'),
     messageType: 'text',
-    text: 'Hello',
+    text: text,
     media: const [],
     clientTimestamp: DateTime.parse('2026-03-31T18:00:00Z'),
     serverTimestamp: DateTime.parse('2026-03-31T18:00:01Z'),
+    editedAt: editedAt,
+    isDeleted: isDeleted,
     statuses: const [],
   );
 }

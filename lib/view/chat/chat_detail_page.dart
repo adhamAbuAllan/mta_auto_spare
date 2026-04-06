@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
@@ -10,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
 import '../../api/chat_socket_service.dart';
+import '../../controllers/methods/api_methods/load_conversations_notifier.dart';
 import '../../controllers/methods/api_methods/load_messages_notifier.dart';
 import '../../controllers/providers/auth_provider.dart';
 import '../../controllers/providers/chat_provider.dart';
@@ -46,6 +48,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   final FocusNode _composerFocusNode = FocusNode();
   final ImagePicker _imagePicker = ImagePicker();
   final AudioRecorder _audioRecorder = AudioRecorder();
+  late final LoadConversationsNotifier _conversationsNotifier;
   late final LoadMessagesNotifier _messagesNotifier;
 
   List<ChatUploadImage> _selectedImages = const [];
@@ -70,6 +73,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     WidgetsBinding.instance.addObserver(this);
     _messageController.addListener(_handleComposerChanged);
     _composerFocusNode.addListener(_handleComposerChanged);
+    _conversationsNotifier = ref.read(conversationsNotifierProvider.notifier);
     _messagesNotifier = ref.read(messagesNotifierProvider.notifier);
     _messageState = _resolveDisplayedMessageState(
       ref.read(messagesNotifierProvider),
@@ -169,6 +173,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
 
   @override
   void dispose() {
+    final conversationId = widget.conversationId;
     _conversationLoadCycle += 1;
     WidgetsBinding.instance.removeObserver(this);
     _voiceRecordingTicker?.cancel();
@@ -184,9 +189,20 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     _scrollController.dispose();
     unawaited(_audioRecorder.cancel());
     unawaited(_audioRecorder.dispose());
-    unawaited(_messagesNotifier.deactivateConversation(widget.conversationId));
+    unawaited(_messagesNotifier.detachConversation(conversationId));
 
     super.dispose();
+
+    unawaited(
+      Future<void>.microtask(() async {
+        if (_conversationsNotifier.mounted) {
+          _conversationsNotifier.setActiveConversationId(null);
+        }
+        if (_messagesNotifier.mounted) {
+          await _messagesNotifier.deactivateConversation(conversationId);
+        }
+      }),
+    );
   }
 
   @override
@@ -368,6 +384,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
                 currentUserId: currentUserId,
                 isMine: message.sender.id == currentUserId,
                 onReply: () => setState(() => _replyTarget = message),
+                onLongPress: () => _openMessageActions(message, currentUserId),
               );
             },
           ),
@@ -402,6 +419,9 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
 
     if (previousConversationId != null &&
         previousConversationId != conversationId) {
+      ref
+          .read(conversationsNotifierProvider.notifier)
+          .setActiveConversationId(null);
       await _messagesNotifier.deactivateConversation(previousConversationId);
       if (!_isConversationLoadCurrent(loadCycle, conversationId)) {
         return;
@@ -433,20 +453,14 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
 
   void _syncConversationPreviewFromLoadedMessages(int conversationId) {
     final currentUserId = ref.read(currentUserIdProvider);
-    if (currentUserId == null || _messageState.messages.isEmpty) {
+    if (currentUserId == null) {
       return;
     }
-
-    final latestMessage = _messageState.messages.last;
-    if (latestMessage.conversationId != conversationId) {
-      return;
-    }
-
     ref
         .read(conversationsNotifierProvider.notifier)
-        .touchConversationFromMessage(
+        .syncConversationFromMessages(
           conversationId: conversationId,
-          message: latestMessage,
+          messages: _messageState.messages,
           isActiveConversation: true,
           currentUserId: currentUserId,
         );
@@ -464,6 +478,9 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       currentUserId: currentUserId,
       accessToken: accessToken,
     );
+    ref
+        .read(conversationsNotifierProvider.notifier)
+        .setActiveConversationId(conversationId);
     if (!mounted || widget.conversationId != conversationId) {
       return;
     }
@@ -543,6 +560,237 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       _messagesNotifier.sendTyping(isTyping: false, hasText: false);
     }
     _keepLatestMessageVisible();
+  }
+
+  Future<void> _openMessageActions(
+    MessageModel message,
+    int currentUserId,
+  ) async {
+    final canCopy = _canCopyMessage(message);
+    final canEdit = _canEditMessage(message, currentUserId);
+    final canDelete = _canDeleteForMe(message);
+    if (!canCopy && !canEdit && !canDelete) {
+      return;
+    }
+
+    final action = await showModalBottomSheet<_ChatMessageAction>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              if (canCopy)
+                ListTile(
+                  leading: const Icon(Icons.content_copy_rounded),
+                  title: const Text('Copy message'),
+                  onTap: () =>
+                      Navigator.of(context).pop(_ChatMessageAction.copy),
+                ),
+              if (canEdit)
+                ListTile(
+                  leading: const Icon(Icons.edit_rounded),
+                  title: const Text('Edit message'),
+                  onTap: () =>
+                      Navigator.of(context).pop(_ChatMessageAction.edit),
+                ),
+              if (canDelete)
+                ListTile(
+                  leading: const Icon(Icons.delete_outline_rounded),
+                  title: const Text('Delete message'),
+                  onTap: () =>
+                      Navigator.of(context).pop(_ChatMessageAction.delete),
+                ),
+              ListTile(
+                leading: const Icon(Icons.close_rounded),
+                title: const Text('Cancel'),
+                onTap: () =>
+                    Navigator.of(context).pop(_ChatMessageAction.cancel),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (!mounted || action == null || action == _ChatMessageAction.cancel) {
+      return;
+    }
+
+    switch (action) {
+      case _ChatMessageAction.copy:
+        await Clipboard.setData(ClipboardData(text: message.text.trim()));
+        _showComposerSnackBar('Message copied.');
+        break;
+      case _ChatMessageAction.edit:
+        await _editMessage(message);
+        break;
+      case _ChatMessageAction.delete:
+        await _confirmDeleteMessage(message, currentUserId);
+        break;
+      case _ChatMessageAction.cancel:
+        break;
+    }
+  }
+
+  Future<void> _editMessage(MessageModel message) async {
+    final controller = TextEditingController(text: message.text);
+    String draft = message.text;
+
+    final updatedText = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final trimmedDraft = draft.trim();
+            final canSave =
+                trimmedDraft.isNotEmpty && trimmedDraft != message.text.trim();
+            return AlertDialog(
+              title: const Text('Edit Message'),
+              content: TextField(
+                controller: controller,
+                autofocus: true,
+                minLines: 1,
+                maxLines: 5,
+                onChanged: (value) {
+                  setModalState(() {
+                    draft = value;
+                  });
+                },
+                decoration: const InputDecoration(
+                  hintText: 'Update your message',
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: canSave
+                      ? () => Navigator.of(context).pop(trimmedDraft)
+                      : null,
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+    controller.dispose();
+
+    if (!mounted || updatedText == null) {
+      return;
+    }
+
+    final updatedMessage = await _messagesNotifier.editMessage(
+      message: message,
+      text: updatedText,
+    );
+    if (!mounted) {
+      return;
+    }
+    if (updatedMessage == null) {
+      _showComposerSnackBar('Message could not be updated.');
+      return;
+    }
+
+    if (_replyTarget?.id == updatedMessage.id) {
+      setState(() {
+        _replyTarget = updatedMessage;
+      });
+    }
+    _showComposerSnackBar('Message updated.');
+  }
+
+  Future<void> _confirmDeleteMessage(
+    MessageModel message,
+    int currentUserId,
+  ) async {
+    final canDeleteForAll = _canDeleteForAll(message, currentUserId);
+    final scope = await showModalBottomSheet<_ChatMessageDeleteScope>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              if (canDeleteForAll)
+                ListTile(
+                  leading: const Icon(Icons.delete_forever_rounded),
+                  title: const Text('Delete for all'),
+                  onTap: () =>
+                      Navigator.of(context).pop(_ChatMessageDeleteScope.all),
+                ),
+              ListTile(
+                leading: const Icon(Icons.person_remove_alt_1_rounded),
+                title: const Text('Delete only me'),
+                onTap: () =>
+                    Navigator.of(context).pop(_ChatMessageDeleteScope.me),
+              ),
+              ListTile(
+                leading: const Icon(Icons.close_rounded),
+                title: const Text('Cancel'),
+                onTap: () =>
+                    Navigator.of(context).pop(_ChatMessageDeleteScope.cancel),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (!mounted || scope == null || scope == _ChatMessageDeleteScope.cancel) {
+      return;
+    }
+
+    final didDelete = await _messagesNotifier.deleteMessage(
+      message: message,
+      scope: scope.apiValue,
+    );
+    if (!mounted) {
+      return;
+    }
+    if (!didDelete) {
+      _showComposerSnackBar('Message could not be deleted.');
+      return;
+    }
+
+    if (_replyTarget?.id == message.id) {
+      setState(() {
+        _replyTarget = null;
+      });
+    }
+    _showComposerSnackBar(
+      scope == _ChatMessageDeleteScope.all
+          ? 'Message deleted for everyone.'
+          : 'Message deleted for you.',
+    );
+  }
+
+  bool _canCopyMessage(MessageModel message) {
+    return !message.isDeleted && message.text.trim().isNotEmpty;
+  }
+
+  bool _canEditMessage(MessageModel message, int currentUserId) {
+    return !message.isDeleted &&
+        !message.isOptimistic &&
+        !message.hasSendError &&
+        message.sender.id == currentUserId &&
+        message.messageType == 'text' &&
+        message.media.isEmpty &&
+        message.product == null;
+  }
+
+  bool _canDeleteForMe(MessageModel message) {
+    return !message.isOptimistic && message.id > 0;
+  }
+
+  bool _canDeleteForAll(MessageModel message, int currentUserId) {
+    return _canDeleteForMe(message) &&
+        !message.isDeleted &&
+        message.sender.id == currentUserId;
   }
 
   Future<void> _startVoiceRecording() async {
@@ -785,16 +1033,20 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     return MessageReplyModel(
       id: message.id,
       sender: message.sender,
-      text: message.text.trim().isNotEmpty
+      text: message.isDeleted
+          ? 'Deleted message'
+          : message.text.trim().isNotEmpty
           ? message.text
           : message.media.any((attachment) => attachment.isAudio)
           ? 'Voice message'
           : message.media.any((attachment) => attachment.isImage)
           ? 'Photo'
           : message.product?.title ?? 'Attachment',
-      product: message.product,
+      product: message.isDeleted ? null : message.product,
       clientTimestamp: message.clientTimestamp,
       serverTimestamp: message.serverTimestamp,
+      editedAt: message.editedAt,
+      isDeleted: message.isDeleted,
     );
   }
 
@@ -833,6 +1085,18 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       _scheduleScrollToBottom(animated: true);
     });
   }
+}
+
+enum _ChatMessageAction { copy, edit, delete, cancel }
+
+enum _ChatMessageDeleteScope {
+  all('all'),
+  me('me'),
+  cancel('');
+
+  const _ChatMessageDeleteScope(this.apiValue);
+
+  final String apiValue;
 }
 
 class _TypingIndicatorBubble extends StatefulWidget {
@@ -1354,7 +1618,9 @@ class _ReplyPreviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final preview = message.text.trim().isNotEmpty
+    final preview = message.isDeleted
+        ? 'Deleted message'
+        : message.text.trim().isNotEmpty
         ? message.text
         : message.media.any((attachment) => attachment.isAudio)
         ? 'Voice message'

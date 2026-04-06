@@ -19,6 +19,7 @@ void main() {
   late FakeUserApi userApi;
   late List<ChatNotificationNavigationRequest> navigationRequests;
   late List<int> refreshedConversationIds;
+  late List<int> refreshedRequestIds;
   late ChatNotificationService service;
   int? visibleConversationId;
 
@@ -30,6 +31,7 @@ void main() {
     userApi = FakeUserApi();
     navigationRequests = <ChatNotificationNavigationRequest>[];
     refreshedConversationIds = <int>[];
+    refreshedRequestIds = <int>[];
     visibleConversationId = null;
     service = ChatNotificationService(
       userApi: userApi,
@@ -40,6 +42,9 @@ void main() {
       onNavigationRequest: navigationRequests.add,
       onConversationMessageReceived: (conversationId) async {
         refreshedConversationIds.add(conversationId);
+      },
+      onRequestCreatedReceived: (requestId) async {
+        refreshedRequestIds.add(requestId);
       },
       resolveVisibleConversationId: () => visibleConversationId,
       createDeviceId: () => 'device-123',
@@ -59,7 +64,10 @@ void main() {
     expect(messagingClient.permissionRequests, 1);
     expect(
       localNotificationsClient.channels.map((channel) => channel.id),
-      <String>[ApiConstants.chatMessageNotificationChannelId],
+      <String>[
+        ApiConstants.chatMessageNotificationChannelId,
+        ApiConstants.chatActivityNotificationChannelId,
+      ],
     );
     expect(userApi.upserts, hasLength(1));
     expect(userApi.upserts.single.deviceId, 'device-123');
@@ -133,6 +141,31 @@ void main() {
     expect(shown.channel.id, ApiConstants.chatMessageNotificationChannelId);
   });
 
+  test('shows a local notification for foreground request alerts', () async {
+    await service.initialize();
+    await messagingClient.emitForegroundMessage(
+      const ChatRemoteMessage(
+        data: <String, String>{
+          'event_type': 'request_created',
+          'request_id': '15',
+          'requester_id': '3',
+          'seller_name': 'Seller User',
+          'request_title': 'Front bumper for Camry',
+          'request_description': 'OEM preferred and ready for pickup.',
+          'body': 'OEM preferred and ready for pickup.',
+        },
+      ),
+    );
+
+    expect(localNotificationsClient.shownNotifications, hasLength(1));
+    expect(refreshedRequestIds, <int>[15]);
+    final shown = localNotificationsClient.shownNotifications.single;
+    expect(shown.eventType, 'request_created');
+    expect(shown.senderName, 'Front bumper for Camry');
+    expect(shown.body, 'OEM preferred and ready for pickup.');
+    expect(shown.channel.id, ApiConstants.chatActivityNotificationChannelId);
+  });
+
   test('ignores non-message activity notifications', () async {
     await service.initialize();
     await messagingClient.emitForegroundMessage(
@@ -180,11 +213,29 @@ void main() {
       await service.initialize();
 
       expect(refreshedConversationIds, <int>[91]);
-      expect(navigationRequests.map((request) => request.conversationId), <int>[
-        91,
-      ]);
+      expect(
+        navigationRequests.map((request) => request.conversationId),
+        <int?>[91],
+      );
     },
   );
+
+  test('routes request notifications to the target request post', () async {
+    localNotificationsClient.launchPayload = const <String, String>{
+      'event_type': 'request_created',
+      'request_id': '25',
+      'requester_id': '3',
+      'seller_name': 'Seller User',
+      'request_title': 'Door mirror',
+    };
+
+    await service.initialize();
+
+    expect(refreshedRequestIds, <int>[25]);
+    expect(navigationRequests.single.requestId, 25);
+    expect(navigationRequests.single.sellerName, 'Seller User');
+    expect(navigationRequests.single.requestTitle, 'Door mirror');
+  });
 
   test('routes notification taps to the target conversation', () async {
     messagingClient.initialMessage = const ChatRemoteMessage(
@@ -212,7 +263,7 @@ void main() {
       'conversation_id': '88',
     });
 
-    expect(navigationRequests.map((request) => request.conversationId), <int>[
+    expect(navigationRequests.map((request) => request.conversationId), <int?>[
       33,
       77,
       88,

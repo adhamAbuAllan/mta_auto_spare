@@ -15,12 +15,14 @@ class MessageBubble extends StatefulWidget {
     required this.currentUserId,
     required this.isMine,
     this.onReply,
+    this.onLongPress,
   });
 
   final MessageModel message;
   final int currentUserId;
   final bool isMine;
   final VoidCallback? onReply;
+  final VoidCallback? onLongPress;
 
   @override
   State<MessageBubble> createState() => _MessageBubbleState();
@@ -42,6 +44,7 @@ class _MessageBubbleState extends State<MessageBubble> {
     final receiptState = widget.message.receiptStateFor(widget.currentUserId);
     final bodyText = _messageBody(widget.message);
     final swipeProgress = (_dragOffset / _replyTriggerOffset).clamp(0.0, 1.0);
+    final showDeletedPlaceholder = widget.message.isDeleted;
 
     return Align(
       alignment: widget.isMine ? Alignment.centerRight : Alignment.centerLeft,
@@ -101,6 +104,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                       bottomLeft: Radius.circular(widget.isMine ? 22 : 8),
                       bottomRight: Radius.circular(widget.isMine ? 8 : 22),
                     ),
+                    onLongPress: widget.onLongPress,
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 6),
                       padding: const EdgeInsets.all(14),
@@ -137,7 +141,8 @@ class _MessageBubbleState extends State<MessageBubble> {
                                     ),
                               ),
                             ),
-                          if (widget.message.replyTo != null) ...[
+                          if (!showDeletedPlaceholder &&
+                              widget.message.replyTo != null) ...[
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.all(10),
@@ -148,7 +153,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: Text(
-                                '${widget.message.replyTo!.sender.name}: ${widget.message.replyTo!.text}',
+                                '${widget.message.replyTo!.sender.name}: ${_replyPreviewText(widget.message.replyTo!)}',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.bodySmall
@@ -163,16 +168,24 @@ class _MessageBubbleState extends State<MessageBubble> {
                             Text(
                               bodyText,
                               style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(color: foreground, height: 1.32),
+                                  ?.copyWith(
+                                    color: foreground,
+                                    height: 1.32,
+                                    fontStyle: showDeletedPlaceholder
+                                        ? FontStyle.italic
+                                        : FontStyle.normal,
+                                  ),
                             ),
-                          if (widget.message.media.isNotEmpty) ...[
+                          if (!showDeletedPlaceholder &&
+                              widget.message.media.isNotEmpty) ...[
                             if (bodyText.isNotEmpty) const SizedBox(height: 10),
                             _MessageMediaGallery(
                               attachments: widget.message.media,
                               isMine: widget.isMine,
                             ),
                           ],
-                          if (widget.message.product != null) ...[
+                          if (!showDeletedPlaceholder &&
+                              widget.message.product != null) ...[
                             const SizedBox(height: 10),
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -201,6 +214,21 @@ class _MessageBubbleState extends State<MessageBubble> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                if (widget.message.editedAt != null &&
+                                    !widget.message.isDeleted) ...[
+                                  Text(
+                                    'Edited',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                          color: foreground.withValues(
+                                            alpha: 0.74,
+                                          ),
+                                        ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                ],
                                 Text(
                                   formatRelativeTime(
                                     widget.message.serverTimestamp ??
@@ -278,6 +306,9 @@ class _MessageBubbleState extends State<MessageBubble> {
   }
 
   String _messageBody(MessageModel message) {
+    if (message.isDeleted) {
+      return 'This message was deleted';
+    }
     if (message.text.trim().isNotEmpty) {
       return message.text;
     }
@@ -295,6 +326,16 @@ class _MessageBubbleState extends State<MessageBubble> {
       return 'Shared a request';
     }
     return 'Message';
+  }
+
+  String _replyPreviewText(MessageReplyModel reply) {
+    if (reply.isDeleted) {
+      return 'Deleted message';
+    }
+    if (reply.text.trim().isNotEmpty) {
+      return reply.text;
+    }
+    return reply.product?.title ?? 'Attachment';
   }
 }
 

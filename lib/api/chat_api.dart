@@ -6,6 +6,41 @@ import '../models/models.dart';
 import 'api_exception.dart';
 import 'dio_client.dart';
 
+int? _intFromDynamic(dynamic value) {
+  if (value is int) {
+    return value;
+  }
+  return int.tryParse(value?.toString() ?? '');
+}
+
+class DeleteMessageResponse {
+  const DeleteMessageResponse({
+    required this.scope,
+    required this.messageId,
+    required this.conversationId,
+    this.message,
+  });
+
+  final String scope;
+  final int messageId;
+  final int conversationId;
+  final MessageModel? message;
+
+  factory DeleteMessageResponse.fromJson(Map<String, dynamic> json) {
+    final messageJson = json['message'];
+    return DeleteMessageResponse(
+      scope: (json['scope'] ?? '').toString(),
+      messageId: _intFromDynamic(json['message_id']) ?? 0,
+      conversationId: _intFromDynamic(json['conversation_id']) ?? 0,
+      message: messageJson is Map<String, dynamic>
+          ? MessageModel.fromJson(messageJson)
+          : messageJson is Map
+          ? MessageModel.fromJson(Map<String, dynamic>.from(messageJson))
+          : null,
+    );
+  }
+}
+
 class ChatApi {
   const ChatApi(this._dio);
 
@@ -107,6 +142,36 @@ class ChatApi {
               ),
       );
       return MessageModel.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
+  Future<MessageModel> editMessage({
+    required int messageId,
+    required String text,
+  }) async {
+    try {
+      final response = await _dio.patch(
+        '${ApiEndpoints.messages}$messageId/',
+        data: {'text': text.trim()},
+      );
+      return MessageModel.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
+  Future<DeleteMessageResponse> deleteMessage({
+    required int messageId,
+    required String scope,
+  }) async {
+    try {
+      final response = await _dio.delete(
+        '${ApiEndpoints.messages}$messageId/',
+        queryParameters: {'scope': scope},
+      );
+      return DeleteMessageResponse.fromJson(_asMap(response.data));
     } on DioException catch (error) {
       throw ApiException.fromDioException(error);
     }

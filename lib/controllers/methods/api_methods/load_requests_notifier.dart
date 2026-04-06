@@ -1,9 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../api/api_exception.dart';
 import '../../../api/request_api.dart';
-import '../../../constants/api_constants.dart';
 import '../../../models/models.dart';
 import '../../statuses/request_state.dart';
 
@@ -17,7 +15,6 @@ class LoadRequestsNotifier extends StateNotifier<RequestState> {
 
     try {
       final requests = await _requestApi.getAllRequests();
-      _logLoadedRequestImages(requests);
       state = state.copyWith(
         isLoading: false,
         requests: requests,
@@ -38,29 +35,43 @@ class LoadRequestsNotifier extends StateNotifier<RequestState> {
     state = state.copyWith(requests: [request, ...state.requests]);
   }
 
-  void _logLoadedRequestImages(List<PartRequest> requests) {
-    if (requests.isEmpty) {
-      debugPrint('[Requests][Images] No requests were loaded.');
+  void replaceRequest(PartRequest request) {
+    final requestId = request.id;
+    if (requestId == null) {
       return;
     }
 
-    for (final request in requests) {
-      if (request.images.isEmpty) {
-        debugPrint(
-          '[Requests][Images] Request #${request.id ?? 0} '
-          '"${request.title}" has no images.',
-        );
-        continue;
-      }
+    state = state.copyWith(
+      requests: [
+        for (final current in state.requests)
+          if (current.id == requestId) request else current,
+      ],
+    );
+  }
 
-      for (final image in request.images) {
-        final rawUrl = image.image.trim();
-        final resolvedUrl = ApiConstants.resolveUrl(rawUrl);
-        debugPrint(
-          '[Requests][Images] Request #${request.id ?? 0} '
-          '"${request.title}" image: raw="$rawUrl" resolved="$resolvedUrl"',
-        );
-      }
+  void upsertRequest(PartRequest request) {
+    final requestId = request.id;
+    if (requestId == null) {
+      prependRequest(request);
+      return;
     }
+
+    final existingIndex = state.requests.indexWhere(
+      (current) => current.id == requestId,
+    );
+    if (existingIndex == -1) {
+      prependRequest(request);
+      return;
+    }
+
+    replaceRequest(request);
+  }
+
+  void removeRequestById(int requestId) {
+    state = state.copyWith(
+      requests: state.requests
+          .where((request) => request.id != requestId)
+          .toList(growable: false),
+    );
   }
 }

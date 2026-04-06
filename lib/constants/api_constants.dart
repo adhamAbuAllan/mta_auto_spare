@@ -7,6 +7,7 @@ abstract final class ApiConstants {
   static const Duration connectTimeout = Duration(seconds: 20);
   static const Duration receiveTimeout = Duration(seconds: 20);
   static const Duration sendTimeout = Duration(seconds: 20);
+  static const Duration requestUploadSendTimeout = Duration(minutes: 2);
   static const Duration chatHeartbeatInterval = Duration(seconds: 20);
   static const Duration chatReconnectBaseDelay = Duration(seconds: 1);
   static const Duration chatReconnectMaxDelay = Duration(seconds: 8);
@@ -40,6 +41,20 @@ abstract final class ApiConstants {
     return base.replace(
       scheme: scheme,
       path: '/ws/chat/$conversationId/',
+      queryParameters: {'token': token},
+    );
+  }
+
+  static Uri buildInboxSocketUri({required String token}) {
+    final base = Uri.parse(baseUrl);
+    final scheme = switch (base.scheme) {
+      'https' => 'wss',
+      'http' => 'ws',
+      _ => 'ws',
+    };
+    return base.replace(
+      scheme: scheme,
+      path: '/ws/inbox/',
       queryParameters: {'token': token},
     );
   }

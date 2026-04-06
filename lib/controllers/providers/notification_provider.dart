@@ -7,6 +7,7 @@ import '../../notifications/chat_notification_service.dart';
 import '../../session/session_notifier.dart';
 import 'api_provider.dart';
 import 'chat_provider.dart';
+import 'request_provider.dart';
 
 final chatNotificationNavigationRequestProvider =
     StateProvider<ChatNotificationNavigationRequest?>((ref) => null);
@@ -43,6 +44,9 @@ final chatNotificationServiceProvider = Provider<ChatNotificationService>((
       await ref
           .read(conversationsNotifierProvider.notifier)
           .load(forceRefresh: true);
+    },
+    onRequestCreatedReceived: (requestId) async {
+      await ref.read(requestsNotifierProvider.notifier).load();
     },
     resolveVisibleConversationId: () {
       return ref.read(messagesNotifierProvider).conversationId;

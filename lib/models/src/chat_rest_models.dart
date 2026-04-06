@@ -133,6 +133,8 @@ class ConversationLastMessagePreview {
     required this.senderId,
     required this.senderName,
     this.timestamp,
+    this.editedAt,
+    this.isDeleted = false,
     this.statuses = const [],
     this.isOptimistic = false,
     this.hasSendError = false,
@@ -143,6 +145,8 @@ class ConversationLastMessagePreview {
   final int senderId;
   final String senderName;
   final DateTime? timestamp;
+  final DateTime? editedAt;
+  final bool isDeleted;
   final List<MessageStatusModel> statuses;
   final bool isOptimistic;
   final bool hasSendError;
@@ -155,6 +159,8 @@ class ConversationLastMessagePreview {
       senderId: intFromJson(senderJson['id']) ?? 0,
       senderName: stringFromJson(senderJson['name']) ?? '',
       timestamp: dateTimeFromJson(json['timestamp']),
+      editedAt: dateTimeFromJson(json['edited_at']),
+      isDeleted: boolFromJson(json['is_deleted']) ?? false,
       statuses: listFromJson(json['statuses'], MessageStatusModel.fromJson),
       isOptimistic: boolFromJson(json['is_optimistic']) ?? false,
       hasSendError: boolFromJson(json['has_send_error']) ?? false,
@@ -167,6 +173,8 @@ class ConversationLastMessagePreview {
       'text': text,
       'sender': {'id': senderId, 'name': senderName},
       'timestamp': timestamp?.toIso8601String(),
+      'edited_at': editedAt?.toIso8601String(),
+      'is_deleted': isDeleted,
       'statuses': statuses.map((item) => item.toJson()).toList(growable: false),
       'is_optimistic': isOptimistic,
       'has_send_error': hasSendError,
@@ -188,6 +196,8 @@ class ConversationLastMessagePreview {
     int? senderId,
     String? senderName,
     Object? timestamp = _conversationLastMessagePreviewUnset,
+    Object? editedAt = _conversationLastMessagePreviewUnset,
+    bool? isDeleted,
     List<MessageStatusModel>? statuses,
     bool? isOptimistic,
     bool? hasSendError,
@@ -200,6 +210,10 @@ class ConversationLastMessagePreview {
       timestamp: identical(timestamp, _conversationLastMessagePreviewUnset)
           ? this.timestamp
           : timestamp as DateTime?,
+      editedAt: identical(editedAt, _conversationLastMessagePreviewUnset)
+          ? this.editedAt
+          : editedAt as DateTime?,
+      isDeleted: isDeleted ?? this.isDeleted,
       statuses: statuses ?? this.statuses,
       isOptimistic: isOptimistic ?? this.isOptimistic,
       hasSendError: hasSendError ?? this.hasSendError,
@@ -434,6 +448,8 @@ class MessageReplyModel {
     this.product,
     this.clientTimestamp,
     this.serverTimestamp,
+    this.editedAt,
+    this.isDeleted = false,
   });
 
   final int id;
@@ -442,6 +458,8 @@ class MessageReplyModel {
   final PartRequestBrief? product;
   final DateTime? clientTimestamp;
   final DateTime? serverTimestamp;
+  final DateTime? editedAt;
+  final bool isDeleted;
 
   factory MessageReplyModel.fromJson(JsonMap json) {
     return MessageReplyModel(
@@ -453,6 +471,8 @@ class MessageReplyModel {
           : PartRequestBrief.fromJson(mapFromJson(json['product'])!),
       clientTimestamp: dateTimeFromJson(json['client_timestamp']),
       serverTimestamp: dateTimeFromJson(json['server_timestamp']),
+      editedAt: dateTimeFromJson(json['edited_at']),
+      isDeleted: boolFromJson(json['is_deleted']) ?? false,
     );
   }
 
@@ -464,6 +484,8 @@ class MessageReplyModel {
       'product': product?.toJson(),
       'client_timestamp': clientTimestamp?.toIso8601String(),
       'server_timestamp': serverTimestamp?.toIso8601String(),
+      'edited_at': editedAt?.toIso8601String(),
+      'is_deleted': isDeleted,
     };
   }
 }
@@ -480,6 +502,8 @@ class MessageModel {
     this.replyTo,
     this.clientTimestamp,
     this.serverTimestamp,
+    this.editedAt,
+    this.isDeleted = false,
     required this.statuses,
     this.localMessageId,
     this.isOptimistic = false,
@@ -496,6 +520,8 @@ class MessageModel {
   final MessageReplyModel? replyTo;
   final DateTime? clientTimestamp;
   final DateTime? serverTimestamp;
+  final DateTime? editedAt;
+  final bool isDeleted;
   final List<MessageStatusModel> statuses;
   final String? localMessageId;
   final bool isOptimistic;
@@ -517,6 +543,8 @@ class MessageModel {
           : MessageReplyModel.fromJson(mapFromJson(json['reply_to'])!),
       clientTimestamp: dateTimeFromJson(json['client_timestamp']),
       serverTimestamp: dateTimeFromJson(json['server_timestamp']),
+      editedAt: dateTimeFromJson(json['edited_at']),
+      isDeleted: boolFromJson(json['is_deleted']) ?? false,
       statuses: listFromJson(json['statuses'], MessageStatusModel.fromJson),
       localMessageId: stringFromJson(json['local_message_id']),
       isOptimistic: boolFromJson(json['is_optimistic']) ?? false,
@@ -536,6 +564,8 @@ class MessageModel {
       'reply_to': replyTo?.toJson(),
       'client_timestamp': clientTimestamp?.toIso8601String(),
       'server_timestamp': serverTimestamp?.toIso8601String(),
+      'edited_at': editedAt?.toIso8601String(),
+      'is_deleted': isDeleted,
       'statuses': statuses.map((item) => item.toJson()).toList(growable: false),
     };
     if (localMessageId != null && localMessageId!.isNotEmpty) {
@@ -561,6 +591,8 @@ class MessageModel {
     Object? replyTo = _messageModelUnset,
     Object? clientTimestamp = _messageModelUnset,
     Object? serverTimestamp = _messageModelUnset,
+    Object? editedAt = _messageModelUnset,
+    bool? isDeleted,
     List<MessageStatusModel>? statuses,
     Object? localMessageId = _messageModelUnset,
     bool? isOptimistic,
@@ -585,6 +617,10 @@ class MessageModel {
       serverTimestamp: identical(serverTimestamp, _messageModelUnset)
           ? this.serverTimestamp
           : serverTimestamp as DateTime?,
+      editedAt: identical(editedAt, _messageModelUnset)
+          ? this.editedAt
+          : editedAt as DateTime?,
+      isDeleted: isDeleted ?? this.isDeleted,
       statuses: statuses ?? this.statuses,
       localMessageId: identical(localMessageId, _messageModelUnset)
           ? this.localMessageId
@@ -617,6 +653,8 @@ class MessageModel {
       replyTo: replyTo,
       clientTimestamp: clientTimestamp,
       serverTimestamp: null,
+      editedAt: null,
+      isDeleted: false,
       statuses: const [],
       localMessageId: localMessageId,
       isOptimistic: true,

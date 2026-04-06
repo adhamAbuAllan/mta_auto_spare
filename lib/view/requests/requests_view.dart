@@ -29,7 +29,8 @@ class RequestsView extends ConsumerStatefulWidget {
 }
 
 class _RequestsViewState extends ConsumerState<RequestsView> {
-  int? _pendingRequestId;
+  int? _pendingChatRequestId;
+  int? _deletingRequestId;
 
   @override
   void initState() {
@@ -198,8 +199,11 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
         return RequestCard(
           request: request,
           isMine: isMine,
-          isChatLoading: _pendingRequestId == request.id,
+          isChatLoading: _pendingChatRequestId == request.id,
+          isDeleteLoading: _deletingRequestId == request.id,
           onChatTap: () => _startConversation(request),
+          onEditTap: isMine ? () => _openEditRequest(request) : null,
+          onDeleteTap: isMine ? () => _confirmDeleteRequest(request) : null,
         );
       },
       separatorBuilder: (context, index) => const SizedBox(height: 14),
@@ -212,6 +216,78 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     ).push(MaterialPageRoute<void>(builder: (_) => const CreateRequestPage()));
   }
 
+  Future<void> _openEditRequest(PartRequest request) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => CreateRequestPage(initialRequest: request),
+      ),
+    );
+  }
+
+  Future<void> _confirmDeleteRequest(PartRequest request) async {
+    final requestId = request.id;
+    if (requestId == null) {
+      return;
+    }
+
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Request'),
+          content: Text(
+            'Delete "${request.title}"? This request post will be removed from your list.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldDelete != true || !mounted) {
+      return;
+    }
+
+    setState(() => _deletingRequestId = requestId);
+
+    try {
+      await ref.read(requestApiProvider).deleteRequest(requestId);
+      ref.read(requestsNotifierProvider.notifier).removeRequestById(requestId);
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Request deleted successfully.')),
+      );
+    } on ApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not delete the request.')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _deletingRequestId = null);
+      }
+    }
+  }
+
   Future<void> _startConversation(PartRequest request) async {
     final currentUserId = ref.read(currentUserIdProvider);
     final requestId = request.id;
@@ -221,7 +297,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
       return;
     }
 
-    setState(() => _pendingRequestId = requestId);
+    setState(() => _pendingChatRequestId = requestId);
 
     final conversationId = await ref
         .read(ensureConversationNotifierProvider.notifier)
@@ -238,7 +314,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
       return;
     }
 
-    setState(() => _pendingRequestId = null);
+    setState(() => _pendingChatRequestId = null);
 
     final ensureState = ref.read(ensureConversationNotifierProvider);
     if (conversationId == null) {
@@ -258,7 +334,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     );
     var shouldStageSharedRequest = true;
 
-    if (ensureState.wasCreated && requestId != null) {
+    if (ensureState.wasCreated) {
       try {
         await ref
             .read(chatApiProvider)

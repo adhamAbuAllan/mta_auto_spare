@@ -61,6 +61,30 @@ class AuthApi {
     }
   }
 
+  Future<MeProfile> updateProfile({
+    required String name,
+    required String? phone,
+    required String? city,
+    required bool chatPushEnabled,
+    required bool chatMessagePreviewEnabled,
+  }) async {
+    try {
+      final response = await _dio.patch(
+        ApiEndpoints.me,
+        data: {
+          'name': name.trim(),
+          'phone': phone?.trim() ?? '',
+          'city': city?.trim() ?? '',
+          'chat_push_enabled': chatPushEnabled,
+          'chat_message_preview_enabled': chatMessagePreviewEnabled,
+        },
+      );
+      return MeProfile.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
   Map<String, dynamic> _asMap(dynamic data) {
     if (data is Map<String, dynamic>) {
       return data;
