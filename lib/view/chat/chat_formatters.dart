@@ -1,9 +1,12 @@
+import 'package:mta_auto_spare/l10n/app_localizations.dart';
+
 import '../../models/models.dart';
 import '../common_widgets/time_formatter.dart';
 
 String conversationDisplayName(
   ConversationListItem conversation,
   int currentUserId,
+  AppLocalizations l10n,
 ) {
   final others = conversation.participants
       .where((participant) => participant.user.id != currentUserId)
@@ -17,19 +20,22 @@ String conversationDisplayName(
   if (conversation.title.trim().isNotEmpty) {
     return conversation.title;
   }
-  return 'Conversation #${conversation.id}';
+  return l10n.conversationNumber(conversation.id);
 }
 
-String conversationPreview(ConversationListItem conversation) {
+String conversationPreview(
+  ConversationListItem conversation,
+  AppLocalizations l10n,
+) {
   final lastMessage = conversation.lastMessage;
   if (lastMessage == null) {
-    return 'No messages yet';
+    return l10n.noMessagesYet;
   }
   if (lastMessage.isDeleted) {
-    return 'This message was deleted';
+    return l10n.thisMessageWasDeleted;
   }
   return lastMessage.text.trim().isEmpty
-      ? 'New message'
+      ? l10n.newMessage
       : lastMessage.text.trim();
 }
 
@@ -48,18 +54,19 @@ ConversationParticipantRead? otherParticipant(
 String conversationPresenceLabel({
   required bool isOnline,
   DateTime? lastSeenAt,
+  required AppLocalizations l10n,
 }) {
   if (isOnline) {
-    return 'Online';
+    return l10n.online;
   }
   if (lastSeenAt == null) {
-    return 'Offline';
+    return l10n.offline;
   }
 
   final localValue = lastSeenAt.toLocal();
   final difference = DateTime.now().difference(localValue);
   if (difference.inDays >= 3) {
-    return 'Last seen ${localValue.day}/${localValue.month}/${localValue.year}';
+    return l10n.lastSeenOn(formatRelativeTime(localValue, l10n));
   }
-  return 'Last seen ${formatRelativeTime(localValue)}';
+  return l10n.lastSeenRelative(formatRelativeTime(localValue, l10n));
 }

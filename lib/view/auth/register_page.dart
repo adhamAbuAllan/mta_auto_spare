@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/providers/auth_provider.dart';
+import '../../controllers/providers/catalog_provider.dart';
 import '../../controllers/statuses/auth_state.dart';
+import '../../localization/app_localizations_x.dart';
+import '../../localization/language_selector.dart';
+import '../../models/models.dart';
 import '../common_widgets/app_error_card.dart';
+import '../common_widgets/async_error_message.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -15,6 +20,8 @@ class RegisterPage extends ConsumerStatefulWidget {
 class _RegisterPageState extends ConsumerState<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   String _selectedRole = 'user';
+  final Set<int> _selectedCarMakeIds = <int>{};
+  int? _selectedCarMakeId;
 
   @override
   void initState() {
@@ -37,7 +44,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Account created for ${next.registeredUser!.username}. You can sign in now.',
+            context.l10n.accountCreatedFor(next.registeredUser!.username),
           ),
         ),
       );
@@ -50,9 +57,28 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final usernameController = ref.watch(registerUsernameControllerProvider);
     final nameController = ref.watch(registerNameControllerProvider);
     final passwordController = ref.watch(registerPasswordControllerProvider);
+    final carCatalog = ref.watch(carCatalogProvider);
+    final availableMakes = carCatalog.valueOrNull ?? const <CarMakeOption>[];
+    final selectedMakes = _resolveSelectedCarMakes(catalog: availableMakes);
+    final selectableMakes = availableMakes
+        .where((make) => !_selectedCarMakeIds.contains(make.id))
+        .toList(growable: false);
+    final carCatalogErrorMessage = asyncErrorMessage(
+      carCatalog.error,
+      fallback: context.l10n.carCatalogCouldNotBeLoadedRightNow,
+    );
+    final showCarSelection = _selectedRole == 'supplier';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Account')),
+      appBar: AppBar(
+        title: Text(context.l10n.createAccount),
+        actions: const [
+          Padding(
+            padding: EdgeInsetsDirectional.only(end: 12),
+            child: Center(child: AppLanguageMenuButton()),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -65,35 +91,35 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Set up your marketplace profile',
+                      context.l10n.setUpMarketplaceProfile,
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(fontWeight: FontWeight.w900),
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Suppliers can post requests, and users can browse requests and start conversations.',
+                      context.l10n.suppliersCanPostRequests,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: const Color(0xFF6F6A63),
                       ),
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Account role',
+                      context.l10n.accountRole,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 10),
                     SegmentedButton<String>(
-                      segments: const [
+                      segments: [
                         ButtonSegment<String>(
                           value: 'user',
-                          label: Text('User'),
+                          label: Text(context.l10n.userRole),
                           icon: Icon(Icons.shopping_bag_outlined),
                         ),
                         ButtonSegment<String>(
                           value: 'supplier',
-                          label: Text('Supplier'),
+                          label: Text(context.l10n.supplierRole),
                           icon: Icon(Icons.storefront_outlined),
                         ),
                       ],
@@ -103,16 +129,130 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       },
                     ),
                     const SizedBox(height: 18),
+                    if (showCarSelection) ...[
+                      Text(
+                        context.l10n.carsIHavePartsFor,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w900),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        context.l10n.pickTheCarNamesYouSupplyPartsFor,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: const Color(0xFF6F6A63),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      if (selectedMakes.isEmpty)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF8F3EC),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: const Color(0xFFE7DCCE)),
+                          ),
+                          child: Text(
+                            context.l10n.noCarNamesSelectedYet,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: const Color(0xFF6F6A63)),
+                          ),
+                        )
+                      else
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: [
+                            for (final make in selectedMakes)
+                              _SelectedMakeChip(
+                                make: make,
+                                onRemove: () {
+                                  setState(() {
+                                    _selectedCarMakeIds.remove(make.id);
+                                  });
+                                },
+                              ),
+                          ],
+                        ),
+                      const SizedBox(height: 16),
+                      if (carCatalog.isLoading)
+                        const LinearProgressIndicator()
+                      else if (carCatalog.hasError)
+                        AppErrorCard(
+                          message:
+                              '${context.l10n.theCarCatalogCouldNotBeLoaded}\n$carCatalogErrorMessage',
+                          onRetry: () => ref.invalidate(carCatalogProvider),
+                        )
+                      else ...[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<int>(
+                                key: ValueKey(
+                                  'make-picker-${_selectedCarMakeId ?? 'none'}-${selectableMakes.length}',
+                                ),
+                                initialValue: _selectedCarMakeId,
+                                decoration: InputDecoration(
+                                  labelText: context.l10n.carName,
+                                ),
+                                items: [
+                                  for (final make in selectableMakes)
+                                    DropdownMenuItem<int>(
+                                      value: make.id,
+                                      child: Text(make.name),
+                                    ),
+                                ],
+                                onChanged: selectableMakes.isEmpty
+                                    ? null
+                                    : (value) {
+                                        setState(() {
+                                          _selectedCarMakeId = value;
+                                        });
+                                      },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            FilledButton.tonalIcon(
+                              onPressed: _selectedCarMakeId == null
+                                  ? null
+                                  : () {
+                                      final selectedMakeId = _selectedCarMakeId;
+                                      if (selectedMakeId == null) {
+                                        return;
+                                      }
+                                      setState(() {
+                                        _selectedCarMakeIds.add(selectedMakeId);
+                                        _selectedCarMakeId = null;
+                                      });
+                                    },
+                              icon: const Icon(Icons.add_rounded),
+                              label: Text(context.l10n.add),
+                            ),
+                          ],
+                        ),
+                        if (selectableMakes.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Text(
+                              context.l10n.allAvailableCarNamesAlreadySelected,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: const Color(0xFF6F6A63)),
+                            ),
+                          ),
+                      ],
+                      const SizedBox(height: 18),
+                    ],
                     TextFormField(
                       controller: nameController,
                       textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        labelText: 'Full name',
-                        hintText: 'Mona Ibrahim',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.fullName,
+                        hintText: context.l10n.fullNameHint,
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Enter your full name.';
+                          return context.l10n.enterYourFullName;
                         }
                         return null;
                       },
@@ -122,17 +262,17 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       controller: emailController,
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        hintText: 'mona@example.com',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.email,
+                        hintText: context.l10n.emailHint,
                       ),
                       validator: (value) {
                         final email = value?.trim() ?? '';
                         if (email.isEmpty) {
-                          return 'Enter your email.';
+                          return context.l10n.enterYourEmail;
                         }
                         if (!email.contains('@')) {
-                          return 'Enter a valid email address.';
+                          return context.l10n.enterAValidEmailAddress;
                         }
                         return null;
                       },
@@ -141,13 +281,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     TextFormField(
                       controller: usernameController,
                       textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        hintText: 'mona_ksa',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.username,
+                        hintText: context.l10n.registerUsernameHint,
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Choose a username.';
+                          return context.l10n.chooseAUsername;
                         }
                         return null;
                       },
@@ -156,16 +296,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     TextFormField(
                       controller: passwordController,
                       obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        hintText: 'At least 6 characters',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.password,
+                        hintText: context.l10n.passwordMinHint,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Enter a password.';
+                          return context.l10n.enterPassword;
                         }
                         if (value.length < 6) {
-                          return 'Use at least 6 characters.';
+                          return context.l10n.useAtLeastSixCharacters;
                         }
                         return null;
                       },
@@ -182,8 +322,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                             onPressed: registerState.isLoading ? null : _submit,
                             child: Text(
                               registerState.isLoading
-                                  ? 'Creating...'
-                                  : 'Create Account',
+                                  ? context.l10n.creating
+                                  : context.l10n.createAccount,
                             ),
                           ),
                         ),
@@ -212,6 +352,95 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           name: ref.read(registerNameControllerProvider).text.trim(),
           password: ref.read(registerPasswordControllerProvider).text,
           role: _selectedRole,
+          supportedCarModelIds: _selectedRole == 'supplier'
+              ? _resolveSelectedCarModelIdsFromMakes(
+                  catalog:
+                      ref.read(carCatalogProvider).valueOrNull ??
+                      const <CarMakeOption>[],
+                )
+              : null,
         );
+  }
+
+  CarMakeOption? _findMakeById(List<CarMakeOption> makes, int makeId) {
+    for (final make in makes) {
+      if (make.id == makeId) {
+        return make;
+      }
+    }
+    return null;
+  }
+
+  List<CarMakeOption> _resolveSelectedCarMakes({
+    required List<CarMakeOption> catalog,
+  }) {
+    final selectedMakes = <CarMakeOption>[];
+    for (final makeId in _selectedCarMakeIds) {
+      final resolvedMake = _findMakeById(catalog, makeId);
+      if (resolvedMake != null) {
+        selectedMakes.add(resolvedMake);
+      }
+    }
+    selectedMakes.sort((left, right) => left.name.compareTo(right.name));
+    return selectedMakes;
+  }
+
+  List<int> _resolveSelectedCarModelIdsFromMakes({
+    required List<CarMakeOption> catalog,
+  }) {
+    final modelIds = <int>{
+      for (final make in catalog)
+        if (_selectedCarMakeIds.contains(make.id))
+          ...make.models.map((model) => model.id),
+    };
+    return modelIds.toList()..sort();
+  }
+}
+
+class _SelectedMakeChip extends StatelessWidget {
+  const _SelectedMakeChip({required this.make, required this.onRemove});
+
+  final CarMakeOption make;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F8F7),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFD5E8E4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.directions_car_filled_rounded,
+            size: 18,
+            color: Color(0xFF0C4A63),
+          ),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                make.name,
+                style: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
+              ),
+            ],
+          ),
+          const SizedBox(width: 6),
+          IconButton(
+            tooltip: context.l10n.remove,
+            onPressed: onRemove,
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.close_rounded),
+          ),
+        ],
+      ),
+    );
   }
 }

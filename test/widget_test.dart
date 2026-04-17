@@ -22,6 +22,7 @@ import 'package:mta_auto_spare/controllers/providers/request_provider.dart';
 import 'package:mta_auto_spare/controllers/statuses/conversation_state.dart';
 import 'package:mta_auto_spare/controllers/statuses/message_state.dart';
 import 'package:mta_auto_spare/controllers/statuses/request_state.dart';
+import 'package:mta_auto_spare/l10n/app_localizations.dart';
 import 'package:mta_auto_spare/main.dart';
 import 'package:mta_auto_spare/models/models.dart';
 import 'package:mta_auto_spare/notifications/chat_notification_service.dart';
@@ -530,7 +531,7 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: const MaterialApp(home: MarketplaceShellPage()),
+        child: _localizedTestApp(home: const MarketplaceShellPage()),
       ),
     );
     await tester.pumpAndSettle();
@@ -585,7 +586,7 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: const MaterialApp(home: MarketplaceShellPage()),
+        child: _localizedTestApp(home: const MarketplaceShellPage()),
       ),
     );
     await tester.pumpAndSettle();
@@ -687,7 +688,7 @@ void main() {
           ),
           messagesNotifierProvider.overrideWith((ref) => messagesNotifier),
         ],
-        child: MaterialApp(home: _ChatDetailToggleHost(key: hostKey)),
+        child: _localizedTestApp(home: _ChatDetailToggleHost(key: hostKey)),
       ),
     );
 
@@ -721,6 +722,15 @@ Future<Widget> _buildApp({List<Override> overrides = const []}) async {
   );
 }
 
+Widget _localizedTestApp({required Widget home}) {
+  return MaterialApp(
+    locale: const Locale('en'),
+    supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    home: home,
+  );
+}
+
 Future<Widget> _buildConversationsHarness({
   required ConversationState conversationState,
   ValueChanged<int>? onOpenConversation,
@@ -736,7 +746,7 @@ Future<Widget> _buildConversationsHarness({
         (ref) => TestLoadConversationsNotifier(conversationState),
       ),
     ],
-    child: MaterialApp(
+    child: _localizedTestApp(
       home: Scaffold(
         body: ConversationsView(
           wideMode: false,
@@ -774,7 +784,7 @@ Future<Widget> _buildRequestsHarness({
       if (chatApi != null) chatApiProvider.overrideWithValue(chatApi),
       if (requestApi != null) requestApiProvider.overrideWithValue(requestApi),
     ],
-    child: MaterialApp(
+    child: _localizedTestApp(
       home: Scaffold(
         body: RequestsView(
           wideMode: false,

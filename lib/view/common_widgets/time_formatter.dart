@@ -1,26 +1,26 @@
-String formatRelativeTime(DateTime? value) {
+import 'package:intl/intl.dart';
+import 'package:mta_auto_spare/l10n/app_localizations.dart';
+
+String formatRelativeTime(DateTime? value, AppLocalizations l10n) {
   if (value == null) {
-    return 'Just now';
+    return l10n.justNow;
   }
 
   final now = DateTime.now();
   final difference = now.difference(value.toLocal());
 
   if (difference.inSeconds < 60) {
-    return 'Just now';
+    return l10n.justNow;
   }
   if (difference.inMinutes < 60) {
-    final minutes = difference.inMinutes;
-    return '$minutes minute${minutes == 1 ? '' : 's'} ago';
+    return l10n.minutesAgo(difference.inMinutes);
   }
   if (difference.inHours < 24) {
-    final hours = difference.inHours;
-    return '$hours hour${hours == 1 ? '' : 's'} ago';
+    return l10n.hoursAgo(difference.inHours);
   }
   if (difference.inDays < 7) {
-    final days = difference.inDays;
-    return '$days day${days == 1 ? '' : 's'} ago';
+    return l10n.daysAgo(difference.inDays);
   }
 
-  return '${value.day}/${value.month}/${value.year}';
+  return DateFormat.yMd(l10n.localeName).format(value.toLocal());
 }

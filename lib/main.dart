@@ -5,10 +5,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mta_auto_spare/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'controllers/providers/auth_provider.dart';
 import 'controllers/providers/notification_provider.dart';
+import 'localization/app_locale.dart';
+import 'localization/app_locale_notifier.dart';
+import 'localization/app_localizations_x.dart';
 import 'notifications/chat_notification_service.dart';
 import 'routing/app_router.dart';
 import 'session/session_notifier.dart';
@@ -91,9 +95,22 @@ class _AutoSpareAppState extends ConsumerState<AutoSpareApp>
 
   @override
   Widget build(BuildContext context) {
+    final materialAppLocale = ref.watch(materialAppLocaleProvider);
     return MaterialApp(
-      title: 'MTA Auto Spare',
+      onGenerateTitle: (context) => context.l10n.appTitle,
       debugShowCheckedModeBanner: false,
+      locale: materialAppLocale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localeListResolutionCallback: (deviceLocales, supportedLocales) {
+        return resolveEffectiveAppLocale(
+          mode: ref.read(appLocaleProvider),
+          deviceLocale: deviceLocales?.isNotEmpty == true
+              ? deviceLocales!.first
+              : null,
+          deviceLocales: deviceLocales,
+        );
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF116466),

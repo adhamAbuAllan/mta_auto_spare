@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/app_localizations_x.dart';
 import 'app_panel.dart';
 
 class AppErrorCard extends StatelessWidget {
@@ -16,7 +17,7 @@ class AppErrorCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Something went wrong',
+            context.l10n.somethingWentWrong,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w800,
               color: const Color(0xFF8A2D1F),
@@ -31,7 +32,10 @@ class AppErrorCard extends StatelessWidget {
           ),
           if (onRetry != null) ...[
             const SizedBox(height: 14),
-            OutlinedButton(onPressed: onRetry, child: const Text('Try Again')),
+            OutlinedButton(
+              onPressed: onRetry,
+              child: Text(context.l10n.tryAgain),
+            ),
           ],
         ],
       ),

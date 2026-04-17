@@ -67,6 +67,7 @@ abstract final class ApiEndpoints {
   static const String me = '/api/me/';
   static const String mobileDevices = '/api/mobile-devices/';
   static const String users = '/api/users/';
+  static const String carMakes = '/api/car-makes/';
   static const String partRequests = '/api/part-requests/';
   static const String partRequestStatuses = '/api/part-request-statuses/';
   static const String conversations = '/api/conversations/';

@@ -23,6 +23,7 @@ class UpdateProfileNotifier extends StateNotifier<AuthState> {
     required String? city,
     required bool chatPushEnabled,
     required bool chatMessagePreviewEnabled,
+    List<int>? supportedCarModelIds,
   }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
@@ -33,6 +34,7 @@ class UpdateProfileNotifier extends StateNotifier<AuthState> {
         city: city,
         chatPushEnabled: chatPushEnabled,
         chatMessagePreviewEnabled: chatMessagePreviewEnabled,
+        supportedCarModelIds: supportedCarModelIds,
       );
       await _sessionNotifier.saveProfile(profile);
       state = state.copyWith(

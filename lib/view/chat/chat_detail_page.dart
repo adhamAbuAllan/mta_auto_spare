@@ -17,6 +17,7 @@ import '../../controllers/providers/auth_provider.dart';
 import '../../controllers/providers/chat_provider.dart';
 import '../../controllers/providers/request_provider.dart';
 import '../../controllers/statuses/message_state.dart';
+import '../../localization/app_localizations_x.dart';
 import '../../models/models.dart';
 import '../../session/session_state.dart';
 import '../common_widgets/app_error_card.dart';
@@ -233,8 +234,8 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     }
 
     final title = conversation == null
-        ? 'Conversation #${widget.conversationId}'
-        : conversationDisplayName(conversation, currentUserId);
+        ? context.l10n.conversationNumber(widget.conversationId)
+        : conversationDisplayName(conversation, currentUserId, context.l10n);
     final participant = conversation == null
         ? null
         : otherParticipant(conversation, currentUserId);
@@ -275,6 +276,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
               : conversationPresenceLabel(
                   isOnline: isOtherOnline,
                   lastSeenAt: otherLastSeenAt,
+                  l10n: context.l10n,
                 ),
           onBack: widget.onBack,
           showBack: widget.onBack != null || !widget.wideMode,
@@ -1716,6 +1718,18 @@ class _ProductPreviewCard extends StatelessWidget {
                     context,
                   ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
                 ),
+                if (product.carModel != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    product.carModel!.displayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: const Color(0xFF0C4A63),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 2),
                 Text(
                   priceLabel,

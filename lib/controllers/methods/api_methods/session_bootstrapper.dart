@@ -13,7 +13,7 @@ class SessionBootstrapper {
   final SessionNotifier _sessionNotifier;
 
   Future<void> restore() async {
-    final initialSession = _sessionNotifier.state;
+    final initialSession = _sessionNotifier.currentState;
     final refreshToken = initialSession.refreshToken?.trim() ?? '';
     final accessToken = initialSession.accessToken?.trim() ?? '';
     final hasRefreshToken = refreshToken.isNotEmpty;

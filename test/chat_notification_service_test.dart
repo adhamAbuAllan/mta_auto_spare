@@ -49,6 +49,7 @@ void main() {
       resolveVisibleConversationId: () => visibleConversationId,
       createDeviceId: () => 'device-123',
       tokenRetryDelay: const Duration(milliseconds: 10),
+      tokenRequestRetryDelay: const Duration(milliseconds: 1),
     );
   });
 
@@ -111,6 +112,30 @@ void main() {
 
       expect(userApi.upserts, hasLength(2));
       expect(userApi.upserts.last.pushToken, 'push-token-3');
+      expect(userApi.upserts.last.isActive, isTrue);
+    },
+  );
+
+  test(
+    'treats token lookup failures as retryable and keeps the app running',
+    () async {
+      messagingClient.tokenError = Exception(
+        'java.io.IOException: SERVICE_NOT_AVAILABLE',
+      );
+
+      await service.syncWithSession(_signedInSession());
+
+      expect(userApi.upserts, hasLength(1));
+      expect(userApi.upserts.single.isActive, isFalse);
+
+      messagingClient.tokenError = null;
+      messagingClient.token = 'push-token-4';
+
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+      await _pumpEventQueue();
+
+      expect(userApi.upserts, hasLength(2));
+      expect(userApi.upserts.last.pushToken, 'push-token-4');
       expect(userApi.upserts.last.isActive, isTrue);
     },
   );
@@ -317,6 +342,7 @@ class FakePushMessagingClient implements PushMessagingClient {
       StreamController<ChatRemoteMessage>.broadcast();
 
   String? _token;
+  Object? tokenError;
   bool initialized = false;
   int permissionRequests = 0;
   ChatRemoteMessage? initialMessage;
@@ -333,6 +359,9 @@ class FakePushMessagingClient implements PushMessagingClient {
 
   @override
   Future<String?> getToken() async {
+    if (tokenError != null) {
+      throw tokenError!;
+    }
     return _token;
   }
 

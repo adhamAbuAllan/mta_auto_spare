@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../constants/api_constants.dart';
+import '../../../localization/app_localizations_x.dart';
 import '../../../models/models.dart';
 import '../../common_widgets/app_panel.dart';
+import '../../common_widgets/car_model_card.dart';
 import '../../common_widgets/time_formatter.dart';
 import '../../common_widgets/zoomable_network_gallery_page.dart';
 
@@ -76,6 +78,13 @@ class RequestCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
           ],
+          if (request.carModel != null) ...[
+            CarModelCard(
+              carModel: request.carModel!,
+              compact: true,
+            ),
+            const SizedBox(height: 14),
+          ],
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -89,7 +98,7 @@ class RequestCard extends StatelessWidget {
               ),
               _MetaChip(
                 icon: Icons.schedule_outlined,
-                label: formatRelativeTime(request.createdAt),
+                label: formatRelativeTime(request.createdAt, context.l10n),
               ),
               if (request.minPrice != null || request.maxPrice != null)
                 _MetaChip(

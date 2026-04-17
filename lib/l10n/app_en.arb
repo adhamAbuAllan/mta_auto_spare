@@ -1,0 +1,122 @@
+{
+  "@@locale": "en",
+  "accountCreatedFor": "Account created for {username}",
+  "@accountCreatedFor": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "accountRole": "Account role",
+  "add": "Add",
+  "allAvailableCarNamesAlreadySelected": "All available car names are already selected.",
+  "appTitle": "MTA Auto Spare",
+  "backend": "Backend",
+  "carCatalogCouldNotBeLoadedRightNow": "The car catalog could not be loaded right now.",
+  "carName": "Car name",
+  "carsIHavePartsFor": "Cars I have parts for",
+  "changeLanguage": "Change language",
+  "chats": "Chats",
+  "chooseAUsername": "Choose a username",
+  "conversationNumber": "Conversation #{id}",
+  "@conversationNumber": {
+    "placeholders": {
+      "id": {
+        "type": "int"
+      }
+    }
+  },
+  "conversations": "Conversations",
+  "createAccount": "Create account",
+  "createNewAccount": "Create new account",
+  "creating": "Creating...",
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "editProfile": "Edit profile",
+  "email": "Email",
+  "emailHint": "name@example.com",
+  "enterAValidEmailAddress": "Enter a valid email address",
+  "enterPassword": "Enter password",
+  "enterUsername": "Enter username",
+  "enterYourEmail": "Enter your email",
+  "enterYourFullName": "Enter your full name",
+  "fullName": "Full name",
+  "fullNameHint": "Enter your full name",
+  "hoursAgo": "{count} hours ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "justNow": "Just now",
+  "language": "Language",
+  "languageArabic": "العربية",
+  "languageEnglish": "English",
+  "languageHebrew": "עברית",
+  "languageSystemDefault": "System default",
+  "lastSeenOn": "Last seen on {time}",
+  "@lastSeenOn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "lastSeenRelative": "Last seen {time}",
+  "@lastSeenRelative": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "loadMore": "Load more",
+  "loading": "Loading...",
+  "logout": "Logout",
+  "minutesAgo": "{count} minutes ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newMessage": "New message",
+  "noCarNamesSelectedYet": "No car names selected yet.",
+  "noConversationsYet": "No conversations yet",
+  "noConversationsYetMessage": "You have not started any conversations yet.",
+  "noMessagesYet": "No messages yet",
+  "offline": "Offline",
+  "online": "Online",
+  "password": "Password",
+  "passwordHint": "Enter password",
+  "passwordMinHint": "At least 6 characters",
+  "pickTheCarNamesYouSupplyPartsFor": "Pick the car names you supply parts for.",
+  "registerUsernameHint": "Choose a username",
+  "remove": "Remove",
+  "requests": "Requests",
+  "selectLanguage": "Select language",
+  "setUpMarketplaceProfile": "Set up your marketplace profile",
+  "signIn": "Sign in",
+  "signingIn": "Signing in...",
+  "signInToBrowseSellerRequests": "Sign in to browse seller requests and chat.",
+  "somethingWentWrong": "Something went wrong",
+  "supplierRole": "Supplier",
+  "suppliersCanPostRequests": "Suppliers can post requests and buyers can start chats.",
+  "theCarCatalogCouldNotBeLoaded": "The car catalog could not be loaded.",
+  "thisMessageWasDeleted": "This message was deleted",
+  "tryAgain": "Try again",
+  "useAtLeastSixCharacters": "Use at least six characters",
+  "username": "Username",
+  "usernameHint": "Enter username",
+  "userRole": "User"
+}

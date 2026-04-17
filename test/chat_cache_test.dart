@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mta_auto_spare/api/chat_api.dart';
 import 'package:mta_auto_spare/api/chat_socket_service.dart';
+import 'package:mta_auto_spare/api/inbox_socket_service.dart';
 import 'package:mta_auto_spare/controllers/methods/api_methods/load_conversations_notifier.dart';
 import 'package:mta_auto_spare/controllers/methods/api_methods/load_messages_notifier.dart';
 import 'package:mta_auto_spare/controllers/methods/local_methods/chat_message_cache_store.dart';
@@ -37,7 +38,7 @@ void main() {
     final api = FakeChatApi(
       conversations: [_conversation(id: 1, title: 'Chat A')],
     );
-    final notifier = LoadConversationsNotifier(api);
+    final notifier = LoadConversationsNotifier(api, InboxSocketService());
 
     await notifier.load();
     expect(api.conversationsCalls, 1);
@@ -58,7 +59,7 @@ void main() {
           _conversation(id: 2, title: 'Chat B'),
         ],
       );
-      final notifier = LoadConversationsNotifier(api);
+      final notifier = LoadConversationsNotifier(api, InboxSocketService());
 
       await notifier.load();
 
@@ -88,7 +89,7 @@ void main() {
       final api = FakeChatApi(
         conversations: [_conversation(id: 2, title: 'Chat B')],
       );
-      final notifier = LoadConversationsNotifier(api);
+      final notifier = LoadConversationsNotifier(api, InboxSocketService());
 
       await notifier.load();
 

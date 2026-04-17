@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mta_auto_spare/l10n/app_localizations.dart';
 import 'package:mta_auto_spare/models/models.dart';
 import 'package:mta_auto_spare/view/chat/widgets/message_bubble.dart';
 
@@ -11,7 +12,7 @@ void main() {
     var replyCount = 0;
 
     await tester.pumpWidget(
-      MaterialApp(
+      _buildTestApp(
         home: Scaffold(
           body: Center(
             child: MessageBubble(
@@ -35,7 +36,7 @@ void main() {
     var replyCount = 0;
 
     await tester.pumpWidget(
-      MaterialApp(
+      _buildTestApp(
         home: Scaffold(
           body: Center(
             child: MessageBubble(
@@ -59,7 +60,7 @@ void main() {
     var replyCount = 0;
 
     await tester.pumpWidget(
-      MaterialApp(
+      _buildTestApp(
         home: Scaffold(
           body: Center(
             child: MessageBubble(
@@ -81,7 +82,7 @@ void main() {
 
   testWidgets('deleted messages render a deleted placeholder', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
+      _buildTestApp(
         home: Scaffold(
           body: Center(
             child: MessageBubble(
@@ -100,7 +101,7 @@ void main() {
 
   testWidgets('edited messages show the edited label', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
+      _buildTestApp(
         home: Scaffold(
           body: Center(
             child: MessageBubble(
@@ -117,6 +118,15 @@ void main() {
 
     expect(find.text('Edited'), findsOneWidget);
   });
+}
+
+Widget _buildTestApp({required Widget home}) {
+  return MaterialApp(
+    locale: const Locale('en'),
+    supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    home: home,
+  );
 }
 
 MessageModel _sampleMessage({

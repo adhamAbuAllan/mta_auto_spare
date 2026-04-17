@@ -11,27 +11,16 @@ import 'package:uuid/uuid.dart';
 
 import '../api/user_api.dart';
 import '../constants/api_constants.dart';
+import '../localization/notification_strings.dart';
 import '../models/models.dart';
 import '../session/session_state.dart';
 
 const _chatNotificationDeviceIdKey = 'chat_notification_device_id';
-const _defaultChatAppName = 'MTA Auto Spare';
-const _defaultChatMessageBody = 'Sent you a new message.';
-
-const _chatMessageChannel = ChatNotificationChannel(
-  id: ApiConstants.chatMessageNotificationChannelId,
-  name: 'Chat Messages',
-  description: 'New messages from chat conversations',
-);
-const _marketplaceActivityChannel = ChatNotificationChannel(
-  id: ApiConstants.chatActivityNotificationChannelId,
-  name: 'Marketplace Updates',
-  description: 'New supplier requests and marketplace activity',
-);
 
 Future<void> showChatNotificationFromFirebaseMessage(
   RemoteMessage message,
 ) async {
+  final strings = await loadNotificationStrings();
   final notification = _notificationFromRemoteMessage(
     ChatRemoteMessage(
       title: message.notification?.title,
@@ -40,6 +29,7 @@ Future<void> showChatNotificationFromFirebaseMessage(
         (key, value) => MapEntry(key.toString(), value.toString()),
       ),
     ),
+    strings,
   );
   if (notification == null) {
     return;
@@ -47,8 +37,8 @@ Future<void> showChatNotificationFromFirebaseMessage(
 
   final client = FlutterLocalNotificationsClient();
   await client.initialize(onPayloadTap: (_) async {});
-  await client.createChannel(_chatMessageChannel);
-  await client.createChannel(_marketplaceActivityChannel);
+  await client.createChannel(_chatMessageChannel(strings));
+  await client.createChannel(_marketplaceActivityChannel(strings));
   await client.show(notification: notification);
 }
 
@@ -431,6 +421,7 @@ class ChatNotificationService {
     int? Function()? resolveVisibleConversationId,
     String Function()? createDeviceId,
     Duration tokenRetryDelay = const Duration(seconds: 12),
+    Duration tokenRequestRetryDelay = const Duration(seconds: 2),
   }) : _userApi = userApi,
        _preferences = preferences,
        _messagingClient = messagingClient,
@@ -441,7 +432,8 @@ class ChatNotificationService {
        _onRequestCreatedReceived = onRequestCreatedReceived,
        _resolveVisibleConversationId = resolveVisibleConversationId,
        _createDeviceId = createDeviceId ?? Uuid().v4,
-       _tokenRetryDelay = tokenRetryDelay;
+       _tokenRetryDelay = tokenRetryDelay,
+       _tokenRequestRetryDelay = tokenRequestRetryDelay;
 
   final UserApi _userApi;
   final SharedPreferences _preferences;
@@ -456,6 +448,7 @@ class ChatNotificationService {
   final int? Function()? _resolveVisibleConversationId;
   final String Function() _createDeviceId;
   final Duration _tokenRetryDelay;
+  final Duration _tokenRequestRetryDelay;
 
   StreamSubscription<String>? _tokenRefreshSubscription;
   StreamSubscription<ChatRemoteMessage>? _foregroundSubscription;
@@ -465,6 +458,7 @@ class ChatNotificationService {
   SessionState _currentSession = const SessionState();
   String? _lastKnownPushToken;
   String? _lastRegistrationFingerprint;
+  DateTime? _lastPushTokenUnavailableAt;
 
   Future<void> initialize() {
     if (!_notificationsSupported) {
@@ -493,6 +487,7 @@ class ChatNotificationService {
     if (!session.isAuthenticated) {
       _cancelRegistrationRetry();
       _lastRegistrationFingerprint = null;
+      _lastPushTokenUnavailableAt = null;
       return;
     }
 
@@ -567,8 +562,15 @@ class ChatNotificationService {
   Future<void> _initializeInternal() async {
     await _messagingClient.initialize();
     await _localNotificationsClient.initialize(onPayloadTap: _handlePayloadTap);
-    await _localNotificationsClient.createChannel(_chatMessageChannel);
-    await _localNotificationsClient.createChannel(_marketplaceActivityChannel);
+    final notificationStrings = await loadNotificationStrings(
+      preferences: _preferences,
+    );
+    await _localNotificationsClient.createChannel(
+      _chatMessageChannel(notificationStrings),
+    );
+    await _localNotificationsClient.createChannel(
+      _marketplaceActivityChannel(notificationStrings),
+    );
     await _messagingClient.requestPermission();
 
     _foregroundSubscription = _messagingClient.onForegroundMessage.listen((
@@ -599,7 +601,13 @@ class ChatNotificationService {
 
   Future<void> _handleForegroundMessage(ChatRemoteMessage message) async {
     try {
-      final notification = _notificationFromRemoteMessage(message);
+      final notificationStrings = await loadNotificationStrings(
+        preferences: _preferences,
+      );
+      final notification = _notificationFromRemoteMessage(
+        message,
+        notificationStrings,
+      );
       if (notification == null) {
         return;
       }
@@ -640,6 +648,7 @@ class ChatNotificationService {
 
       _cancelRegistrationRetry();
       _lastKnownPushToken = normalizedToken;
+      _lastPushTokenUnavailableAt = null;
       if (!_currentSession.isAuthenticated) {
         return;
       }
@@ -747,18 +756,37 @@ class ChatNotificationService {
   Future<String?> _resolvePushToken() async {
     final cachedToken = _lastKnownPushToken?.trim();
     if (cachedToken != null && cachedToken.isNotEmpty) {
+      _lastPushTokenUnavailableAt = null;
       return cachedToken;
     }
 
+    final unavailableAt = _lastPushTokenUnavailableAt;
+    if (unavailableAt != null &&
+        DateTime.now().difference(unavailableAt) < _tokenRetryDelay) {
+      return null;
+    }
+
     for (var attempt = 0; attempt < 3; attempt += 1) {
-      final token = (await _messagingClient.getToken())?.trim();
+      String? token;
+      try {
+        token = (await _messagingClient.getToken())?.trim();
+      } catch (error) {
+        _lastPushTokenUnavailableAt = DateTime.now();
+        debugPrint(
+          'Chat notifications: FCM token retrieval failed ($error). '
+          'Push registration will stay inactive and retry later.',
+        );
+        return null;
+      }
       if (token != null && token.isNotEmpty) {
+        _lastPushTokenUnavailableAt = null;
         return token;
       }
       if (attempt < 2) {
-        await Future<void>.delayed(const Duration(seconds: 2));
+        await Future<void>.delayed(_tokenRequestRetryDelay);
       }
     }
+    _lastPushTokenUnavailableAt = DateTime.now();
     return null;
   }
 
@@ -832,9 +860,11 @@ class ChatNotificationService {
 
 ChatLocalNotification? _notificationFromRemoteMessage(
   ChatRemoteMessage message,
+  NotificationStrings strings,
 ) {
   final parsed = _parseNotification(
     message.data,
+    strings,
     fallbackTitle: message.title,
     fallbackBody: message.body,
   );
@@ -846,8 +876,8 @@ ChatLocalNotification? _notificationFromRemoteMessage(
     id: _resolveNotificationId(parsed.data),
     eventType: parsed.eventType,
     channel: parsed.eventType == 'request_created'
-        ? _marketplaceActivityChannel
-        : _chatMessageChannel,
+        ? _marketplaceActivityChannel(strings)
+        : _chatMessageChannel(strings),
     data: parsed.data,
     appName: parsed.appName,
     senderName: parsed.senderName,
@@ -858,7 +888,8 @@ ChatLocalNotification? _notificationFromRemoteMessage(
 }
 
 _ParsedChatNotification? _parseNotification(
-  Map<String, String> data, {
+  Map<String, String> data,
+  NotificationStrings strings, {
   String? fallbackTitle,
   String? fallbackBody,
 }) {
@@ -866,6 +897,7 @@ _ParsedChatNotification? _parseNotification(
   if (normalizedEventType == 'request_created') {
     return _parseRequestNotification(
       data,
+      strings,
       fallbackTitle: fallbackTitle,
       fallbackBody: fallbackBody,
     );
@@ -873,13 +905,15 @@ _ParsedChatNotification? _parseNotification(
 
   return _parseChatNotification(
     data,
+    strings,
     fallbackTitle: fallbackTitle,
     fallbackBody: fallbackBody,
   );
 }
 
 _ParsedChatNotification? _parseChatNotification(
-  Map<String, String> data, {
+  Map<String, String> data,
+  NotificationStrings strings, {
   String? fallbackTitle,
   String? fallbackBody,
 }) {
@@ -893,14 +927,14 @@ _ParsedChatNotification? _parseChatNotification(
     data['sender_name'],
     data['title'],
     fallbackTitle,
-    'New message',
+    strings.newMessageTitle,
   );
   final body = _firstNonEmpty(
     data['body'],
     fallbackBody,
-    _defaultChatMessageBody,
+    strings.defaultChatMessageBody,
   );
-  final appName = _firstNonEmpty(data['app_name'], _defaultChatAppName);
+  final appName = _firstNonEmpty(data['app_name'], strings.appName);
   final senderAvatarUrl = _resolveOptionalUrl(data['sender_avatar']);
   final timestamp = _parseTimestamp(data['server_timestamp']) ?? DateTime.now();
 
@@ -916,7 +950,8 @@ _ParsedChatNotification? _parseChatNotification(
 }
 
 _ParsedChatNotification? _parseRequestNotification(
-  Map<String, String> data, {
+  Map<String, String> data,
+  NotificationStrings strings, {
   String? fallbackTitle,
   String? fallbackBody,
 }) {
@@ -929,18 +964,18 @@ _ParsedChatNotification? _parseRequestNotification(
     data['request_title'],
     data['title'],
     fallbackTitle,
-    'New seller request',
+    strings.newSellerRequestTitle,
   );
   final sellerName = _firstNonEmpty(
     data['seller_name'],
     data['requester_name'],
-    'Supplier',
+    strings.supplierFallbackName,
   );
   final body = _firstNonEmpty(
     data['body'],
     data['request_description'],
     fallbackBody,
-    'A supplier posted a new request.',
+    strings.requestCreatedFallbackBody,
   );
 
   return _ParsedChatNotification(
@@ -1042,5 +1077,21 @@ BaseOptions _notificationBaseOptions() {
       'Accept': ApiConstants.acceptHeader,
       ApiConstants.ngrokHeaderKey: ApiConstants.ngrokHeaderValue,
     },
+  );
+}
+
+ChatNotificationChannel _chatMessageChannel(NotificationStrings strings) {
+  return ChatNotificationChannel(
+    id: ApiConstants.chatMessageNotificationChannelId,
+    name: strings.chatMessagesChannel.name,
+    description: strings.chatMessagesChannel.description,
+  );
+}
+
+ChatNotificationChannel _marketplaceActivityChannel(NotificationStrings strings) {
+  return ChatNotificationChannel(
+    id: ApiConstants.chatActivityNotificationChannelId,
+    name: strings.chatActivityChannel.name,
+    description: strings.chatActivityChannel.description,
   );
 }

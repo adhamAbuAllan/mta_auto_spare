@@ -6,11 +6,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 
 import '../../constants/api_constants.dart';
+import '../../controllers/providers/catalog_provider.dart';
 import '../../controllers/providers/request_provider.dart';
 import '../../controllers/statuses/request_state.dart';
 import '../../models/models.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/app_panel.dart';
+import '../common_widgets/async_error_message.dart';
+import '../common_widgets/car_model_card.dart';
 
 class CreateRequestPage extends ConsumerStatefulWidget {
   const CreateRequestPage({super.key, this.initialRequest});
@@ -37,6 +40,9 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
 
   List<PartImage> _existingImages = const [];
   List<RequestUploadImage> _selectedImages = const [];
+  int? _selectedCarMakeId;
+  int? _selectedCarModelId;
+  String? _carSelectionError;
 
   @override
   void initState() {
@@ -49,6 +55,8 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
       _minPriceController.text = initialRequest.minPrice ?? '';
       _maxPriceController.text = initialRequest.maxPrice ?? '';
       _existingImages = List<PartImage>.from(initialRequest.images);
+      _selectedCarMakeId = initialRequest.carModel?.makeId;
+      _selectedCarModelId = initialRequest.carModelId;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref
@@ -101,7 +109,22 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
     });
 
     final createState = ref.watch(createRequestNotifierProvider);
+    final carCatalog = ref.watch(carCatalogProvider);
+    final availableMakes = carCatalog.valueOrNull ?? const <CarMakeOption>[];
+    final selectedMake =
+        _selectedCarMakeId != null
+        ? _findMakeById(availableMakes, _selectedCarMakeId!)
+        : (availableMakes.isEmpty ? null : availableMakes.first);
+    final visibleModels = selectedMake?.models ?? const <CarModelOption>[];
+    final selectedCarModel =
+        _selectedCarModelId == null
+        ? null
+        : _findModelById(availableMakes, _selectedCarModelId!);
     final currentUserId = ref.watch(currentUserIdProvider);
+    final carCatalogErrorMessage = asyncErrorMessage(
+      carCatalog.error,
+      fallback: 'The car catalog could not be loaded right now.',
+    );
     PartRequestStatus? selectedStatus;
     for (final status in createState.statuses) {
       if (status.id == createState.selectedStatusId) {
@@ -203,6 +226,96 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                           return null;
                         },
                       ),
+                      const SizedBox(height: 18),
+                      Text(
+                        'Car model',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w900),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Choose the exact car model this request is for so only matching buyers get notified.',
+                        style: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(color: const Color(0xFF6F6A63)),
+                      ),
+                      const SizedBox(height: 14),
+                      if (selectedCarModel != null) ...[
+                        CarModelCard(
+                          carModel: selectedCarModel,
+                          compact: true,
+                          isSelected: true,
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      if (_carSelectionError != null) ...[
+                        AppErrorCard(message: _carSelectionError!),
+                        const SizedBox(height: 12),
+                      ],
+                      if (carCatalog.isLoading)
+                        const LinearProgressIndicator()
+                      else if (carCatalog.hasError)
+                        AppErrorCard(
+                          message:
+                              'The car catalog could not be loaded.\n$carCatalogErrorMessage',
+                          onRetry: () => ref.invalidate(carCatalogProvider),
+                        )
+                      else ...[
+                        DropdownButtonFormField<int>(
+                          initialValue: selectedMake?.id,
+                          decoration: const InputDecoration(
+                            labelText: 'Car make',
+                          ),
+                          items: [
+                            for (final make in availableMakes)
+                              DropdownMenuItem<int>(
+                                value: make.id,
+                                child: Text(make.name),
+                              ),
+                          ],
+                          onChanged: (value) {
+                            final nextMake =
+                                value == null
+                                ? null
+                                : _findMakeById(availableMakes, value);
+                            setState(() {
+                              _selectedCarMakeId = value;
+                              _carSelectionError = null;
+                              if (nextMake == null ||
+                                  !nextMake.models.any(
+                                    (model) => model.id == _selectedCarModelId,
+                                  )) {
+                                _selectedCarModelId = null;
+                              }
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 14),
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: visibleModels.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: 0.82,
+                              ),
+                          itemBuilder: (context, index) {
+                            final carModel = visibleModels[index];
+                            return CarModelCard(
+                              carModel: carModel,
+                              isSelected: carModel.id == _selectedCarModelId,
+                              onTap: () {
+                                setState(() {
+                                  _selectedCarModelId = carModel.id;
+                                  _carSelectionError = null;
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ],
                       const SizedBox(height: 14),
                       TextFormField(
                         controller: _cityController,
@@ -367,6 +480,13 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
     if (requesterId == null) {
       return;
     }
+    final selectedCarModelId = _selectedCarModelId;
+    if (selectedCarModelId == null) {
+      setState(() {
+        _carSelectionError = 'Choose a car model before saving this request.';
+      });
+      return;
+    }
 
     final notifier = ref.read(createRequestNotifierProvider.notifier);
     final initialRequest = widget.initialRequest;
@@ -376,6 +496,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
         requesterId: requesterId,
         title: _titleController.text,
         description: _descriptionController.text,
+        carModelId: selectedCarModelId,
         city: _cityController.text,
         minPrice: _minPriceController.text,
         maxPrice: _maxPriceController.text,
@@ -392,6 +513,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
       requesterId: requesterId,
       title: _titleController.text,
       description: _descriptionController.text,
+      carModelId: selectedCarModelId,
       city: _cityController.text,
       minPrice: _minPriceController.text,
       maxPrice: _maxPriceController.text,
@@ -436,6 +558,26 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
           .where((item) => item.id != image.id)
           .toList(growable: false);
     });
+  }
+
+  CarMakeOption? _findMakeById(List<CarMakeOption> makes, int makeId) {
+    for (final make in makes) {
+      if (make.id == makeId) {
+        return make;
+      }
+    }
+    return null;
+  }
+
+  CarModelOption? _findModelById(List<CarMakeOption> makes, int modelId) {
+    for (final make in makes) {
+      for (final model in make.models) {
+        if (model.id == modelId) {
+          return model;
+        }
+      }
+    }
+    return null;
   }
 }
 

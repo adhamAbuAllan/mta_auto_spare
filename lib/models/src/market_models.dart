@@ -1,4 +1,5 @@
 import 'json_utils.dart';
+import 'car_catalog_models.dart';
 
 class SparePart {
   const SparePart({
@@ -81,6 +82,8 @@ class PartRequest {
     this.minPrice,
     this.maxPrice,
     required this.status,
+    this.carModelId,
+    this.carModel,
     this.city,
     this.images = const [],
     this.createdAt,
@@ -94,6 +97,8 @@ class PartRequest {
   final String? minPrice;
   final String? maxPrice;
   final int status;
+  final int? carModelId;
+  final CarModelOption? carModel;
   final String? city;
   final List<PartImage> images;
   final DateTime? createdAt;
@@ -108,6 +113,10 @@ class PartRequest {
       minPrice: stringFromJson(json['min_price']),
       maxPrice: stringFromJson(json['max_price']),
       status: intFromJson(json['status']) ?? 0,
+      carModelId: intFromJson(json['car_model']),
+      carModel: mapFromJson(json['car_model_details']) == null
+          ? null
+          : CarModelOption.fromJson(mapFromJson(json['car_model_details'])!),
       city: stringFromJson(json['city']),
       images: listFromJson(json['images'], PartImage.fromJson),
       createdAt: dateTimeFromJson(json['created_at']),
@@ -124,6 +133,7 @@ class PartRequest {
       'min_price': minPrice,
       'max_price': maxPrice,
       'status': status,
+      'car_model': carModelId,
       'city': city,
       'images': images.map((item) => item.toJson()).toList(growable: false),
       'created_at': createdAt?.toIso8601String(),
@@ -182,12 +192,14 @@ class PartRequestBrief {
     required this.title,
     this.minPrice,
     this.maxPrice,
+    this.carModel,
   });
 
   final int id;
   final String title;
   final String? minPrice;
   final String? maxPrice;
+  final CarModelOption? carModel;
 
   factory PartRequestBrief.fromJson(JsonMap json) {
     return PartRequestBrief(
@@ -195,6 +207,9 @@ class PartRequestBrief {
       title: stringFromJson(json['title']) ?? '',
       minPrice: stringFromJson(json['min_price']),
       maxPrice: stringFromJson(json['max_price']),
+      carModel: mapFromJson(json['car_model_details']) == null
+          ? null
+          : CarModelOption.fromJson(mapFromJson(json['car_model_details'])!),
     );
   }
 
@@ -204,6 +219,7 @@ class PartRequestBrief {
       'title': title,
       'min_price': minPrice,
       'max_price': maxPrice,
+      'car_model_details': carModel?.toJson(),
     };
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/providers/chat_provider.dart';
 import '../../controllers/providers/request_provider.dart';
 import '../../controllers/statuses/conversation_state.dart';
+import '../../localization/app_localizations_x.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/empty_state_card.dart';
 import 'widgets/conversation_tile_card.dart';
@@ -67,7 +68,7 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Conversations',
+                    context.l10n.conversations,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
@@ -125,14 +126,19 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
     }
 
     if (conversationState.conversations.isEmpty) {
-      return const EmptyStateCard(
-        title: 'No conversations yet',
-        message:
-            'When you tap the chat button from a request card, the conversation will appear here.',
+        return const EmptyStateCard(
+        title: '',
+        message: '',
         icon: Icons.chat_bubble_outline_rounded,
       );
     }
-
+    if (conversationState.conversations.isEmpty) {
+      return EmptyStateCard(
+        title: context.l10n.noConversationsYet,
+        message: context.l10n.noConversationsYetMessage,
+        icon: Icons.chat_bubble_outline_rounded,
+      );
+    }
     return ListView.separated(
       padding: EdgeInsets.zero,
       itemCount: conversationState.conversations.length + 1,
@@ -150,7 +156,9 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
                         .read(conversationsNotifierProvider.notifier)
                         .loadMore(),
               child: Text(
-                conversationState.isLoadingMore ? 'Loading...' : 'Load More',
+                conversationState.isLoadingMore
+                    ? context.l10n.loading
+                    : context.l10n.loadMore,
               ),
             ),
           );

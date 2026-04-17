@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../constants/api_constants.dart';
+import '../../../localization/app_localizations_x.dart';
 import '../../../models/models.dart';
 import '../../common_widgets/time_formatter.dart';
 import 'voice_message_card.dart';
@@ -233,6 +234,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                                   formatRelativeTime(
                                     widget.message.serverTimestamp ??
                                         widget.message.clientTimestamp,
+                                    context.l10n,
                                   ),
                                   style: Theme.of(context).textTheme.labelSmall
                                       ?.copyWith(

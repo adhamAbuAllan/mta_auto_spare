@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../constants/api_constants.dart';
 import '../../controllers/providers/auth_provider.dart';
+import '../../localization/app_localizations_x.dart';
+import '../../localization/language_selector.dart';
 import '../common_widgets/app_error_card.dart';
 import 'register_page.dart';
 
@@ -53,38 +55,45 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(28),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: AppLanguageMenuButton(
+                              foregroundColor: const Color(0xFF0C4A63),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
                           Text(
-                            'Auto Spare Hub',
+                            context.l10n.appTitle,
                             style: Theme.of(context).textTheme.headlineMedium
                                 ?.copyWith(fontWeight: FontWeight.w900),
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            'Sign in to browse seller requests, post your own request, and continue your chats.',
+                            context.l10n.signInToBrowseSellerRequests,
                             style: Theme.of(context).textTheme.bodyLarge
                                 ?.copyWith(color: const Color(0xFF6F6A63)),
                           ),
                           const SizedBox(height: 24),
                           _InfoBanner(
-                            title: 'Backend',
+                            title: context.l10n.backend,
                             message: ApiConstants.baseUrl,
                           ),
                           const SizedBox(height: 20),
                           TextFormField(
                             controller: usernameController,
                             textInputAction: TextInputAction.next,
-                            decoration: const InputDecoration(
-                              labelText: 'Username',
-                              hintText: 'chat_user_a',
+                            decoration: InputDecoration(
+                              labelText: context.l10n.username,
+                              hintText: context.l10n.usernameHint,
                             ),
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
-                                return 'Enter your username.';
+                                return context.l10n.enterUsername;
                               }
                               return null;
                             },
@@ -94,8 +103,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             controller: passwordController,
                             obscureText: isPasswordObscure,
                             decoration: InputDecoration(
-                              labelText: 'Password',
-                              hintText: 'Your password',
+                              labelText: context.l10n.password,
+                              hintText: context.l10n.passwordHint,
                               suffixIcon: IconButton(
                                 onPressed: () {
                                   ref
@@ -118,7 +127,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Enter your password.';
+                                return context.l10n.enterPassword;
                               }
                               return null;
                             },
@@ -139,8 +148,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     ),
                               child: Text(
                                 loginState.isLoading
-                                    ? 'Signing In...'
-                                    : 'Sign In',
+                                    ? context.l10n.signingIn
+                                    : context.l10n.signIn,
                               ),
                             ),
                           ),
@@ -154,7 +163,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   ),
                                 );
                               },
-                              child: const Text('Create a New Account'),
+                              child: Text(context.l10n.createNewAccount),
                             ),
                           ),
                         ],

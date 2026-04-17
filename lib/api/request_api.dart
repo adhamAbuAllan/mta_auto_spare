@@ -77,23 +77,25 @@ class RequestApi {
     List<RequestUploadImage> images = const [],
   }) async {
     try {
-      final retryDataBuilder = images.isEmpty
-          ? null
-          : () => _buildMultipartPayload(request, images: images);
-      final payload = retryDataBuilder == null
-          ? request.toJson()
-          : await retryDataBuilder();
+      Future<FormData> buildRetryData() {
+        return _buildMultipartPayload(request, images: images);
+      }
+
+      final shouldUseMultipart = images.isNotEmpty;
+      final payload = shouldUseMultipart
+          ? await buildRetryData()
+          : request.toJson();
       final response = await _dio.post(
         ApiEndpoints.partRequests,
         data: payload,
-        options: retryDataBuilder == null
-            ? null
-            : Options(
+        options: shouldUseMultipart
+            ? Options(
                 sendTimeout: ApiConstants.requestUploadSendTimeout,
                 extra: {
-                  AppDioClient.retryDataBuilderExtraKey: retryDataBuilder,
+                  AppDioClient.retryDataBuilderExtraKey: buildRetryData,
                 },
-              ),
+              )
+            : null,
       );
       return PartRequest.fromJson(_asMap(response.data));
     } on DioException catch (error) {
@@ -112,7 +114,7 @@ class RequestApi {
     }
 
     try {
-      final retryDataBuilder = () => _buildMultipartPayload(
+      Future<FormData> buildRetryData() => _buildMultipartPayload(
         request,
         images: newImages,
         keepImageIds: keepImageIds,
@@ -120,10 +122,10 @@ class RequestApi {
       );
       final response = await _dio.patch(
         '${ApiEndpoints.partRequests}$requestId/',
-        data: await retryDataBuilder(),
+        data: await buildRetryData(),
         options: Options(
           sendTimeout: ApiConstants.requestUploadSendTimeout,
-          extra: {AppDioClient.retryDataBuilderExtraKey: retryDataBuilder},
+          extra: {AppDioClient.retryDataBuilderExtraKey: buildRetryData},
         ),
       );
       return PartRequest.fromJson(_asMap(response.data));
@@ -152,6 +154,10 @@ class RequestApi {
       'description': request.description,
       'status': request.status.toString(),
     };
+    final carModelId = request.carModelId;
+    if (carModelId != null || syncImages) {
+      data['car_model'] = carModelId?.toString() ?? '';
+    }
     if (images.isNotEmpty) {
       data['images'] = await Future.wait(
         images.map(

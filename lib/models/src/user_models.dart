@@ -1,4 +1,5 @@
 import 'json_utils.dart';
+import 'car_catalog_models.dart';
 
 class ApiUser {
   const ApiUser({
@@ -13,6 +14,7 @@ class ApiUser {
     this.rating,
     this.createdAt,
     this.password,
+    this.supportedCarModelIds,
   });
 
   final int? id;
@@ -26,6 +28,7 @@ class ApiUser {
   final String? rating;
   final DateTime? createdAt;
   final String? password;
+  final List<int>? supportedCarModelIds;
 
   factory ApiUser.fromJson(JsonMap json) {
     return ApiUser(
@@ -70,6 +73,9 @@ class ApiUser {
     }
     if (password != null) {
       json['password'] = password;
+    }
+    if (supportedCarModelIds != null) {
+      json['supported_car_model_ids'] = supportedCarModelIds;
     }
     return json;
   }
@@ -146,6 +152,7 @@ class MeProfile {
     this.rating,
     required this.chatPushEnabled,
     required this.chatMessagePreviewEnabled,
+    this.supportedCarModels = const [],
     required this.createdAt,
   });
 
@@ -160,6 +167,7 @@ class MeProfile {
   final String? rating;
   final bool chatPushEnabled;
   final bool chatMessagePreviewEnabled;
+  final List<CarModelOption> supportedCarModels;
   final DateTime createdAt;
 
   factory MeProfile.fromJson(JsonMap json) {
@@ -176,6 +184,10 @@ class MeProfile {
       chatPushEnabled: boolFromJson(json['chat_push_enabled']) ?? false,
       chatMessagePreviewEnabled:
           boolFromJson(json['chat_message_preview_enabled']) ?? false,
+      supportedCarModels: listFromJson(
+        json['supported_car_models'],
+        CarModelOption.fromJson,
+      ),
       createdAt: dateTimeFromJson(json['created_at']) ?? DateTime.now(),
     );
   }
@@ -193,6 +205,9 @@ class MeProfile {
       'rating': rating,
       'chat_push_enabled': chatPushEnabled,
       'chat_message_preview_enabled': chatMessagePreviewEnabled,
+      'supported_car_models': supportedCarModels
+          .map((item) => item.toJson())
+          .toList(growable: false),
       'created_at': createdAt.toIso8601String(),
     };
   }

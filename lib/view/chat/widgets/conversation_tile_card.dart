@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../localization/app_localizations_x.dart';
 import '../../../models/models.dart';
 import '../../common_widgets/time_formatter.dart';
 import '../../common_widgets/user_avatar.dart';
@@ -21,11 +22,13 @@ class ConversationTileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayName = conversationDisplayName(conversation, currentUserId);
+    final l10n = context.l10n;
+    final displayName = conversationDisplayName(conversation, currentUserId, l10n);
     final participant = otherParticipant(conversation, currentUserId);
     final lastMessage = conversation.lastMessage;
     final isLastMessageMine =
         lastMessage != null && lastMessage.senderId == currentUserId;
+    final lastOwnMessage = isLastMessageMine ? lastMessage : null;
     final presenceColor = participant == null
         ? null
         : participant.user.isOnline
@@ -78,6 +81,7 @@ class ConversationTileCard extends StatelessWidget {
                           Text(
                             formatRelativeTime(
                               conversation.lastMessage?.timestamp,
+                              l10n,
                             ),
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(color: const Color(0xFF7A746C)),
@@ -87,18 +91,18 @@ class ConversationTileCard extends StatelessWidget {
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          if (isLastMessageMine) ...[
+                          if (lastOwnMessage != null) ...[
                             _ConversationReceiptIcon(
-                              receiptState: lastMessage!.receiptStateFor(
+                              receiptState: lastOwnMessage.receiptStateFor(
                                 currentUserId,
                               ),
-                              isOptimistic: lastMessage.isOptimistic,
+                              isOptimistic: lastOwnMessage.isOptimistic,
                             ),
                             const SizedBox(width: 6),
                           ],
                           Expanded(
                             child: Text(
-                              conversationPreview(conversation),
+                              conversationPreview(conversation, l10n),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.bodyMedium

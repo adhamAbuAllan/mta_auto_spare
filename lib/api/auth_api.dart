@@ -67,17 +67,22 @@ class AuthApi {
     required String? city,
     required bool chatPushEnabled,
     required bool chatMessagePreviewEnabled,
+    List<int>? supportedCarModelIds,
   }) async {
     try {
+      final payload = <String, dynamic>{
+        'name': name.trim(),
+        'phone': phone?.trim() ?? '',
+        'city': city?.trim() ?? '',
+        'chat_push_enabled': chatPushEnabled,
+        'chat_message_preview_enabled': chatMessagePreviewEnabled,
+      };
+      if (supportedCarModelIds != null) {
+        payload['supported_car_model_ids'] = supportedCarModelIds;
+      }
       final response = await _dio.patch(
         ApiEndpoints.me,
-        data: {
-          'name': name.trim(),
-          'phone': phone?.trim() ?? '',
-          'city': city?.trim() ?? '',
-          'chat_push_enabled': chatPushEnabled,
-          'chat_message_preview_enabled': chatMessagePreviewEnabled,
-        },
+        data: payload,
       );
       return MeProfile.fromJson(_asMap(response.data));
     } on DioException catch (error) {

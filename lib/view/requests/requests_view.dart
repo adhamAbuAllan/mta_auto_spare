@@ -331,6 +331,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
       title: request.title,
       minPrice: request.minPrice,
       maxPrice: request.maxPrice,
+      carModel: request.carModel,
     );
     var shouldStageSharedRequest = true;
 

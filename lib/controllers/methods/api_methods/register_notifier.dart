@@ -20,6 +20,7 @@ class RegisterNotifier extends StateNotifier<AuthState> {
     required String name,
     required String password,
     String role = 'user',
+    List<int>? supportedCarModelIds,
   }) async {
     state = state.copyWith(
       isLoading: true,
@@ -35,6 +36,7 @@ class RegisterNotifier extends StateNotifier<AuthState> {
           name: name,
           role: role,
           password: password,
+          supportedCarModelIds: supportedCarModelIds,
         ),
       );
 

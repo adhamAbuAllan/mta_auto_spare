@@ -26,6 +26,8 @@ class SessionNotifier extends StateNotifier<SessionState> {
 
   final SharedPreferences _preferences;
 
+  SessionState get currentState => state;
+
   static SessionState _restore(SharedPreferences preferences) {
     final accessToken = preferences.getString(_accessTokenKey);
     final refreshToken = preferences.getString(_refreshTokenKey);

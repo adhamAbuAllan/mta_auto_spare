@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../api/auth_api.dart';
+import '../../api/catalog_api.dart';
 import '../../api/chat_api.dart';
 import '../../api/dio_client.dart';
 import '../../api/request_api.dart';
@@ -20,6 +21,10 @@ final dioProvider = Provider<Dio>((ref) {
 
 final authApiProvider = Provider<AuthApi>((ref) {
   return AuthApi(ref.read(dioProvider));
+});
+
+final catalogApiProvider = Provider<CatalogApi>((ref) {
+  return CatalogApi(ref.read(dioProvider));
 });
 
 final userApiProvider = Provider<UserApi>((ref) {

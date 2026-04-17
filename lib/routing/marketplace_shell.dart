@@ -5,6 +5,7 @@ import '../controllers/providers/auth_provider.dart';
 import '../controllers/providers/chat_provider.dart';
 import '../controllers/providers/notification_provider.dart';
 import '../controllers/providers/request_provider.dart';
+import '../localization/app_localizations_x.dart';
 import '../models/models.dart';
 import '../notifications/chat_notification_service.dart';
 import '../view/chat/chat_detail_page.dart';
@@ -117,10 +118,12 @@ class _MarketplaceShellPageState extends ConsumerState<MarketplaceShellPage> {
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 980;
         return isWide
-            ? _WideMarketplaceLayout(userName: session.profile?.name ?? 'User')
+            ? _WideMarketplaceLayout(
+                userName: session.profile?.name ?? context.l10n.userRole,
+              )
             : _MobileMarketplaceLayout(
                 index: _mobileIndex,
-                userName: session.profile?.name ?? 'User',
+                userName: session.profile?.name ?? context.l10n.userRole,
                 onDestinationSelected: (index) {
                   setState(() => _mobileIndex = index);
                 },
@@ -141,10 +144,10 @@ class _WideMarketplaceLayout extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Auto Spare Hub'),
+        title: Text(context.l10n.appTitle),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsetsDirectional.only(end: 8),
             child: Center(
               child: Text(
                 userName,
@@ -155,14 +158,14 @@ class _WideMarketplaceLayout extends ConsumerWidget {
             ),
           ),
           IconButton(
-            tooltip: 'Edit profile',
+            tooltip: context.l10n.editProfile,
             onPressed: () => _openEditProfile(context),
             icon: const Icon(Icons.manage_accounts_outlined),
           ),
           TextButton(
             onPressed: () => ref.read(logoutNotifierProvider.notifier).logout(),
             style: TextButton.styleFrom(foregroundColor: Colors.white),
-            child: const Text('Logout'),
+            child: Text(context.l10n.logout),
           ),
           const SizedBox(width: 8),
         ],
@@ -245,10 +248,10 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Auto Spare Hub'),
+        title: Text(context.l10n.appTitle),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsetsDirectional.only(end: 8),
             child: Center(
               child: Text(
                 userName,
@@ -259,12 +262,12 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
             ),
           ),
           IconButton(
-            tooltip: 'Edit profile',
+            tooltip: context.l10n.editProfile,
             onPressed: () => _openEditProfile(context),
             icon: const Icon(Icons.manage_accounts_outlined),
           ),
           IconButton(
-            tooltip: 'Logout',
+            tooltip: context.l10n.logout,
             onPressed: () => ref.read(logoutNotifierProvider.notifier).logout(),
             icon: const Icon(Icons.logout_rounded),
           ),
@@ -303,16 +306,16 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
         onDestinationSelected: onDestinationSelected,
-        destinations: const [
+        destinations:  [
           NavigationDestination(
             icon: Icon(Icons.inventory_2_outlined),
             selectedIcon: Icon(Icons.inventory_2_rounded),
-            label: 'Requests',
+            label: context.l10n.requests,
           ),
           NavigationDestination(
             icon: Icon(Icons.chat_bubble_outline_rounded),
             selectedIcon: Icon(Icons.chat_bubble_rounded),
-            label: 'Chats',
+            label: context.l10n.chats,
           ),
         ],
       ),
