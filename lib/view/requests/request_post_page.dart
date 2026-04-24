@@ -13,7 +13,10 @@ import '../common_widgets/app_error_card.dart';
 import '../common_widgets/app_panel.dart';
 import '../common_widgets/car_model_card.dart';
 import '../common_widgets/time_formatter.dart';
+import '../common_widgets/user_avatar.dart';
 import '../common_widgets/zoomable_network_gallery_page.dart';
+import '../profile/user_profile_page.dart';
+import 'widgets/request_status_sheet.dart';
 
 class RequestPostPage extends ConsumerStatefulWidget {
   const RequestPostPage({
@@ -36,6 +39,7 @@ class _RequestPostPageState extends ConsumerState<RequestPostPage> {
   String? _errorMessage;
   bool _isLoading = false;
   bool _isOpeningChat = false;
+  bool _isUpdatingStatus = false;
 
   @override
   void initState() {
@@ -61,6 +65,7 @@ class _RequestPostPageState extends ConsumerState<RequestPostPage> {
         currentUserId != null &&
         !isMine &&
         request.id != null;
+    final canChangeStatus = request?.canUpdateStatus == true;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Request Post')),
@@ -87,10 +92,17 @@ class _RequestPostPageState extends ConsumerState<RequestPostPage> {
                   request: request,
                   sellerName: widget.sellerName,
                   canChat: canChat,
+                  canChangeStatus: canChangeStatus,
                   isChatLoading: _isOpeningChat,
+                  isStatusUpdating: _isUpdatingStatus,
                   onChatTap: canChat
                       ? () => _openChatForRequest(request)
                       : null,
+                  onChangeStatusTap: canChangeStatus
+                      ? () => _changeRequestStatus(request)
+                      : null,
+                  onRequesterTap: () =>
+                      _openRequesterProfile(request.requester),
                 ),
             ],
           ),
@@ -177,9 +189,12 @@ class _RequestPostPageState extends ConsumerState<RequestPostPage> {
       final requestBrief = PartRequestBrief(
         id: requestId,
         title: request.title,
+        translatedTitle: request.translatedTitle,
+        titleLanguage: request.titleLanguage,
         minPrice: request.minPrice,
         maxPrice: request.maxPrice,
         carModel: request.carModel,
+        translationTargetLanguage: request.translationTargetLanguage,
       );
       var shouldStageSharedRequest = true;
 
@@ -246,21 +261,99 @@ class _RequestPostPageState extends ConsumerState<RequestPostPage> {
       }
     }
   }
+
+  Future<void> _changeRequestStatus(PartRequest request) async {
+    final requestId = request.id;
+    if (requestId == null || _isUpdatingStatus) {
+      return;
+    }
+
+    try {
+      final statuses = await ref.read(requestStatusesProvider.future);
+      if (!mounted) {
+        return;
+      }
+
+      final selectedStatus = await showRequestStatusSheet(
+        context,
+        statuses: statuses,
+        request: request,
+      );
+      if (!mounted ||
+          selectedStatus == null ||
+          selectedStatus.id == null ||
+          selectedStatus.id == request.status) {
+        return;
+      }
+
+      setState(() => _isUpdatingStatus = true);
+      final updatedRequest = await ref
+          .read(requestApiProvider)
+          .updateRequestStatus(
+            requestId: requestId,
+            statusId: selectedStatus.id!,
+          );
+      ref.read(requestsNotifierProvider.notifier).upsertRequest(updatedRequest);
+      if (!mounted) {
+        return;
+      }
+      setState(() => _request = updatedRequest);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.requestStatusUpdated)),
+      );
+    } on ApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.couldNotUpdateRequestStatus)),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isUpdatingStatus = false);
+      }
+    }
+  }
+
+  Future<void> _openRequesterProfile(int userId) async {
+    if (userId <= 0) {
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => UserProfilePage(userId: userId)),
+    );
+  }
 }
 
 class _RequestPostContent extends StatelessWidget {
   const _RequestPostContent({
     required this.request,
     required this.canChat,
+    required this.canChangeStatus,
     required this.isChatLoading,
+    required this.isStatusUpdating,
     this.onChatTap,
+    this.onChangeStatusTap,
+    this.onRequesterTap,
     this.sellerName,
   });
 
   final PartRequest request;
   final bool canChat;
+  final bool canChangeStatus;
   final bool isChatLoading;
+  final bool isStatusUpdating;
   final VoidCallback? onChatTap;
+  final VoidCallback? onChangeStatusTap;
+  final VoidCallback? onRequesterTap;
   final String? sellerName;
 
   @override
@@ -313,20 +406,51 @@ class _RequestPostContent extends StatelessWidget {
             ),
             const SizedBox(height: 18),
           ],
+          Row(
+            children: [
+              UserAvatar(
+                label: _sellerDisplayName,
+                imageUrl: request.requesterDetails?.avatar,
+                radius: 22,
+                onTap: onRequesterTap,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextButton(
+                  onPressed: onRequesterTap,
+                  style: TextButton.styleFrom(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    _sellerDisplayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0C4A63),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
           Wrap(
             spacing: 10,
             runSpacing: 10,
             children: [
               _MetaChip(
-                icon: Icons.storefront_outlined,
-                label: (sellerName ?? '').trim().isNotEmpty
-                    ? sellerName!.trim()
-                    : 'Seller #${request.requester}',
-              ),
-              _MetaChip(
                 icon: Icons.schedule_outlined,
                 label: formatRelativeTime(request.createdAt, context.l10n),
               ),
+              if (request.statusDetails != null)
+                _MetaChip(
+                  icon: Icons.flag_outlined,
+                  label: request.statusDetails!.label,
+                ),
               _MetaChip(
                 icon: Icons.location_on_outlined,
                 label: request.city?.trim().isNotEmpty == true
@@ -338,29 +462,37 @@ class _RequestPostContent extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          Text(
-            request.title,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            request.description,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: const Color(0xFF5F5A54),
-              height: 1.45,
-            ),
-          ),
+          _TranslatedRequestCopy(request: request),
           const SizedBox(height: 20),
           Text(
             canChat
                 ? 'Open a chat with the seller behind this request.'
+                : canChangeStatus
+                ? context.l10n.youCanManageThisRequestStatus
                 : 'This request belongs to you.',
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: const Color(0xFF7A746C)),
           ),
+          if (canChangeStatus) ...[
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.tonalIcon(
+                onPressed: isStatusUpdating ? null : onChangeStatusTap,
+                icon: Icon(
+                  isStatusUpdating
+                      ? Icons.hourglass_top_rounded
+                      : Icons.flag_circle_outlined,
+                ),
+                label: Text(
+                  isStatusUpdating
+                      ? context.l10n.updatingStatus
+                      : context.l10n.changeStatus,
+                ),
+              ),
+            ),
+          ],
           if (canChat) ...[
             const SizedBox(height: 12),
             Align(
@@ -379,6 +511,16 @@ class _RequestPostContent extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String get _sellerDisplayName {
+    if (request.requesterDetails?.name.trim().isNotEmpty == true) {
+      return request.requesterDetails!.name.trim();
+    }
+    if ((sellerName ?? '').trim().isNotEmpty) {
+      return sellerName!.trim();
+    }
+    return 'Seller #${request.requester}';
   }
 
   String _priceLabel() {
@@ -415,6 +557,66 @@ class _RequestPostContent extends StatelessWidget {
           heroTagBuilder: (index) => 'request-post-image-${request.id}-$index',
         ),
       ),
+    );
+  }
+}
+
+class _TranslatedRequestCopy extends StatefulWidget {
+  const _TranslatedRequestCopy({required this.request});
+
+  final PartRequest request;
+
+  @override
+  State<_TranslatedRequestCopy> createState() => _TranslatedRequestCopyState();
+}
+
+class _TranslatedRequestCopyState extends State<_TranslatedRequestCopy> {
+  bool _showOriginal = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final request = widget.request;
+    final l10n = context.l10n;
+    final showOriginal = _showOriginal && request.hasTranslatedContent;
+    final title = showOriginal ? request.title : request.displayTitle;
+    final description = showOriginal
+        ? request.description
+        : request.displayDescription;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          description,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            color: const Color(0xFF5F5A54),
+            height: 1.45,
+          ),
+        ),
+        if (request.hasTranslatedContent) ...[
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              onPressed: () {
+                setState(() {
+                  _showOriginal = !_showOriginal;
+                });
+              },
+              child: Text(
+                _showOriginal ? l10n.showTranslation : l10n.showOriginal,
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

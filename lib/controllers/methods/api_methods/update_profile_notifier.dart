@@ -24,6 +24,7 @@ class UpdateProfileNotifier extends StateNotifier<AuthState> {
     required bool chatPushEnabled,
     required bool chatMessagePreviewEnabled,
     List<int>? supportedCarModelIds,
+    RequestUploadImage? avatarImage,
   }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
@@ -35,6 +36,7 @@ class UpdateProfileNotifier extends StateNotifier<AuthState> {
         chatPushEnabled: chatPushEnabled,
         chatMessagePreviewEnabled: chatMessagePreviewEnabled,
         supportedCarModelIds: supportedCarModelIds,
+        avatarImage: avatarImage,
       );
       await _sessionNotifier.saveProfile(profile);
       state = state.copyWith(

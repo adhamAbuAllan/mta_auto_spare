@@ -519,6 +519,726 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'User'**
   String get userRole;
+
+  /// No description provided for @attachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment'**
+  String get attachment;
+
+  /// No description provided for @attachedRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Attached request'**
+  String get attachedRequest;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @copyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy message'**
+  String get copyMessage;
+
+  /// No description provided for @deleteForAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete for all'**
+  String get deleteForAll;
+
+  /// No description provided for @deleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete message'**
+  String get deleteMessage;
+
+  /// No description provided for @deleteOnlyMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete only for me'**
+  String get deleteOnlyMe;
+
+  /// No description provided for @deletedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted message'**
+  String get deletedMessage;
+
+  /// No description provided for @discardVoiceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard voice message'**
+  String get discardVoiceMessage;
+
+  /// No description provided for @editMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit message'**
+  String get editMessage;
+
+  /// No description provided for @editMessageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit message'**
+  String get editMessageTitle;
+
+  /// No description provided for @edited.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited'**
+  String get edited;
+
+  /// No description provided for @fromPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'From {value}'**
+  String fromPrice(String value);
+
+  /// No description provided for @messageCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Message copied.'**
+  String get messageCopied;
+
+  /// No description provided for @messageCouldNotBeDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Message could not be deleted.'**
+  String get messageCouldNotBeDeleted;
+
+  /// No description provided for @messageCouldNotBeUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Message could not be updated.'**
+  String get messageCouldNotBeUpdated;
+
+  /// No description provided for @messageDeletedForEveryone.
+  ///
+  /// In en, this message translates to:
+  /// **'Message deleted for everyone.'**
+  String get messageDeletedForEveryone;
+
+  /// No description provided for @messageDeletedForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Message deleted for you.'**
+  String get messageDeletedForYou;
+
+  /// No description provided for @messageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get messageLabel;
+
+  /// No description provided for @messageUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Message updated.'**
+  String get messageUpdated;
+
+  /// No description provided for @microphonePermissionRequiredForVoiceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone permission is required to record a voice message.'**
+  String get microphonePermissionRequiredForVoiceMessage;
+
+  /// No description provided for @noMessagesYetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Say hello and start the conversation.'**
+  String get noMessagesYetMessage;
+
+  /// No description provided for @noPriceRange.
+  ///
+  /// In en, this message translates to:
+  /// **'No price range'**
+  String get noPriceRange;
+
+  /// No description provided for @noVoiceMessageCaptured.
+  ///
+  /// In en, this message translates to:
+  /// **'No voice message was captured.'**
+  String get noVoiceMessageCaptured;
+
+  /// No description provided for @pauseVoiceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause voice message'**
+  String get pauseVoiceMessage;
+
+  /// No description provided for @photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get photo;
+
+  /// No description provided for @photosCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} photos'**
+  String photosCount(int count);
+
+  /// No description provided for @playVoiceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Play voice message'**
+  String get playVoiceMessage;
+
+  /// No description provided for @preparingRecorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing recorder...'**
+  String get preparingRecorder;
+
+  /// No description provided for @recordVoiceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Record voice message'**
+  String get recordVoiceMessage;
+
+  /// No description provided for @replyingTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Replying to {name}'**
+  String replyingTo(String name);
+
+  /// No description provided for @requestWithTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request: {title}'**
+  String requestWithTitle(String title);
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @sendMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Send message'**
+  String get sendMessage;
+
+  /// No description provided for @sendOrClearDraftBeforeVoiceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Send or clear the current draft before recording a voice message.'**
+  String get sendOrClearDraftBeforeVoiceMessage;
+
+  /// No description provided for @sending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get sending;
+
+  /// No description provided for @sendVoiceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Send voice message'**
+  String get sendVoiceMessage;
+
+  /// No description provided for @sentAttachmentsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent {count} attachment(s)'**
+  String sentAttachmentsCount(int count);
+
+  /// No description provided for @sharedRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared a request'**
+  String get sharedRequest;
+
+  /// No description provided for @showOriginal.
+  ///
+  /// In en, this message translates to:
+  /// **'Show original'**
+  String get showOriginal;
+
+  /// No description provided for @showTranslation.
+  ///
+  /// In en, this message translates to:
+  /// **'Show translation'**
+  String get showTranslation;
+
+  /// No description provided for @typing.
+  ///
+  /// In en, this message translates to:
+  /// **'Typing...'**
+  String get typing;
+
+  /// No description provided for @unableToPlayVoiceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to play voice message'**
+  String get unableToPlayVoiceMessage;
+
+  /// No description provided for @unableToSeekVoiceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to seek voice message'**
+  String get unableToSeekVoiceMessage;
+
+  /// No description provided for @updateYourMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your message'**
+  String get updateYourMessage;
+
+  /// No description provided for @upToPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {value}'**
+  String upToPrice(String value);
+
+  /// No description provided for @uploadImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload images'**
+  String get uploadImages;
+
+  /// No description provided for @voiceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice message'**
+  String get voiceMessage;
+
+  /// No description provided for @voiceMessageCouldNotBeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice message could not be sent.'**
+  String get voiceMessageCouldNotBeSent;
+
+  /// No description provided for @voiceMessageDiscarded.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice message discarded.'**
+  String get voiceMessageDiscarded;
+
+  /// No description provided for @voiceMessageDiscardFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice message could not be discarded cleanly.'**
+  String get voiceMessageDiscardFailed;
+
+  /// No description provided for @voiceRecordingCouldNotStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice recording could not start on this device.'**
+  String get voiceRecordingCouldNotStart;
+
+  /// No description provided for @writeAMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message...'**
+  String get writeAMessage;
+
+  /// No description provided for @connecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting...'**
+  String get connecting;
+
+  /// No description provided for @liveUpdatesUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Live updates unavailable'**
+  String get liveUpdatesUnavailable;
+
+  /// No description provided for @reconnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting...'**
+  String get reconnecting;
+
+  /// No description provided for @marketplaceUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketplace user'**
+  String get marketplaceUser;
+
+  /// No description provided for @refreshRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh requests'**
+  String get refreshRequests;
+
+  /// No description provided for @browseRequestPostsFromOtherSellers.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse request posts from other sellers.'**
+  String get browseRequestPostsFromOtherSellers;
+
+  /// No description provided for @seeRequestPostsYouCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'See the request posts you created.'**
+  String get seeRequestPostsYouCreated;
+
+  /// No description provided for @browseRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse Requests'**
+  String get browseRequests;
+
+  /// No description provided for @myRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'My Requests'**
+  String get myRequests;
+
+  /// No description provided for @noRequestsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests yet'**
+  String get noRequestsYet;
+
+  /// No description provided for @createFirstRequestPostMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first request post and it will show up here.'**
+  String get createFirstRequestPostMessage;
+
+  /// No description provided for @noSellerRequestsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No seller requests yet'**
+  String get noSellerRequestsYet;
+
+  /// No description provided for @noSellerRequestsYetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no request posts from other sellers yet. Pull to refresh later.'**
+  String get noSellerRequestsYetMessage;
+
+  /// No description provided for @createRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Request'**
+  String get createRequest;
+
+  /// No description provided for @deleteRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Request'**
+  String get deleteRequest;
+
+  /// No description provided for @deleteRequestConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{title}\"? This request post will be removed from your list.'**
+  String deleteRequestConfirmation(String title);
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @deleting.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting...'**
+  String get deleting;
+
+  /// No description provided for @chatSeller.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat Seller'**
+  String get chatSeller;
+
+  /// No description provided for @opening.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening...'**
+  String get opening;
+
+  /// No description provided for @requestDeletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Request deleted successfully.'**
+  String get requestDeletedSuccessfully;
+
+  /// No description provided for @couldNotDeleteRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the request.'**
+  String get couldNotDeleteRequest;
+
+  /// No description provided for @couldNotOpenConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the conversation.'**
+  String get couldNotOpenConversation;
+
+  /// No description provided for @requestAttachedResendHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The request is attached in the chat composer so you can resend it.'**
+  String get requestAttachedResendHint;
+
+  /// No description provided for @initialRequestCouldNotBeSentAutomatically.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat opened, but the initial request could not be sent automatically.'**
+  String get initialRequestCouldNotBeSentAutomatically;
+
+  /// No description provided for @welcomeBackUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back, {name}'**
+  String welcomeBackUser(String name);
+
+  /// No description provided for @browse.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse'**
+  String get browse;
+
+  /// No description provided for @mine.
+  ///
+  /// In en, this message translates to:
+  /// **'Mine'**
+  String get mine;
+
+  /// No description provided for @assigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get assigned;
+
+  /// No description provided for @assignedRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Requests'**
+  String get assignedRequests;
+
+  /// No description provided for @allStatuses.
+  ///
+  /// In en, this message translates to:
+  /// **'All Statuses'**
+  String get allStatuses;
+
+  /// No description provided for @cityNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'City not set'**
+  String get cityNotSet;
+
+  /// No description provided for @thisRequestBelongsToYou.
+  ///
+  /// In en, this message translates to:
+  /// **'This request belongs to you.'**
+  String get thisRequestBelongsToYou;
+
+  /// No description provided for @openChatWithSellerBehindRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a chat with the seller behind this request.'**
+  String get openChatWithSellerBehindRequest;
+
+  /// No description provided for @requestsYouCanManageNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests you can manage right now.'**
+  String get requestsYouCanManageNow;
+
+  /// No description provided for @noAssignedRequestsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No assigned requests yet'**
+  String get noAssignedRequestsYet;
+
+  /// No description provided for @noAssignedRequestsYetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Once an owner approves your access, the request will appear here.'**
+  String get noAssignedRequestsYetMessage;
+
+  /// No description provided for @youCanManageThisRequestStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'You can manage this request status.'**
+  String get youCanManageThisRequestStatus;
+
+  /// No description provided for @changeStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Status'**
+  String get changeStatus;
+
+  /// No description provided for @requestStatusUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Request status updated.'**
+  String get requestStatusUpdated;
+
+  /// No description provided for @couldNotUpdateRequestStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update the request status.'**
+  String get couldNotUpdateRequestStatus;
+
+  /// No description provided for @updatingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating...'**
+  String get updatingStatus;
+
+  /// No description provided for @requestControl.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Control'**
+  String get requestControl;
+
+  /// No description provided for @thisChatCanManageRequestStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'The supplier in this chat can manage this request status now.'**
+  String get thisChatCanManageRequestStatus;
+
+  /// No description provided for @thisRequestIsAssignedToAnotherSupplier.
+  ///
+  /// In en, this message translates to:
+  /// **'This request is currently assigned to another supplier.'**
+  String get thisRequestIsAssignedToAnotherSupplier;
+
+  /// No description provided for @noAccessRequestForThisRequestYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No access request has been sent for this request yet.'**
+  String get noAccessRequestForThisRequestYet;
+
+  /// No description provided for @youCanChangeThisRequestStatusNow.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this request status now.'**
+  String get youCanChangeThisRequestStatusNow;
+
+  /// No description provided for @waitingForOwnerApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the owner to approve your access request.'**
+  String get waitingForOwnerApproval;
+
+  /// No description provided for @ownerRejectedYourAccessRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'The owner rejected your access request.'**
+  String get ownerRejectedYourAccessRequest;
+
+  /// No description provided for @askOwnerForStatusAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the owner for permission to manage this request status.'**
+  String get askOwnerForStatusAccess;
+
+  /// No description provided for @currentManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Current manager: {name}'**
+  String currentManager(String name);
+
+  /// No description provided for @approving.
+  ///
+  /// In en, this message translates to:
+  /// **'Approving...'**
+  String get approving;
+
+  /// No description provided for @approveAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve Access'**
+  String get approveAccess;
+
+  /// No description provided for @rejectAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Access'**
+  String get rejectAccess;
+
+  /// No description provided for @sendingRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get sendingRequest;
+
+  /// No description provided for @requestAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Access'**
+  String get requestAccess;
+
+  /// No description provided for @accessRequestPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your access request is pending.'**
+  String get accessRequestPending;
+
+  /// No description provided for @openAssignedRequestsToUpdateStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Assigned Requests to update the status anytime.'**
+  String get openAssignedRequestsToUpdateStatus;
+
+  /// No description provided for @accessRequestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Access request sent.'**
+  String get accessRequestSent;
+
+  /// No description provided for @couldNotSendAccessRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the access request.'**
+  String get couldNotSendAccessRequest;
+
+  /// No description provided for @accessRequestApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Access request approved.'**
+  String get accessRequestApproved;
+
+  /// No description provided for @couldNotApproveAccessRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not approve the access request.'**
+  String get couldNotApproveAccessRequest;
+
+  /// No description provided for @accessRequestRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Access request rejected.'**
+  String get accessRequestRejected;
+
+  /// No description provided for @couldNotRejectAccessRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reject the access request.'**
+  String get couldNotRejectAccessRequest;
+
+  /// No description provided for @expandRequestControl.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand request controls'**
+  String get expandRequestControl;
+
+  /// No description provided for @collapseRequestControl.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse request controls'**
+  String get collapseRequestControl;
 }
 
 class _AppLocalizationsDelegate

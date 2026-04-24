@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../api/chat_socket_service.dart';
 import '../../api/inbox_socket_service.dart';
+import '../../localization/app_locale.dart';
+import '../../localization/app_locale_notifier.dart';
 import '../../models/models.dart';
 import '../../session/session_notifier.dart';
 import '../methods/api_methods/load_conversations_notifier.dart';
@@ -19,14 +21,26 @@ final pendingSharedProductProvider = StateProvider<PartRequestBrief?>(
   (ref) => null,
 );
 
+String _currentAppLanguageCode(Ref ref) {
+  final locale = resolveEffectiveAppLocale(
+    mode: ref.read(appLocaleProvider),
+    deviceLocale: currentDeviceLocale(),
+  );
+  return locale.languageCode;
+}
+
 final chatSocketServiceProvider = Provider<ChatSocketService>((ref) {
-  final service = ChatSocketService();
+  final service = ChatSocketService(
+    resolveLanguageCode: () => _currentAppLanguageCode(ref),
+  );
   ref.onDispose(service.dispose);
   return service;
 });
 
 final inboxSocketServiceProvider = Provider<InboxSocketService>((ref) {
-  final service = InboxSocketService();
+  final service = InboxSocketService(
+    resolveLanguageCode: () => _currentAppLanguageCode(ref),
+  );
   ref.onDispose(service.dispose);
   return service;
 });
@@ -44,13 +58,18 @@ final conversationsNotifierProvider =
       ref.listen(sessionNotifierProvider, (previous, next) {
         unawaited(notifier.syncWithSession(next));
       });
+      ref.listen(appLocaleProvider, (previous, next) {
+        unawaited(
+          notifier.refreshTranslationLocale(ref.read(sessionNotifierProvider)),
+        );
+      });
       unawaited(notifier.syncWithSession(ref.read(sessionNotifierProvider)));
       return notifier;
     });
 
 final messagesNotifierProvider =
     StateNotifierProvider<LoadMessagesNotifier, MessageState>((ref) {
-      return LoadMessagesNotifier(
+      final notifier = LoadMessagesNotifier(
         ref.read(chatApiProvider),
         ref.read(chatSocketServiceProvider),
         cacheStore: ref.read(chatMessageCacheStoreProvider),
@@ -126,6 +145,10 @@ final messagesNotifierProvider =
                   );
             },
       );
+      ref.listen(appLocaleProvider, (previous, next) {
+        unawaited(notifier.refreshTranslationLocale());
+      });
+      return notifier;
     });
 
 final ensureConversationNotifierProvider =

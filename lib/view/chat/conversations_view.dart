@@ -7,6 +7,8 @@ import '../../controllers/statuses/conversation_state.dart';
 import '../../localization/app_localizations_x.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/empty_state_card.dart';
+import '../profile/user_profile_page.dart';
+import 'chat_formatters.dart';
 import 'widgets/conversation_tile_card.dart';
 
 class ConversationsView extends ConsumerStatefulWidget {
@@ -30,6 +32,9 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
       final state = ref.read(conversationsNotifierProvider);
       if (state.conversations.isEmpty && !state.isLoading) {
         ref.read(conversationsNotifierProvider.notifier).load();
@@ -126,13 +131,6 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
     }
 
     if (conversationState.conversations.isEmpty) {
-        return const EmptyStateCard(
-        title: '',
-        message: '',
-        icon: Icons.chat_bubble_outline_rounded,
-      );
-    }
-    if (conversationState.conversations.isEmpty) {
       return EmptyStateCard(
         title: context.l10n.noConversationsYet,
         message: context.l10n.noConversationsYetMessage,
@@ -165,6 +163,7 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
         }
 
         final conversation = conversationState.conversations[index];
+        final participant = otherParticipant(conversation, currentUserId);
         return ConversationTileCard(
           conversation: conversation,
           currentUserId: currentUserId,
@@ -175,8 +174,21 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
                 .markConversationRead(conversation.id);
             widget.onOpenConversation(conversation.id);
           },
+          onProfileTap: participant == null
+              ? null
+              : () => _openUserProfile(participant.user.id),
         );
       },
+    );
+  }
+
+  Future<void> _openUserProfile(int userId) async {
+    if (userId <= 0) {
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => UserProfilePage(userId: userId)),
     );
   }
 }

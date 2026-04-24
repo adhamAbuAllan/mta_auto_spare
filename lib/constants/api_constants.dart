@@ -31,6 +31,7 @@ abstract final class ApiConstants {
   static Uri buildChatSocketUri({
     required int conversationId,
     required String token,
+    String? languageCode,
   }) {
     final base = Uri.parse(baseUrl);
     final scheme = switch (base.scheme) {
@@ -41,11 +42,17 @@ abstract final class ApiConstants {
     return base.replace(
       scheme: scheme,
       path: '/ws/chat/$conversationId/',
-      queryParameters: {'token': token},
+      queryParameters: {
+        'token': token,
+        if ((languageCode ?? '').trim().isNotEmpty) 'lang': languageCode,
+      },
     );
   }
 
-  static Uri buildInboxSocketUri({required String token}) {
+  static Uri buildInboxSocketUri({
+    required String token,
+    String? languageCode,
+  }) {
     final base = Uri.parse(baseUrl);
     final scheme = switch (base.scheme) {
       'https' => 'wss',
@@ -55,7 +62,10 @@ abstract final class ApiConstants {
     return base.replace(
       scheme: scheme,
       path: '/ws/inbox/',
-      queryParameters: {'token': token},
+      queryParameters: {
+        'token': token,
+        if ((languageCode ?? '').trim().isNotEmpty) 'lang': languageCode,
+      },
     );
   }
 }
@@ -70,6 +80,7 @@ abstract final class ApiEndpoints {
   static const String carMakes = '/api/car-makes/';
   static const String partRequests = '/api/part-requests/';
   static const String partRequestStatuses = '/api/part-request-statuses/';
+  static const String partRequestAccesses = '/api/part-request-accesses/';
   static const String conversations = '/api/conversations/';
   static const String conversationParticipants =
       '/api/conversation-participants/';

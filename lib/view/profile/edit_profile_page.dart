@@ -1,6 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 
+import '../../api/api_exception.dart';
+import '../../controllers/providers/api_provider.dart';
 import '../../controllers/providers/auth_provider.dart';
 import '../../controllers/providers/catalog_provider.dart';
 import '../../models/models.dart';
@@ -8,6 +14,7 @@ import '../common_widgets/app_error_card.dart';
 import '../common_widgets/app_panel.dart';
 import '../common_widgets/async_error_message.dart';
 import '../common_widgets/car_model_card.dart';
+import '../common_widgets/user_avatar.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
   const EditProfilePage({super.key});
@@ -21,9 +28,13 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _cityController = TextEditingController();
+  final ImagePicker _imagePicker = ImagePicker();
 
   bool _chatPushEnabled = true;
   bool _chatMessagePreviewEnabled = true;
+  bool _isDeletingAccount = false;
+  String? _deleteAccountError;
+  RequestUploadImage? _selectedAvatarImage;
   final Set<int> _selectedCarModelIds = <int>{};
   int? _selectedCarMakeId;
 
@@ -59,6 +70,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     }
 
     final updateState = ref.watch(updateProfileNotifierProvider);
+    final isBusy = updateState.isLoading || _isDeletingAccount;
     final carCatalog = ref.watch(carCatalogProvider);
     final availableMakes = carCatalog.valueOrNull ?? const <CarMakeOption>[];
     final selectedMake = _selectedCarMakeId != null
@@ -105,10 +117,25 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                         ),
                       ),
                       const SizedBox(height: 20),
+                      _AvatarEditorSection(
+                        profile: profile,
+                        selectedAvatarImage: _selectedAvatarImage,
+                        onPickAvatar: isBusy ? null : _pickAvatar,
+                        onClearSelection: _selectedAvatarImage == null || isBusy
+                            ? null
+                            : () {
+                                setState(() => _selectedAvatarImage = null);
+                              },
+                      ),
+                      const SizedBox(height: 16),
                       _ReadOnlyProfileMeta(profile: profile),
                       const SizedBox(height: 16),
                       if (updateState.errorMessage != null) ...[
                         AppErrorCard(message: updateState.errorMessage!),
+                        const SizedBox(height: 16),
+                      ],
+                      if (_deleteAccountError != null) ...[
+                        AppErrorCard(message: _deleteAccountError!),
                         const SizedBox(height: 16),
                       ],
                       TextFormField(
@@ -284,7 +311,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                         children: [
                           Expanded(
                             child: FilledButton(
-                              onPressed: updateState.isLoading ? null : _submit,
+                              onPressed: isBusy ? null : _submit,
                               child: Text(
                                 updateState.isLoading
                                     ? 'Saving...'
@@ -293,6 +320,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 24),
+                      _DangerZoneCard(
+                        isBusy: isBusy,
+                        onDeleteAccount: _confirmDeleteAccount,
                       ),
                     ],
                   ),
@@ -308,6 +340,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
       return;
+    }
+
+    if (_deleteAccountError != null) {
+      setState(() => _deleteAccountError = null);
     }
 
     final profile = ref.read(currentSessionProvider).profile;
@@ -326,6 +362,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
           supportedCarModelIds: profile.role == 'supplier'
               ? (_selectedCarModelIds.toList()..sort())
               : null,
+          avatarImage: _selectedAvatarImage,
         );
 
     if (updatedProfile == null || !mounted) {
@@ -335,7 +372,98 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Profile updated successfully.')),
     );
+    setState(() => _selectedAvatarImage = null);
     Navigator.of(context).pop();
+  }
+
+  Future<void> _pickAvatar() async {
+    final pickedFile = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 90,
+      maxWidth: 1600,
+      maxHeight: 1600,
+      requestFullMetadata: false,
+    );
+    if (!mounted || pickedFile == null) {
+      return;
+    }
+
+    setState(() {
+      _selectedAvatarImage = RequestUploadImage(
+        path: pickedFile.path,
+        fileName: pickedFile.name,
+        contentType: lookupMimeType(pickedFile.path) ?? 'image/jpeg',
+      );
+    });
+  }
+
+  Future<void> _confirmDeleteAccount() async {
+    if (_isDeletingAccount) {
+      return;
+    }
+
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Account'),
+          content: const Text(
+            'This permanently deletes your account, your request posts, your chat history, and your registered devices. This action cannot be undone.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFFB42318),
+              ),
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Delete Account'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldDelete != true || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _isDeletingAccount = true;
+      _deleteAccountError = null;
+    });
+
+    try {
+      await ref.read(authApiProvider).deleteAccount();
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Your account has been deleted.')),
+      );
+      await ref.read(logoutNotifierProvider.notifier).logout();
+    } on ApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _deleteAccountError = error.message);
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(
+        () => _deleteAccountError =
+            'Your account could not be deleted right now.',
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isDeletingAccount = false);
+      }
+    }
   }
 
   void _seedForm(MeProfile profile) {
@@ -429,6 +557,96 @@ class _ReadOnlyProfileMeta extends StatelessWidget {
   }
 }
 
+class _AvatarEditorSection extends StatelessWidget {
+  const _AvatarEditorSection({
+    required this.profile,
+    required this.selectedAvatarImage,
+    required this.onPickAvatar,
+    this.onClearSelection,
+  });
+
+  final MeProfile profile;
+  final RequestUploadImage? selectedAvatarImage;
+  final Future<void> Function()? onPickAvatar;
+  final VoidCallback? onClearSelection;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasPendingPhoto = selectedAvatarImage != null;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F3EC),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFE7DCCE)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          UserAvatar(
+            label: profile.name,
+            imageUrl: profile.avatar,
+            imageProvider: selectedAvatarImage == null
+                ? null
+                : FileImage(File(selectedAvatarImage!.path)),
+            radius: 34,
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Profile Photo',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  hasPendingPhoto
+                      ? 'A new photo is ready. Save your profile to apply it.'
+                      : 'Choose a photo so your name is easier to recognize in requests and chats.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: const Color(0xFF6F6A63),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    FilledButton.tonalIcon(
+                      onPressed: onPickAvatar == null
+                          ? null
+                          : () {
+                              onPickAvatar!();
+                            },
+                      icon: const Icon(Icons.photo_camera_back_outlined),
+                      label: Text(
+                        hasPendingPhoto
+                            ? 'Choose Another Photo'
+                            : 'Change Photo',
+                      ),
+                    ),
+                    if (hasPendingPhoto)
+                      TextButton(
+                        onPressed: onClearSelection,
+                        child: const Text('Undo Photo Change'),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _PreferenceToggle extends StatelessWidget {
   const _PreferenceToggle({
     required this.title,
@@ -467,6 +685,59 @@ class _PreferenceToggle extends StatelessWidget {
             context,
           ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF6F6A63)),
         ),
+      ),
+    );
+  }
+}
+
+class _DangerZoneCard extends StatelessWidget {
+  const _DangerZoneCard({required this.isBusy, required this.onDeleteAccount});
+
+  final bool isBusy;
+  final Future<void> Function() onDeleteAccount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF1F1),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFF3C1C1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Delete Account',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFFB42318),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Remove your profile and permanently delete the data that belongs to your account if you no longer want to use the app.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF7A271A)),
+          ),
+          const SizedBox(height: 14),
+          OutlinedButton.icon(
+            onPressed: isBusy
+                ? null
+                : () {
+                    onDeleteAccount();
+                  },
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFFB42318),
+              side: const BorderSide(color: Color(0xFFF0A7A7)),
+            ),
+            icon: const Icon(Icons.delete_forever_outlined),
+            label: Text(isBusy ? 'Please wait...' : 'Delete Account'),
+          ),
+        ],
       ),
     );
   }

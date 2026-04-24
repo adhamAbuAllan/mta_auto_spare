@@ -1,23 +1,29 @@
 import '../../models/models.dart';
 
-enum RequestSegment { browse, mine }
+enum RequestSegment { browse, mine, assigned }
 
 class RequestState {
   const RequestState({
     this.isLoading = false,
     this.errorMessage,
     this.segment = RequestSegment.browse,
+    this.selectedStatusId,
     this.requests = const [],
   });
 
   final bool isLoading;
   final String? errorMessage;
   final RequestSegment segment;
+  final int? selectedStatusId;
   final List<PartRequest> requests;
 
   List<PartRequest> browseRequestsFor(int currentUserId) {
     return requests
-        .where((request) => request.requester != currentUserId)
+        .where(
+          (request) =>
+              request.requester != currentUserId &&
+              !request.isAssignedToCurrentUser,
+        )
         .toList(growable: false);
   }
 
@@ -27,10 +33,21 @@ class RequestState {
         .toList(growable: false);
   }
 
+  List<PartRequest> assignedRequestsFor(int currentUserId) {
+    return requests
+        .where(
+          (request) =>
+              request.requester != currentUserId &&
+              request.isAssignedToCurrentUser,
+        )
+        .toList(growable: false);
+  }
+
   RequestState copyWith({
     bool? isLoading,
     Object? errorMessage = _requestUnset,
     RequestSegment? segment,
+    Object? selectedStatusId = _requestUnset,
     List<PartRequest>? requests,
   }) {
     return RequestState(
@@ -39,6 +56,9 @@ class RequestState {
           ? this.errorMessage
           : errorMessage as String?,
       segment: segment ?? this.segment,
+      selectedStatusId: identical(selectedStatusId, _requestUnset)
+          ? this.selectedStatusId
+          : selectedStatusId as int?,
       requests: requests ?? this.requests,
     );
   }

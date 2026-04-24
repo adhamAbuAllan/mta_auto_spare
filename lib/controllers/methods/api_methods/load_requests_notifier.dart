@@ -27,8 +27,19 @@ class LoadRequestsNotifier extends StateNotifier<RequestState> {
     }
   }
 
+  Future<void> refreshTranslationLocale() async {
+    if (state.requests.isEmpty && !state.isLoading) {
+      return;
+    }
+    await load();
+  }
+
   void setSegment(RequestSegment segment) {
     state = state.copyWith(segment: segment);
+  }
+
+  void setStatusFilter(int? statusId) {
+    state = state.copyWith(selectedStatusId: statusId);
   }
 
   void prependRequest(PartRequest request) {

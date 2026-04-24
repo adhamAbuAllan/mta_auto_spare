@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../../constants/api_constants.dart';
+import '../../../localization/app_localizations_x.dart';
 import '../../../models/models.dart';
 
 class VoiceMessageCard extends StatefulWidget {
@@ -93,6 +94,7 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final foreground = widget.isMine ? Colors.white : const Color(0xFF1C1B18);
     final activeColor = widget.isMine
         ? const Color(0xFF93E8FF)
@@ -134,7 +136,9 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
                 : Icon(
                     _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                   ),
-            tooltip: _isPlaying ? 'Pause voice message' : 'Play voice message',
+            tooltip: _isPlaying
+                ? l10n.pauseVoiceMessage
+                : l10n.playVoiceMessage,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -230,7 +234,7 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
       }
       setState(() {
         _isReady = false;
-        _errorMessage = 'Unable to play voice message';
+        _errorMessage = context.l10n.unableToPlayVoiceMessage;
       });
     }
   }
@@ -315,7 +319,7 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
         return;
       }
       setState(() {
-        _errorMessage = 'Unable to seek voice message';
+        _errorMessage = context.l10n.unableToSeekVoiceMessage;
       });
     } finally {
       if (mounted) {

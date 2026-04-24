@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 
 import '../constants/api_constants.dart';
 import '../models/models.dart';
 import 'api_exception.dart';
+import 'dio_client.dart';
 
 class AuthApi {
   const AuthApi(this._dio);
@@ -68,6 +70,7 @@ class AuthApi {
     required bool chatPushEnabled,
     required bool chatMessagePreviewEnabled,
     List<int>? supportedCarModelIds,
+    RequestUploadImage? avatarImage,
   }) async {
     try {
       final payload = <String, dynamic>{
@@ -80,11 +83,50 @@ class AuthApi {
       if (supportedCarModelIds != null) {
         payload['supported_car_model_ids'] = supportedCarModelIds;
       }
+      final shouldUseMultipart = avatarImage != null;
+
+      Future<FormData> buildRetryData() async {
+        final formData = <String, dynamic>{
+          'name': name.trim(),
+          'phone': phone?.trim() ?? '',
+          'city': city?.trim() ?? '',
+          'chat_push_enabled': chatPushEnabled.toString(),
+          'chat_message_preview_enabled': chatMessagePreviewEnabled.toString(),
+        };
+        if (supportedCarModelIds != null) {
+          formData['supported_car_model_ids'] = supportedCarModelIds
+              .map((item) => item.toString())
+              .toList(growable: false);
+        }
+        if (avatarImage != null) {
+          formData['avatar'] = await MultipartFile.fromFile(
+            avatarImage.path,
+            filename: avatarImage.fileName,
+            contentType: MediaType.parse(avatarImage.contentType),
+          );
+        }
+        return FormData.fromMap(formData);
+      }
+
       final response = await _dio.patch(
         ApiEndpoints.me,
-        data: payload,
+        data: shouldUseMultipart ? await buildRetryData() : payload,
+        options: shouldUseMultipart
+            ? Options(
+                sendTimeout: ApiConstants.requestUploadSendTimeout,
+                extra: {AppDioClient.retryDataBuilderExtraKey: buildRetryData},
+              )
+            : null,
       );
       return MeProfile.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
+  Future<void> deleteAccount() async {
+    try {
+      await _dio.delete(ApiEndpoints.me);
     } on DioException catch (error) {
       throw ApiException.fromDioException(error);
     }

@@ -10,9 +10,11 @@ import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
+import '../../api/api_exception.dart';
 import '../../api/chat_socket_service.dart';
 import '../../controllers/methods/api_methods/load_conversations_notifier.dart';
 import '../../controllers/methods/api_methods/load_messages_notifier.dart';
+import '../../controllers/providers/api_provider.dart';
 import '../../controllers/providers/auth_provider.dart';
 import '../../controllers/providers/chat_provider.dart';
 import '../../controllers/providers/request_provider.dart';
@@ -23,6 +25,7 @@ import '../../session/session_state.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/empty_state_card.dart';
 import '../common_widgets/user_avatar.dart';
+import '../profile/user_profile_page.dart';
 import 'chat_formatters.dart';
 import 'widgets/message_bubble.dart';
 
@@ -67,6 +70,12 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   Duration _voiceRecordingDuration = Duration.zero;
   bool _isVoiceRecording = false;
   bool _isVoiceRecorderBusy = false;
+  int? _selectedSharedRequestId;
+  bool _isRequestAccessPanelExpanded = true;
+  bool _isLoadingSharedRequestState = false;
+  bool _isUpdatingSharedRequestState = false;
+  final Map<int, PartRequest> _sharedRequestsById = {};
+  final Map<int, List<PartRequestAccess>> _sharedAccessesByRequestId = {};
 
   @override
   void initState() {
@@ -85,9 +94,11 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
         if (!mounted) {
           return;
         }
+        final displayedState = _resolveDisplayedMessageState(next);
         setState(() {
-          _messageState = _resolveDisplayedMessageState(next);
+          _messageState = displayedState;
         });
+        unawaited(_refreshSharedRequestContext(displayedState.messages));
       },
     );
     _sessionSubscription = ref.listenManual<SessionState>(
@@ -126,6 +137,12 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
           _selectedImages = const [];
           _replyTarget = null;
           _selectedProduct = null;
+          _selectedSharedRequestId = null;
+          _isRequestAccessPanelExpanded = true;
+          _sharedRequestsById.clear();
+          _sharedAccessesByRequestId.clear();
+          _isLoadingSharedRequestState = false;
+          _isUpdatingSharedRequestState = false;
           _messageState = _resolveDisplayedMessageState(
             ref.read(messagesNotifierProvider),
           );
@@ -255,6 +272,24 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
         : isOtherOnline
         ? const Color(0xFF20A05A)
         : const Color(0xFFB9B2A8);
+    final sharedProducts = _sharedProductsFromMessages(messageState.messages);
+    final selectedSharedRequestId =
+        sharedProducts.any((product) => product.id == _selectedSharedRequestId)
+        ? _selectedSharedRequestId
+        : sharedProducts.isEmpty
+        ? null
+        : sharedProducts.first.id;
+    final selectedSharedProduct = selectedSharedRequestId == null
+        ? null
+        : sharedProducts.firstWhere(
+            (product) => product.id == selectedSharedRequestId,
+          );
+    final selectedSharedRequest = selectedSharedRequestId == null
+        ? null
+        : _sharedRequestsById[selectedSharedRequestId];
+    final selectedSharedAccesses = selectedSharedRequestId == null
+        ? const <PartRequestAccess>[]
+        : _sharedAccessesByRequestId[selectedSharedRequestId] ?? const [];
 
     if (_lastKnownOtherTyping != isOtherTyping) {
       _lastKnownOtherTyping = isOtherTyping;
@@ -272,7 +307,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
           title: title,
           connectionStatus: messageState.connectionStatus,
           statusLabel: isOtherTyping
-              ? 'Typing...'
+              ? context.l10n.typing
               : conversationPresenceLabel(
                   isOnline: isOtherOnline,
                   lastSeenAt: otherLastSeenAt,
@@ -283,8 +318,36 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
           avatarName: title,
           avatarUrl: participant?.user.avatar,
           presenceColor: presenceColor,
+          onProfileTap: otherUserId == null
+              ? null
+              : () => _openUserProfile(otherUserId),
         ),
         const SizedBox(height: 16),
+        if (selectedSharedProduct != null) ...[
+          _RequestAccessPanel(
+            sharedProducts: sharedProducts,
+            selectedProductId: selectedSharedRequestId,
+            selectedProduct: selectedSharedProduct,
+            selectedRequest: selectedSharedRequest,
+            accesses: selectedSharedAccesses,
+            currentUserId: currentUserId,
+            otherUserId: otherUserId,
+            isLoading: _isLoadingSharedRequestState,
+            isUpdating: _isUpdatingSharedRequestState,
+            isExpanded: _isRequestAccessPanelExpanded,
+            onToggleExpanded: () {
+              setState(() {
+                _isRequestAccessPanelExpanded = !_isRequestAccessPanelExpanded;
+              });
+            },
+            onSelectProduct: _selectSharedRequest,
+            onRequestAccess: () =>
+                _requestManagementAccess(selectedSharedProduct.id),
+            onApproveAccess: _approveSharedAccess,
+            onRejectAccess: _rejectSharedAccess,
+          ),
+          const SizedBox(height: 14),
+        ],
         Expanded(
           child: _buildMessagesBody(
             context,
@@ -352,9 +415,9 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
 
     if (messageState.messages.isEmpty) {
       return SingleChildScrollView(
-        child: const EmptyStateCard(
-          title: 'No messages yet',
-          message: 'Say hello and start the conversation.',
+        child: EmptyStateCard(
+          title: context.l10n.noMessagesYet,
+          message: context.l10n.noMessagesYetMessage,
           icon: Icons.forum_outlined,
         ),
       );
@@ -450,6 +513,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       ref.read(messagesNotifierProvider),
     );
     _syncConversationPreviewFromLoadedMessages(conversationId);
+    await _refreshSharedRequestContext(_messageState.messages);
     _keepLatestMessageVisible();
   }
 
@@ -480,12 +544,10 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       currentUserId: currentUserId,
       accessToken: accessToken,
     );
-    ref
-        .read(conversationsNotifierProvider.notifier)
-        .setActiveConversationId(conversationId);
     if (!mounted || widget.conversationId != conversationId) {
       return;
     }
+    _conversationsNotifier.setActiveConversationId(conversationId);
     _messagesNotifier.sendSeenIfNeeded();
   }
 
@@ -503,6 +565,233 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     }
     return _messagesNotifier.peek(widget.conversationId) ??
         MessageState(conversationId: widget.conversationId, isLoading: true);
+  }
+
+  List<PartRequestBrief> _sharedProductsFromMessages(
+    List<MessageModel> messages,
+  ) {
+    final products = <PartRequestBrief>[];
+    final seenIds = <int>{};
+
+    for (final message in messages.reversed) {
+      final product = message.product;
+      if (product == null || seenIds.contains(product.id)) {
+        continue;
+      }
+      seenIds.add(product.id);
+      products.add(product);
+    }
+
+    return products;
+  }
+
+  Future<void> _refreshSharedRequestContext(List<MessageModel> messages) async {
+    final sharedProducts = _sharedProductsFromMessages(messages);
+    final sharedIds = sharedProducts.map((product) => product.id).toSet();
+
+    if (sharedIds.isEmpty) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _selectedSharedRequestId = null;
+        _isLoadingSharedRequestState = false;
+        _sharedRequestsById.clear();
+        _sharedAccessesByRequestId.clear();
+      });
+      return;
+    }
+
+    final nextSelectedId = sharedIds.contains(_selectedSharedRequestId)
+        ? _selectedSharedRequestId
+        : sharedProducts.first.id;
+    final staleRequestIds = [
+      for (final requestId in _sharedRequestsById.keys)
+        if (!sharedIds.contains(requestId)) requestId,
+    ];
+
+    if (mounted) {
+      setState(() {
+        _selectedSharedRequestId = nextSelectedId;
+        for (final requestId in staleRequestIds) {
+          _sharedRequestsById.remove(requestId);
+          _sharedAccessesByRequestId.remove(requestId);
+        }
+      });
+    }
+
+    if (nextSelectedId != null) {
+      await _loadSharedRequestState(nextSelectedId);
+    }
+  }
+
+  Future<void> _loadSharedRequestState(
+    int requestId, {
+    bool forceReload = false,
+  }) async {
+    final hasRequest = _sharedRequestsById.containsKey(requestId);
+    final hasAccesses = _sharedAccessesByRequestId.containsKey(requestId);
+    if (!forceReload && hasRequest && hasAccesses) {
+      return;
+    }
+
+    if (mounted) {
+      setState(() => _isLoadingSharedRequestState = true);
+    }
+
+    try {
+      final requestApi = ref.read(requestApiProvider);
+      final request = forceReload || !hasRequest
+          ? await requestApi.getRequestById(requestId)
+          : _sharedRequestsById[requestId]!;
+      final accesses = forceReload || !hasAccesses
+          ? await requestApi.getRequestAccesses(
+              partRequestId: requestId,
+              conversationId: widget.conversationId,
+            )
+          : _sharedAccessesByRequestId[requestId]!;
+      ref.read(requestsNotifierProvider.notifier).upsertRequest(request);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _sharedRequestsById[requestId] = request;
+        _sharedAccessesByRequestId[requestId] = accesses;
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingSharedRequestState = false);
+      }
+    }
+  }
+
+  Future<void> _selectSharedRequest(int requestId) async {
+    if (_selectedSharedRequestId == requestId) {
+      return;
+    }
+
+    setState(() => _selectedSharedRequestId = requestId);
+    await _loadSharedRequestState(requestId);
+  }
+
+  Future<void> _requestManagementAccess(int requestId) async {
+    if (_isUpdatingSharedRequestState) {
+      return;
+    }
+
+    setState(() => _isUpdatingSharedRequestState = true);
+    try {
+      await ref
+          .read(requestApiProvider)
+          .requestManagementAccess(
+            partRequestId: requestId,
+            conversationId: widget.conversationId,
+          );
+      await _loadSharedRequestState(requestId, forceReload: true);
+      await ref.read(requestsNotifierProvider.notifier).load();
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.accessRequestSent)));
+    } on ApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.couldNotSendAccessRequest)),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isUpdatingSharedRequestState = false);
+      }
+    }
+  }
+
+  Future<void> _approveSharedAccess(PartRequestAccess access) async {
+    if (_isUpdatingSharedRequestState) {
+      return;
+    }
+
+    setState(() => _isUpdatingSharedRequestState = true);
+    try {
+      await ref.read(requestApiProvider).approveRequestAccess(access.id);
+      await _loadSharedRequestState(access.partRequest, forceReload: true);
+      await ref.read(requestsNotifierProvider.notifier).load();
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.accessRequestApproved)),
+      );
+    } on ApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.couldNotApproveAccessRequest)),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isUpdatingSharedRequestState = false);
+      }
+    }
+  }
+
+  Future<void> _rejectSharedAccess(PartRequestAccess access) async {
+    if (_isUpdatingSharedRequestState) {
+      return;
+    }
+
+    setState(() => _isUpdatingSharedRequestState = true);
+    try {
+      await ref.read(requestApiProvider).rejectRequestAccess(access.id);
+      await _loadSharedRequestState(access.partRequest, forceReload: true);
+      await ref.read(requestsNotifierProvider.notifier).load();
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.accessRequestRejected)),
+      );
+    } on ApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.couldNotRejectAccessRequest)),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isUpdatingSharedRequestState = false);
+      }
+    }
   }
 
   Future<void> _sendMessage({
@@ -568,6 +857,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     MessageModel message,
     int currentUserId,
   ) async {
+    final l10n = context.l10n;
     final canCopy = _canCopyMessage(message);
     final canEdit = _canEditMessage(message, currentUserId);
     final canDelete = _canDeleteForMe(message);
@@ -585,27 +875,27 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
               if (canCopy)
                 ListTile(
                   leading: const Icon(Icons.content_copy_rounded),
-                  title: const Text('Copy message'),
+                  title: Text(l10n.copyMessage),
                   onTap: () =>
                       Navigator.of(context).pop(_ChatMessageAction.copy),
                 ),
               if (canEdit)
                 ListTile(
                   leading: const Icon(Icons.edit_rounded),
-                  title: const Text('Edit message'),
+                  title: Text(l10n.editMessage),
                   onTap: () =>
                       Navigator.of(context).pop(_ChatMessageAction.edit),
                 ),
               if (canDelete)
                 ListTile(
                   leading: const Icon(Icons.delete_outline_rounded),
-                  title: const Text('Delete message'),
+                  title: Text(l10n.deleteMessage),
                   onTap: () =>
                       Navigator.of(context).pop(_ChatMessageAction.delete),
                 ),
               ListTile(
                 leading: const Icon(Icons.close_rounded),
-                title: const Text('Cancel'),
+                title: Text(l10n.cancel),
                 onTap: () =>
                     Navigator.of(context).pop(_ChatMessageAction.cancel),
               ),
@@ -622,7 +912,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     switch (action) {
       case _ChatMessageAction.copy:
         await Clipboard.setData(ClipboardData(text: message.text.trim()));
-        _showComposerSnackBar('Message copied.');
+        _showComposerSnackBar(l10n.messageCopied);
         break;
       case _ChatMessageAction.edit:
         await _editMessage(message);
@@ -636,6 +926,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   }
 
   Future<void> _editMessage(MessageModel message) async {
+    final l10n = context.l10n;
     final controller = TextEditingController(text: message.text);
     String draft = message.text;
 
@@ -648,7 +939,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
             final canSave =
                 trimmedDraft.isNotEmpty && trimmedDraft != message.text.trim();
             return AlertDialog(
-              title: const Text('Edit Message'),
+              title: Text(l10n.editMessageTitle),
               content: TextField(
                 controller: controller,
                 autofocus: true,
@@ -659,20 +950,18 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
                     draft = value;
                   });
                 },
-                decoration: const InputDecoration(
-                  hintText: 'Update your message',
-                ),
+                decoration: InputDecoration(hintText: l10n.updateYourMessage),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(l10n.cancel),
                 ),
                 FilledButton(
                   onPressed: canSave
                       ? () => Navigator.of(context).pop(trimmedDraft)
                       : null,
-                  child: const Text('Save'),
+                  child: Text(l10n.save),
                 ),
               ],
             );
@@ -694,7 +983,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       return;
     }
     if (updatedMessage == null) {
-      _showComposerSnackBar('Message could not be updated.');
+      _showComposerSnackBar(l10n.messageCouldNotBeUpdated);
       return;
     }
 
@@ -703,13 +992,14 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
         _replyTarget = updatedMessage;
       });
     }
-    _showComposerSnackBar('Message updated.');
+    _showComposerSnackBar(l10n.messageUpdated);
   }
 
   Future<void> _confirmDeleteMessage(
     MessageModel message,
     int currentUserId,
   ) async {
+    final l10n = context.l10n;
     final canDeleteForAll = _canDeleteForAll(message, currentUserId);
     final scope = await showModalBottomSheet<_ChatMessageDeleteScope>(
       context: context,
@@ -721,19 +1011,19 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
               if (canDeleteForAll)
                 ListTile(
                   leading: const Icon(Icons.delete_forever_rounded),
-                  title: const Text('Delete for all'),
+                  title: Text(l10n.deleteForAll),
                   onTap: () =>
                       Navigator.of(context).pop(_ChatMessageDeleteScope.all),
                 ),
               ListTile(
                 leading: const Icon(Icons.person_remove_alt_1_rounded),
-                title: const Text('Delete only me'),
+                title: Text(l10n.deleteOnlyMe),
                 onTap: () =>
                     Navigator.of(context).pop(_ChatMessageDeleteScope.me),
               ),
               ListTile(
                 leading: const Icon(Icons.close_rounded),
-                title: const Text('Cancel'),
+                title: Text(l10n.cancel),
                 onTap: () =>
                     Navigator.of(context).pop(_ChatMessageDeleteScope.cancel),
               ),
@@ -755,7 +1045,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       return;
     }
     if (!didDelete) {
-      _showComposerSnackBar('Message could not be deleted.');
+      _showComposerSnackBar(l10n.messageCouldNotBeDeleted);
       return;
     }
 
@@ -766,13 +1056,23 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     }
     _showComposerSnackBar(
       scope == _ChatMessageDeleteScope.all
-          ? 'Message deleted for everyone.'
-          : 'Message deleted for you.',
+          ? l10n.messageDeletedForEveryone
+          : l10n.messageDeletedForYou,
     );
   }
 
   bool _canCopyMessage(MessageModel message) {
     return !message.isDeleted && message.text.trim().isNotEmpty;
+  }
+
+  Future<void> _openUserProfile(int userId) async {
+    if (userId <= 0) {
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => UserProfilePage(userId: userId)),
+    );
   }
 
   bool _canEditMessage(MessageModel message, int currentUserId) {
@@ -796,15 +1096,14 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   }
 
   Future<void> _startVoiceRecording() async {
+    final l10n = context.l10n;
     if (_isVoiceRecording || _isVoiceRecorderBusy) {
       return;
     }
     if (_messageController.text.trim().isNotEmpty ||
         _selectedImages.isNotEmpty ||
         _selectedProduct != null) {
-      _showComposerSnackBar(
-        'Send or clear the current draft before recording a voice message.',
-      );
+      _showComposerSnackBar(l10n.sendOrClearDraftBeforeVoiceMessage);
       return;
     }
 
@@ -815,9 +1114,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     try {
       final hasPermission = await _audioRecorder.hasPermission();
       if (!hasPermission) {
-        _showComposerSnackBar(
-          'Microphone permission is required to record a voice message.',
-        );
+        _showComposerSnackBar(l10n.microphonePermissionRequiredForVoiceMessage);
         return;
       }
 
@@ -852,7 +1149,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       _startVoiceRecordingTicker();
       _keepLatestMessageVisible();
     } catch (_) {
-      _showComposerSnackBar('Voice recording could not start on this device.');
+      _showComposerSnackBar(l10n.voiceRecordingCouldNotStart);
     } finally {
       if (mounted) {
         setState(() {
@@ -863,6 +1160,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   }
 
   Future<void> _cancelVoiceRecording({bool silent = false}) async {
+    final l10n = context.l10n;
     if (_isVoiceRecorderBusy) {
       return;
     }
@@ -881,11 +1179,11 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
     try {
       await _audioRecorder.cancel();
       if (!silent) {
-        _showComposerSnackBar('Voice message discarded.');
+        _showComposerSnackBar(l10n.voiceMessageDiscarded);
       }
     } catch (_) {
       if (!silent) {
-        _showComposerSnackBar('Voice message could not be discarded cleanly.');
+        _showComposerSnackBar(l10n.voiceMessageDiscardFailed);
       }
     } finally {
       _resetVoiceRecordingState();
@@ -898,6 +1196,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   }
 
   Future<void> _stopAndSendVoiceMessage() async {
+    final l10n = context.l10n;
     if (!_isVoiceRecording || _isVoiceRecorderBusy) {
       return;
     }
@@ -910,7 +1209,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       final recordedPath = await _audioRecorder.stop();
       if (recordedPath == null || recordedPath.trim().isEmpty) {
         _resetVoiceRecordingState();
-        _showComposerSnackBar('No voice message was captured.');
+        _showComposerSnackBar(l10n.noVoiceMessageCaptured);
         return;
       }
 
@@ -925,7 +1224,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
       _resetVoiceRecordingState();
       await _sendMessage(attachmentsOverride: [attachment]);
     } catch (_) {
-      _showComposerSnackBar('Voice message could not be sent.');
+      _showComposerSnackBar(l10n.voiceMessageCouldNotBeSent);
       _resetVoiceRecordingState();
     } finally {
       if (mounted) {
@@ -1032,19 +1331,25 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage>
   }
 
   MessageReplyModel _replyPreviewFromMessage(MessageModel message) {
+    final l10n = context.l10n;
     return MessageReplyModel(
       id: message.id,
       sender: message.sender,
       text: message.isDeleted
-          ? 'Deleted message'
+          ? l10n.deletedMessage
           : message.text.trim().isNotEmpty
           ? message.text
           : message.media.any((attachment) => attachment.isAudio)
-          ? 'Voice message'
+          ? l10n.voiceMessage
           : message.media.any((attachment) => attachment.isImage)
-          ? 'Photo'
-          : message.product?.title ?? 'Attachment',
+          ? l10n.photo
+          : message.product?.title ?? l10n.attachment,
+      translatedText: message.text.trim().isNotEmpty
+          ? message.translatedText
+          : null,
+      textLanguage: message.textLanguage,
       product: message.isDeleted ? null : message.product,
+      translationTargetLanguage: message.translationTargetLanguage,
       clientTimestamp: message.clientTimestamp,
       serverTimestamp: message.serverTimestamp,
       editedAt: message.editedAt,
@@ -1202,6 +1507,7 @@ class _ChatHeader extends StatelessWidget {
     required this.avatarUrl,
     required this.presenceColor,
     required this.showBack,
+    this.onProfileTap,
     this.onBack,
   });
 
@@ -1212,6 +1518,7 @@ class _ChatHeader extends StatelessWidget {
   final String? avatarUrl;
   final Color? presenceColor;
   final bool showBack;
+  final VoidCallback? onProfileTap;
   final VoidCallback? onBack;
 
   @override
@@ -1227,61 +1534,330 @@ class _ChatHeader extends StatelessWidget {
           label: avatarName,
           imageUrl: avatarUrl,
           //   presenceColor: presenceColor,
+          onTap: onProfileTap,
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  if (presenceColor != null) ...[
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: presenceColor,
-                        shape: BoxShape.circle,
+          child: TextButton(
+            onPressed: onProfileTap,
+            style: TextButton.styleFrom(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    if (presenceColor != null) ...[
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: presenceColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    Expanded(
+                      child: Text(
+                        _connectionLabel(context, statusLabel),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: const Color(0xFF6F6A63),
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 8),
                   ],
-                  Expanded(
-                    child: Text(
-                      _connectionLabel(statusLabel),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFF6F6A63),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ],
     );
   }
 
-  String _connectionLabel(String fallbackStatus) {
+  String _connectionLabel(BuildContext context, String fallbackStatus) {
     return switch (connectionStatus) {
-      ChatConnectionStatus.connecting => 'Connecting...',
-      ChatConnectionStatus.reconnecting => 'Reconnecting...',
-      ChatConnectionStatus.failed => 'Live updates unavailable',
+      ChatConnectionStatus.connecting => context.l10n.connecting,
+      ChatConnectionStatus.reconnecting => context.l10n.reconnecting,
+      ChatConnectionStatus.failed => context.l10n.liveUpdatesUnavailable,
       ChatConnectionStatus.connected => fallbackStatus,
       ChatConnectionStatus.disconnected => fallbackStatus,
     };
+  }
+}
+
+class _RequestAccessPanel extends StatelessWidget {
+  const _RequestAccessPanel({
+    required this.sharedProducts,
+    required this.selectedProductId,
+    required this.selectedProduct,
+    required this.selectedRequest,
+    required this.accesses,
+    required this.currentUserId,
+    required this.otherUserId,
+    required this.isLoading,
+    required this.isUpdating,
+    required this.isExpanded,
+    required this.onToggleExpanded,
+    required this.onSelectProduct,
+    required this.onRequestAccess,
+    required this.onApproveAccess,
+    required this.onRejectAccess,
+  });
+
+  final List<PartRequestBrief> sharedProducts;
+  final int? selectedProductId;
+  final PartRequestBrief selectedProduct;
+  final PartRequest? selectedRequest;
+  final List<PartRequestAccess> accesses;
+  final int currentUserId;
+  final int? otherUserId;
+  final bool isLoading;
+  final bool isUpdating;
+  final bool isExpanded;
+  final VoidCallback onToggleExpanded;
+  final ValueChanged<int> onSelectProduct;
+  final Future<void> Function() onRequestAccess;
+  final Future<void> Function(PartRequestAccess access) onApproveAccess;
+  final Future<void> Function(PartRequestAccess access) onRejectAccess;
+
+  @override
+  Widget build(BuildContext context) {
+    final request = selectedRequest;
+    final statusLabel =
+        request?.statusDetails?.label ?? selectedProduct.statusDetails?.label;
+    final isOwner = request?.isOwner ?? false;
+    final hasManageAccess = request?.canUpdateStatus == true;
+
+    PartRequestAccess? myAccess;
+    PartRequestAccess? acceptedAccess;
+    PartRequestAccess? pendingOtherAccess;
+    for (final access in accesses) {
+      if (access.user == currentUserId) {
+        myAccess = access;
+      }
+      if (access.isAccepted && acceptedAccess == null) {
+        acceptedAccess = access;
+      }
+      if (otherUserId != null &&
+          access.user == otherUserId &&
+          access.isPending &&
+          pendingOtherAccess == null) {
+        pendingOtherAccess = access;
+      }
+    }
+
+    final infoText = switch ((
+      isOwner,
+      myAccess?.status,
+      acceptedAccess?.user,
+    )) {
+      (true, _, final acceptedUserId?) when acceptedUserId == otherUserId =>
+        context.l10n.thisChatCanManageRequestStatus,
+      (true, _, final acceptedUserId?) when acceptedUserId != otherUserId =>
+        context.l10n.thisRequestIsAssignedToAnotherSupplier,
+      (true, _, _) => context.l10n.noAccessRequestForThisRequestYet,
+      (false, 'accepted', _) => context.l10n.youCanChangeThisRequestStatusNow,
+      (false, 'pending', _) => context.l10n.waitingForOwnerApproval,
+      (false, 'rejected', _) => context.l10n.ownerRejectedYourAccessRequest,
+      _ => context.l10n.askOwnerForStatusAccess,
+    };
+    final pendingAccessForOther = pendingOtherAccess;
+    final toggleTooltip = isExpanded
+        ? context.l10n.collapseRequestControl
+        : context.l10n.expandRequestControl;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F2EC),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: const Color(0xFFE0D7CA)),
+      ),
+      child: AnimatedSize(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeInOutCubic,
+        alignment: Alignment.topCenter,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.l10n.requestControl,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w900),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        selectedProduct.displayTitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: const Color(0xFF0C4A63),
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                IconButton.filledTonal(
+                  tooltip: toggleTooltip,
+                  onPressed: onToggleExpanded,
+                  icon: Icon(
+                    isExpanded
+                        ? Icons.keyboard_arrow_up_rounded
+                        : Icons.keyboard_arrow_down_rounded,
+                  ),
+                ),
+              ],
+            ),
+            if (statusLabel != null && statusLabel.trim().isNotEmpty) ...[
+              // const SizedBox(height: 10),
+              // Container(
+              //   padding: const EdgeInsets.symmetric(
+              //     horizontal: 10,
+              //     vertical: 6,
+              //   ),
+              //   decoration: BoxDecoration(
+              //     color: const Color(0xFFE3EEF1),
+              //     borderRadius: BorderRadius.circular(999),
+              //   ),
+              //   child: Text(
+              //     statusLabel,
+              //     style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              //       color: const Color(0xFF0C4A63),
+              //       fontWeight: FontWeight.w800,
+              //     ),
+              //   ),
+              // ),
+            ],
+            if (isExpanded) ...[
+              const SizedBox(height: 12),
+              if (sharedProducts.length > 1)
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final product in sharedProducts)
+                      ChoiceChip(
+                        label: Text(product.displayTitle),
+                        selected: product.id == selectedProductId,
+                        onSelected: (_) => onSelectProduct(product.id),
+                      ),
+                  ],
+                ),
+              if (sharedProducts.length > 1) const SizedBox(height: 12),
+              if (isLoading && request == null)
+                const LinearProgressIndicator()
+              else
+                Text(
+                  infoText,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: const Color(0xFF6F6A63),
+                    height: 1.35,
+                  ),
+                ),
+              if (request?.grantedUser != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  context.l10n.currentManager(request!.grantedUser!.name),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: const Color(0xFF0C4A63),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 12),
+              if (isOwner && pendingAccessForOther != null)
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: isUpdating
+                          ? null
+                          : () => onApproveAccess(pendingAccessForOther),
+                      icon: Icon(
+                        isUpdating
+                            ? Icons.hourglass_top_rounded
+                            : Icons.check_circle_outline_rounded,
+                      ),
+                      label: Text(
+                        isUpdating
+                            ? context.l10n.approving
+                            : context.l10n.approveAccess,
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: isUpdating
+                          ? null
+                          : () => onRejectAccess(pendingAccessForOther),
+                      icon: const Icon(Icons.close_rounded),
+                      label: Text(context.l10n.rejectAccess),
+                    ),
+                  ],
+                )
+              else if (!isOwner &&
+                  !hasManageAccess &&
+                  myAccess?.status != 'pending')
+                FilledButton.tonalIcon(
+                  onPressed: isUpdating ? null : onRequestAccess,
+                  icon: Icon(
+                    isUpdating
+                        ? Icons.hourglass_top_rounded
+                        : Icons.lock_open_rounded,
+                  ),
+                  label: Text(
+                    isUpdating
+                        ? context.l10n.sendingRequest
+                        : context.l10n.requestAccess,
+                  ),
+                )
+              else if (!isOwner && myAccess?.status == 'pending')
+                Text(
+                  context.l10n.accessRequestPending,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: const Color(0xFF8A5A1F),
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+              else if (!isOwner && hasManageAccess)
+                Text(
+                  context.l10n.openAssignedRequestsToUpdateStatus,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: const Color(0xFF0C4A63),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -1378,7 +1954,7 @@ class _Composer extends StatelessWidget {
               Row(
                 children: [
                   IconButton.filledTonal(
-                    tooltip: 'Upload images',
+                    tooltip: context.l10n.uploadImages,
                     onPressed: isSending || isVoiceRecorderBusy
                         ? null
                         : onPickImages,
@@ -1393,8 +1969,8 @@ class _Composer extends StatelessWidget {
                       maxLines: 4,
                       textInputAction: TextInputAction.send,
                       enabled: !isVoiceRecorderBusy,
-                      decoration: const InputDecoration(
-                        hintText: 'Write a message...',
+                      decoration: InputDecoration(
+                        hintText: context.l10n.writeAMessage,
                         border: InputBorder.none,
                         filled: false,
                       ),
@@ -1427,8 +2003,8 @@ class _Composer extends StatelessWidget {
                                     : Icons.send_rounded,
                               ),
                               tooltip: isSending
-                                  ? 'Sending...'
-                                  : 'Send message',
+                                  ? context.l10n.sending
+                                  : context.l10n.sendMessage,
                             ),
                           ],
                         );
@@ -1451,8 +2027,8 @@ class _Composer extends StatelessWidget {
                                   : Icons.mic_rounded,
                             ),
                             tooltip: isVoiceRecorderBusy
-                                ? 'Preparing recorder...'
-                                : 'Record voice message',
+                                ? context.l10n.preparingRecorder
+                                : context.l10n.recordVoiceMessage,
                           ),
                         ],
                       );
@@ -1495,7 +2071,7 @@ class _VoiceRecordingComposer extends StatelessWidget {
           IconButton(
             onPressed: isBusy ? null : onCancel,
             icon: const Icon(Icons.delete_outline_rounded),
-            tooltip: 'Discard voice message',
+            tooltip: context.l10n.discardVoiceMessage,
           ),
           const SizedBox(width: 2),
           Expanded(
@@ -1543,7 +2119,9 @@ class _VoiceRecordingComposer extends StatelessWidget {
             icon: Icon(
               isBusy ? Icons.hourglass_top_rounded : Icons.send_rounded,
             ),
-            tooltip: isBusy ? 'Sending...' : 'Send voice message',
+            tooltip: isBusy
+                ? context.l10n.sending
+                : context.l10n.sendVoiceMessage,
           ),
         ],
       ),
@@ -1620,15 +2198,16 @@ class _ReplyPreviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final preview = message.isDeleted
-        ? 'Deleted message'
+        ? l10n.deletedMessage
         : message.text.trim().isNotEmpty
-        ? message.text
+        ? message.displayText
         : message.media.any((attachment) => attachment.isAudio)
-        ? 'Voice message'
+        ? l10n.voiceMessage
         : message.media.any((attachment) => attachment.isImage)
-        ? 'Photo'
-        : message.product?.title ?? 'Attachment';
+        ? l10n.photo
+        : message.product?.displayTitle ?? l10n.attachment;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
@@ -1644,7 +2223,7 @@ class _ReplyPreviewCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Replying to ${message.sender.name}',
+                  l10n.replyingTo(message.sender.name),
                   style: Theme.of(
                     context,
                   ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
@@ -1679,11 +2258,12 @@ class _ProductPreviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final priceLabel = switch ((product.minPrice, product.maxPrice)) {
       (final min?, final max?) => '$min - $max',
-      (final min?, null) => 'From $min',
-      (null, final max?) => 'Up to $max',
-      _ => 'No price range',
+      (final min?, null) => l10n.fromPrice(min.toString()),
+      (null, final max?) => l10n.upToPrice(max.toString()),
+      _ => l10n.noPriceRange,
     };
 
     return Container(
@@ -1703,7 +2283,7 @@ class _ProductPreviewCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Attached request',
+                  l10n.attachedRequest,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFFB35B00),
@@ -1711,7 +2291,7 @@ class _ProductPreviewCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  product.title,
+                  product.displayTitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(

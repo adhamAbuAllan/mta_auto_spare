@@ -85,3 +85,20 @@ Map<int, DateTime?> dateTimeMapByIntKeyFromJson(dynamic value) {
   });
   return result;
 }
+
+String translatedTextOrOriginal(String originalText, String? translatedText) {
+  final normalizedTranslation = translatedText?.trim() ?? '';
+  if (normalizedTranslation.isEmpty) {
+    return originalText;
+  }
+  return normalizedTranslation;
+}
+
+bool hasVisibleTranslation(String originalText, String? translatedText) {
+  final normalizedOriginal = originalText.trim();
+  final normalizedTranslation = translatedText?.trim() ?? '';
+  if (normalizedTranslation.isEmpty) {
+    return false;
+  }
+  return normalizedTranslation != normalizedOriginal;
+}

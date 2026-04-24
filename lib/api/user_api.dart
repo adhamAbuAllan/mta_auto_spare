@@ -20,6 +20,15 @@ class UserApi {
     }
   }
 
+  Future<PublicUserProfile> getUserById(int userId) async {
+    try {
+      final response = await _dio.get('${ApiEndpoints.users}$userId/');
+      return PublicUserProfile.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
   Future<MobileDevice> upsertMobileDevice(MobileDevice device) async {
     try {
       final response = await _dio.post(

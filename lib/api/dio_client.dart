@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../constants/api_constants.dart';
+import '../localization/app_locale.dart';
+import '../localization/app_locale_notifier.dart';
 import '../models/models.dart';
 import '../session/session_notifier.dart';
 
@@ -26,9 +28,14 @@ class AppDioClient {
           final skipAuth = options.extra['skipAuth'] == true;
           final session = ref.read(sessionNotifierProvider);
           final token = session.accessToken;
+          final effectiveLocale = resolveEffectiveAppLocale(
+            mode: ref.read(appLocaleProvider),
+            deviceLocale: currentDeviceLocale(),
+          );
           if (!skipAuth && token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
+          options.headers['Accept-Language'] = effectiveLocale.languageCode;
           handler.next(options);
         },
         onError: (error, handler) async {

@@ -40,9 +40,9 @@ void main() {
     await tester.pumpWidget(await _buildApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('Auto Spare Hub'), findsOneWidget);
-    expect(find.text('Sign In'), findsOneWidget);
-    expect(find.text('Create a New Account'), findsOneWidget);
+    expect(find.text('MTA Auto Spare'), findsOneWidget);
+    expect(find.text('Sign in'), findsOneWidget);
+    expect(find.text('Create new account'), findsOneWidget);
   });
 
   testWidgets('signed-in user lands on requests tab by default', (
@@ -625,6 +625,7 @@ void main() {
                 unreadCount: 3,
                 lastMessage: const ConversationLastMessagePreview(
                   id: 501,
+                  messageType: 'text',
                   text: 'Ready for pickup',
                   senderId: 1,
                   senderName: 'Buyer User',

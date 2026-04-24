@@ -35,15 +35,31 @@ class _MessageBubbleState extends State<MessageBubble> {
 
   double _dragOffset = 0;
   bool _didCrossReplyThreshold = false;
+  bool _showOriginal = false;
+
+  @override
+  void didUpdateWidget(covariant MessageBubble oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.message.id != widget.message.id) {
+      _showOriginal = false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final bubbleColor = widget.isMine
         ? const Color(0xFF116466)
         : const Color(0xFFF2EEE7);
     final foreground = widget.isMine ? Colors.white : const Color(0xFF1C1B18);
     final receiptState = widget.message.receiptStateFor(widget.currentUserId);
-    final bodyText = _messageBody(widget.message);
+    final hasTranslatedContent = widget.message.hasTranslatedContent;
+    final showOriginalText = _showOriginal && hasTranslatedContent;
+    final bodyText = _messageBody(
+      widget.message,
+      l10n,
+      showOriginalText: showOriginalText,
+    );
     final swipeProgress = (_dragOffset / _replyTriggerOffset).clamp(0.0, 1.0);
     final showDeletedPlaceholder = widget.message.isDeleted;
 
@@ -154,7 +170,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: Text(
-                                '${widget.message.replyTo!.sender.name}: ${_replyPreviewText(widget.message.replyTo!)}',
+                                '${widget.message.replyTo!.sender.name}: ${_replyPreviewText(widget.message.replyTo!, l10n, showOriginalText: showOriginalText)}',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.bodySmall
@@ -200,12 +216,56 @@ class _MessageBubbleState extends State<MessageBubble> {
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: Text(
-                                'Request: ${widget.message.product!.title}',
+                                l10n.requestWithTitle(
+                                  showOriginalText
+                                      ? widget.message.product!.title
+                                      : widget.message.product!.displayTitle,
+                                ),
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(
                                       color: foreground,
                                       fontWeight: FontWeight.w700,
                                     ),
+                              ),
+                            ),
+                            if (widget.message.product!.statusDetails !=
+                                null) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                widget.message.product!.statusDetails!.label,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: foreground.withValues(alpha: 0.78),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                              ),
+                            ],
+                          ],
+                          if (!showDeletedPlaceholder &&
+                              hasTranslatedContent) ...[
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: TextButton(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: foreground.withValues(
+                                    alpha: 0.88,
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _showOriginal = !_showOriginal;
+                                  });
+                                },
+                                child: Text(
+                                  _showOriginal
+                                      ? l10n.showTranslation
+                                      : l10n.showOriginal,
+                                ),
                               ),
                             ),
                           ],
@@ -218,7 +278,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                                 if (widget.message.editedAt != null &&
                                     !widget.message.isDeleted) ...[
                                   Text(
-                                    'Edited',
+                                    l10n.edited,
                                     style: Theme.of(context)
                                         .textTheme
                                         .labelSmall
@@ -307,12 +367,16 @@ class _MessageBubbleState extends State<MessageBubble> {
     });
   }
 
-  String _messageBody(MessageModel message) {
+  String _messageBody(
+    MessageModel message,
+    dynamic l10n, {
+    required bool showOriginalText,
+  }) {
     if (message.isDeleted) {
-      return 'This message was deleted';
+      return l10n.thisMessageWasDeleted;
     }
     if (message.text.trim().isNotEmpty) {
-      return message.text;
+      return showOriginalText ? message.text : message.displayText;
     }
     if (message.messageType == 'media' && message.media.isNotEmpty) {
       if (message.media.every((attachment) => attachment.isAudio)) {
@@ -320,24 +384,30 @@ class _MessageBubbleState extends State<MessageBubble> {
       }
       return message.media.every((attachment) => attachment.isImage)
           ? message.media.length == 1
-                ? 'Photo'
-                : '${message.media.length} photos'
-          : 'Sent ${message.media.length} attachment(s)';
+                ? l10n.photo
+                : l10n.photosCount(message.media.length)
+          : l10n.sentAttachmentsCount(message.media.length);
     }
     if (message.messageType == 'product' && message.product != null) {
-      return 'Shared a request';
+      return l10n.sharedRequest;
     }
-    return 'Message';
+    return l10n.messageLabel;
   }
 
-  String _replyPreviewText(MessageReplyModel reply) {
+  String _replyPreviewText(
+    MessageReplyModel reply,
+    dynamic l10n, {
+    required bool showOriginalText,
+  }) {
     if (reply.isDeleted) {
-      return 'Deleted message';
+      return l10n.deletedMessage;
     }
     if (reply.text.trim().isNotEmpty) {
-      return reply.text;
+      return showOriginalText ? reply.text : reply.displayText;
     }
-    return reply.product?.title ?? 'Attachment';
+    return showOriginalText
+        ? reply.product?.title ?? l10n.attachment
+        : reply.product?.displayTitle ?? l10n.attachment;
   }
 }
 

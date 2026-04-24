@@ -14,12 +14,14 @@ enum ChatConnectionStatus {
 }
 
 class ChatSocketService {
-  ChatSocketService();
+  ChatSocketService({String Function()? resolveLanguageCode})
+    : _resolveLanguageCode = resolveLanguageCode ?? _defaultLanguageCode;
 
   final StreamController<ChatSocketEvent> _eventsController =
       StreamController<ChatSocketEvent>.broadcast();
   final StreamController<ChatConnectionStatus> _statusController =
       StreamController<ChatConnectionStatus>.broadcast();
+  final String Function() _resolveLanguageCode;
 
   WebSocket? _socket;
   StreamSubscription<dynamic>? _socketSubscription;
@@ -27,6 +29,7 @@ class ChatSocketService {
   Timer? _reconnectTimer;
   int? _conversationId;
   String? _token;
+  String? _languageCode;
   bool _shouldReconnect = false;
   bool _isPaused = false;
   bool _isDisposed = false;
@@ -50,6 +53,7 @@ class ChatSocketService {
     final sameConnection =
         _conversationId == conversationId &&
         _token == token &&
+        _languageCode == _resolveLanguageCode().trim() &&
         (_status == ChatConnectionStatus.connected ||
             _status == ChatConnectionStatus.connecting ||
             _status == ChatConnectionStatus.reconnecting);
@@ -71,6 +75,7 @@ class ChatSocketService {
     await _closeSocket();
     _conversationId = null;
     _token = null;
+    _languageCode = null;
     _setStatus(ChatConnectionStatus.disconnected);
   }
 
@@ -114,6 +119,7 @@ class ChatSocketService {
   Future<void> _openSocket({required bool isReconnect}) async {
     final conversationId = _conversationId;
     final token = _token;
+    final languageCode = _resolveLanguageCode().trim();
     if (_isDisposed ||
         _isPaused ||
         conversationId == null ||
@@ -129,10 +135,12 @@ class ChatSocketService {
           ? ChatConnectionStatus.reconnecting
           : ChatConnectionStatus.connecting,
     );
+    _languageCode = languageCode;
 
     final uri = ApiConstants.buildChatSocketUri(
       conversationId: conversationId,
       token: token,
+      languageCode: languageCode,
     );
 
     try {
@@ -253,4 +261,6 @@ class ChatSocketService {
     _status = next;
     _statusController.add(next);
   }
+
+  static String _defaultLanguageCode() => 'en';
 }

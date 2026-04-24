@@ -34,9 +34,24 @@ String conversationPreview(
   if (lastMessage.isDeleted) {
     return l10n.thisMessageWasDeleted;
   }
-  return lastMessage.text.trim().isEmpty
-      ? l10n.newMessage
-      : lastMessage.text.trim();
+
+  final translatedPreview = lastMessage.displayText.trim();
+  if (translatedPreview.isNotEmpty) {
+    return translatedPreview;
+  }
+
+  switch (lastMessage.messageType) {
+    case 'product':
+      final title = lastMessage.product?.displayTitle.trim();
+      if (title != null && title.isNotEmpty) {
+        return l10n.requestWithTitle(title);
+      }
+      return l10n.sharedRequest;
+    case 'media':
+      return l10n.newMessage;
+    default:
+      return l10n.newMessage;
+  }
 }
 
 ConversationParticipantRead? otherParticipant(

@@ -238,4 +238,405 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userRole => 'User';
+
+  @override
+  String get attachment => 'Attachment';
+
+  @override
+  String get attachedRequest => 'Attached request';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get copyMessage => 'Copy message';
+
+  @override
+  String get deleteForAll => 'Delete for all';
+
+  @override
+  String get deleteMessage => 'Delete message';
+
+  @override
+  String get deleteOnlyMe => 'Delete only for me';
+
+  @override
+  String get deletedMessage => 'Deleted message';
+
+  @override
+  String get discardVoiceMessage => 'Discard voice message';
+
+  @override
+  String get editMessage => 'Edit message';
+
+  @override
+  String get editMessageTitle => 'Edit message';
+
+  @override
+  String get edited => 'Edited';
+
+  @override
+  String fromPrice(String value) {
+    return 'From $value';
+  }
+
+  @override
+  String get messageCopied => 'Message copied.';
+
+  @override
+  String get messageCouldNotBeDeleted => 'Message could not be deleted.';
+
+  @override
+  String get messageCouldNotBeUpdated => 'Message could not be updated.';
+
+  @override
+  String get messageDeletedForEveryone => 'Message deleted for everyone.';
+
+  @override
+  String get messageDeletedForYou => 'Message deleted for you.';
+
+  @override
+  String get messageLabel => 'Message';
+
+  @override
+  String get messageUpdated => 'Message updated.';
+
+  @override
+  String get microphonePermissionRequiredForVoiceMessage =>
+      'Microphone permission is required to record a voice message.';
+
+  @override
+  String get noMessagesYetMessage => 'Say hello and start the conversation.';
+
+  @override
+  String get noPriceRange => 'No price range';
+
+  @override
+  String get noVoiceMessageCaptured => 'No voice message was captured.';
+
+  @override
+  String get pauseVoiceMessage => 'Pause voice message';
+
+  @override
+  String get photo => 'Photo';
+
+  @override
+  String photosCount(int count) {
+    return '$count photos';
+  }
+
+  @override
+  String get playVoiceMessage => 'Play voice message';
+
+  @override
+  String get preparingRecorder => 'Preparing recorder...';
+
+  @override
+  String get recordVoiceMessage => 'Record voice message';
+
+  @override
+  String replyingTo(String name) {
+    return 'Replying to $name';
+  }
+
+  @override
+  String requestWithTitle(String title) {
+    return 'Request: $title';
+  }
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get sendMessage => 'Send message';
+
+  @override
+  String get sendOrClearDraftBeforeVoiceMessage =>
+      'Send or clear the current draft before recording a voice message.';
+
+  @override
+  String get sending => 'Sending...';
+
+  @override
+  String get sendVoiceMessage => 'Send voice message';
+
+  @override
+  String sentAttachmentsCount(int count) {
+    return 'Sent $count attachment(s)';
+  }
+
+  @override
+  String get sharedRequest => 'Shared a request';
+
+  @override
+  String get showOriginal => 'Show original';
+
+  @override
+  String get showTranslation => 'Show translation';
+
+  @override
+  String get typing => 'Typing...';
+
+  @override
+  String get unableToPlayVoiceMessage => 'Unable to play voice message';
+
+  @override
+  String get unableToSeekVoiceMessage => 'Unable to seek voice message';
+
+  @override
+  String get updateYourMessage => 'Update your message';
+
+  @override
+  String upToPrice(String value) {
+    return 'Up to $value';
+  }
+
+  @override
+  String get uploadImages => 'Upload images';
+
+  @override
+  String get voiceMessage => 'Voice message';
+
+  @override
+  String get voiceMessageCouldNotBeSent => 'Voice message could not be sent.';
+
+  @override
+  String get voiceMessageDiscarded => 'Voice message discarded.';
+
+  @override
+  String get voiceMessageDiscardFailed =>
+      'Voice message could not be discarded cleanly.';
+
+  @override
+  String get voiceRecordingCouldNotStart =>
+      'Voice recording could not start on this device.';
+
+  @override
+  String get writeAMessage => 'Write a message...';
+
+  @override
+  String get connecting => 'Connecting...';
+
+  @override
+  String get liveUpdatesUnavailable => 'Live updates unavailable';
+
+  @override
+  String get reconnecting => 'Reconnecting...';
+
+  @override
+  String get marketplaceUser => 'Marketplace user';
+
+  @override
+  String get refreshRequests => 'Refresh requests';
+
+  @override
+  String get browseRequestPostsFromOtherSellers =>
+      'Browse request posts from other sellers.';
+
+  @override
+  String get seeRequestPostsYouCreated => 'See the request posts you created.';
+
+  @override
+  String get browseRequests => 'Browse Requests';
+
+  @override
+  String get myRequests => 'My Requests';
+
+  @override
+  String get noRequestsYet => 'No requests yet';
+
+  @override
+  String get createFirstRequestPostMessage =>
+      'Create your first request post and it will show up here.';
+
+  @override
+  String get noSellerRequestsYet => 'No seller requests yet';
+
+  @override
+  String get noSellerRequestsYetMessage =>
+      'There are no request posts from other sellers yet. Pull to refresh later.';
+
+  @override
+  String get createRequest => 'Create Request';
+
+  @override
+  String get deleteRequest => 'Delete Request';
+
+  @override
+  String deleteRequestConfirmation(String title) {
+    return 'Delete \"$title\"? This request post will be removed from your list.';
+  }
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get deleting => 'Deleting...';
+
+  @override
+  String get chatSeller => 'Chat Seller';
+
+  @override
+  String get opening => 'Opening...';
+
+  @override
+  String get requestDeletedSuccessfully => 'Request deleted successfully.';
+
+  @override
+  String get couldNotDeleteRequest => 'Could not delete the request.';
+
+  @override
+  String get couldNotOpenConversation => 'Could not open the conversation.';
+
+  @override
+  String get requestAttachedResendHint =>
+      'The request is attached in the chat composer so you can resend it.';
+
+  @override
+  String get initialRequestCouldNotBeSentAutomatically =>
+      'The chat opened, but the initial request could not be sent automatically.';
+
+  @override
+  String welcomeBackUser(String name) {
+    return 'Welcome back, $name';
+  }
+
+  @override
+  String get browse => 'Browse';
+
+  @override
+  String get mine => 'Mine';
+
+  @override
+  String get assigned => 'Assigned';
+
+  @override
+  String get assignedRequests => 'Assigned Requests';
+
+  @override
+  String get allStatuses => 'All Statuses';
+
+  @override
+  String get cityNotSet => 'City not set';
+
+  @override
+  String get thisRequestBelongsToYou => 'This request belongs to you.';
+
+  @override
+  String get openChatWithSellerBehindRequest =>
+      'Open a chat with the seller behind this request.';
+
+  @override
+  String get requestsYouCanManageNow => 'Requests you can manage right now.';
+
+  @override
+  String get noAssignedRequestsYet => 'No assigned requests yet';
+
+  @override
+  String get noAssignedRequestsYetMessage =>
+      'Once an owner approves your access, the request will appear here.';
+
+  @override
+  String get youCanManageThisRequestStatus =>
+      'You can manage this request status.';
+
+  @override
+  String get changeStatus => 'Change Status';
+
+  @override
+  String get requestStatusUpdated => 'Request status updated.';
+
+  @override
+  String get couldNotUpdateRequestStatus =>
+      'Could not update the request status.';
+
+  @override
+  String get updatingStatus => 'Updating...';
+
+  @override
+  String get requestControl => 'Request Control';
+
+  @override
+  String get thisChatCanManageRequestStatus =>
+      'The supplier in this chat can manage this request status now.';
+
+  @override
+  String get thisRequestIsAssignedToAnotherSupplier =>
+      'This request is currently assigned to another supplier.';
+
+  @override
+  String get noAccessRequestForThisRequestYet =>
+      'No access request has been sent for this request yet.';
+
+  @override
+  String get youCanChangeThisRequestStatusNow =>
+      'You can change this request status now.';
+
+  @override
+  String get waitingForOwnerApproval =>
+      'Waiting for the owner to approve your access request.';
+
+  @override
+  String get ownerRejectedYourAccessRequest =>
+      'The owner rejected your access request.';
+
+  @override
+  String get askOwnerForStatusAccess =>
+      'Ask the owner for permission to manage this request status.';
+
+  @override
+  String currentManager(String name) {
+    return 'Current manager: $name';
+  }
+
+  @override
+  String get approving => 'Approving...';
+
+  @override
+  String get approveAccess => 'Approve Access';
+
+  @override
+  String get rejectAccess => 'Reject Access';
+
+  @override
+  String get sendingRequest => 'Sending...';
+
+  @override
+  String get requestAccess => 'Request Access';
+
+  @override
+  String get accessRequestPending => 'Your access request is pending.';
+
+  @override
+  String get openAssignedRequestsToUpdateStatus =>
+      'Open Assigned Requests to update the status anytime.';
+
+  @override
+  String get accessRequestSent => 'Access request sent.';
+
+  @override
+  String get couldNotSendAccessRequest => 'Could not send the access request.';
+
+  @override
+  String get accessRequestApproved => 'Access request approved.';
+
+  @override
+  String get couldNotApproveAccessRequest =>
+      'Could not approve the access request.';
+
+  @override
+  String get accessRequestRejected => 'Access request rejected.';
+
+  @override
+  String get couldNotRejectAccessRequest =>
+      'Could not reject the access request.';
+
+  @override
+  String get expandRequestControl => 'Expand request controls';
+
+  @override
+  String get collapseRequestControl => 'Collapse request controls';
 }

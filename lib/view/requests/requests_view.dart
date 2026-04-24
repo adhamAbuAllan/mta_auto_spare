@@ -7,12 +7,16 @@ import '../../controllers/providers/api_provider.dart';
 import '../../controllers/providers/chat_provider.dart';
 import '../../controllers/providers/request_provider.dart';
 import '../../controllers/statuses/request_state.dart';
+import '../../localization/app_localizations_x.dart';
 import '../../models/models.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/app_panel.dart';
 import '../common_widgets/empty_state_card.dart';
+import '../profile/user_profile_page.dart';
 import 'create_request_page.dart';
+import 'request_post_page.dart';
 import 'widgets/request_card.dart';
+import 'widgets/request_status_sheet.dart';
 
 class RequestsView extends ConsumerStatefulWidget {
   const RequestsView({
@@ -31,6 +35,7 @@ class RequestsView extends ConsumerStatefulWidget {
 class _RequestsViewState extends ConsumerState<RequestsView> {
   int? _pendingChatRequestId;
   int? _deletingRequestId;
+  int? _updatingStatusRequestId;
 
   @override
   void initState() {
@@ -48,8 +53,10 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     final requestState = ref.watch(requestsNotifierProvider);
     final currentUser = ref.watch(currentSessionProvider).profile;
     final currentUserId = currentUser?.id;
+    final requestStatusesAsync = ref.watch(requestStatusesProvider);
     final browseRequests = ref.watch(browseRequestsProvider);
     final myRequests = ref.watch(myRequestsProvider);
+    final assignedRequests = ref.watch(assignedRequestsProvider);
     final activeRequests = ref.watch(activeRequestsProvider);
 
     final listBody = _buildListBody(
@@ -67,25 +74,26 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
           slivers: [
             SliverToBoxAdapter(
               child: _RequestsHero(
-                userName: currentUser?.name ?? 'Marketplace user',
+                userName: currentUser?.name ?? context.l10n.marketplaceUser,
                 browseCount: browseRequests.length,
                 mineCount: myRequests.length,
+                assignedCount: assignedRequests.length,
                 onCreateRequest: _openCreateRequest,
               ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 18)),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
             SliverToBoxAdapter(
               child: Row(
                 children: [
                   Expanded(
                     child: Text(
-                      'Requests',
+                      context.l10n.requests,
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(fontWeight: FontWeight.w900),
                     ),
                   ),
                   IconButton.filledTonal(
-                    tooltip: 'Refresh requests',
+                    tooltip: context.l10n.refreshRequests,
                     onPressed: requestState.isLoading
                         ? null
                         : () => ref
@@ -99,9 +107,13 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
             const SliverToBoxAdapter(child: SizedBox(height: 8)),
             SliverToBoxAdapter(
               child: Text(
-                requestState.segment == RequestSegment.browse
-                    ? 'Browse request posts from other sellers.'
-                    : 'See the request posts you created.',
+                switch (requestState.segment) {
+                  RequestSegment.browse =>
+                    context.l10n.browseRequestPostsFromOtherSellers,
+                  RequestSegment.mine => context.l10n.seeRequestPostsYouCreated,
+                  RequestSegment.assigned =>
+                    context.l10n.requestsYouCanManageNow,
+                },
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: const Color(0xFF6F6A63),
                 ),
@@ -112,16 +124,21 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: SegmentedButton<RequestSegment>(
-                  segments: const [
+                  segments: [
                     ButtonSegment<RequestSegment>(
                       value: RequestSegment.browse,
-                      label: Text('Browse Requests'),
+                      label: Text(context.l10n.browseRequests),
                       icon: Icon(Icons.travel_explore_rounded),
                     ),
                     ButtonSegment<RequestSegment>(
                       value: RequestSegment.mine,
-                      label: Text('My Requests'),
+                      label: Text(context.l10n.myRequests),
                       icon: Icon(Icons.assignment_outlined),
+                    ),
+                    ButtonSegment<RequestSegment>(
+                      value: RequestSegment.assigned,
+                      label: Text(context.l10n.assignedRequests),
+                      icon: Icon(Icons.task_alt_rounded),
                     ),
                   ],
                   selected: {requestState.segment},
@@ -133,6 +150,45 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
                 ),
               ),
             ),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+            SliverToBoxAdapter(
+              child: requestStatusesAsync.when(
+                data: (statuses) {
+                  final chips = <Widget>[
+                    FilterChip(
+                      label: Text(context.l10n.allStatuses),
+                      selected: requestState.selectedStatusId == null,
+                      onSelected: (_) {
+                        ref
+                            .read(requestsNotifierProvider.notifier)
+                            .setStatusFilter(null);
+                      },
+                    ),
+                    for (final status in statuses)
+                      FilterChip(
+                        label: Text(status.label),
+                        selected: requestState.selectedStatusId == status.id,
+                        onSelected: (_) {
+                          ref
+                              .read(requestsNotifierProvider.notifier)
+                              .setStatusFilter(status.id);
+                        },
+                      ),
+                  ];
+                  return SizedBox(
+                    height: 42,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: chips.length,
+                      separatorBuilder: (_, _) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) => chips[index],
+                    ),
+                  );
+                },
+                error: (_, _) => const SizedBox.shrink(),
+                loading: () => const LinearProgressIndicator(),
+              ),
+            ),
             if (requestState.errorMessage != null &&
                 requestState.requests.isNotEmpty) ...[
               const SliverToBoxAdapter(child: SizedBox(height: 16)),
@@ -140,7 +196,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
                 child: AppErrorCard(message: requestState.errorMessage!),
               ),
             ],
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
             listBody,
           ],
         ),
@@ -173,17 +229,28 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
 
     if (activeRequests.isEmpty) {
       final isMine = requestState.segment == RequestSegment.mine;
+      final isAssigned = requestState.segment == RequestSegment.assigned;
       return SliverFillRemaining(
         hasScrollBody: false,
         child: Center(
           child: EmptyStateCard(
-            title: isMine ? 'No requests yet' : 'No seller requests yet',
+            title: isMine
+                ? context.l10n.noRequestsYet
+                : isAssigned
+                ? context.l10n.noAssignedRequestsYet
+                : context.l10n.noSellerRequestsYet,
             message: isMine
-                ? 'Create your first request post and it will show up here.'
-                : 'There are no request posts from other sellers yet. Pull to refresh later.',
-            actionLabel: isMine ? 'Create Request' : null,
+                ? context.l10n.createFirstRequestPostMessage
+                : isAssigned
+                ? context.l10n.noAssignedRequestsYetMessage
+                : context.l10n.noSellerRequestsYetMessage,
+            actionLabel: isMine ? context.l10n.createRequest : null,
             onAction: isMine ? _openCreateRequest : null,
-            icon: isMine ? Icons.add_box_outlined : Icons.inventory_2_outlined,
+            icon: isMine
+                ? Icons.add_box_outlined
+                : isAssigned
+                ? Icons.task_alt_outlined
+                : Icons.inventory_2_outlined,
           ),
         ),
       );
@@ -195,15 +262,22 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
         final request = activeRequests[index];
         final isMine =
             currentUserId != null && request.requester == currentUserId;
+        final canChangeStatus = request.canUpdateStatus;
 
         return RequestCard(
           request: request,
           isMine: isMine,
+          canChangeStatus: canChangeStatus,
           isChatLoading: _pendingChatRequestId == request.id,
           isDeleteLoading: _deletingRequestId == request.id,
+          onViewTap: () => _openRequest(request),
           onChatTap: () => _startConversation(request),
+          onChangeStatusTap: canChangeStatus
+              ? () => _changeRequestStatus(request)
+              : null,
           onEditTap: isMine ? () => _openEditRequest(request) : null,
           onDeleteTap: isMine ? () => _confirmDeleteRequest(request) : null,
+          onRequesterTap: () => _openUserProfile(request.requester),
         );
       },
       separatorBuilder: (context, index) => const SizedBox(height: 14),
@@ -224,6 +298,33 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     );
   }
 
+  Future<void> _openRequest(PartRequest request) async {
+    final requestId = request.id;
+    if (requestId == null) {
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => RequestPostPage(
+          requestId: requestId,
+          initialRequest: request,
+          sellerName: request.requesterDetails?.name,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openUserProfile(int userId) async {
+    if (userId <= 0) {
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => UserProfilePage(userId: userId)),
+    );
+  }
+
   Future<void> _confirmDeleteRequest(PartRequest request) async {
     final requestId = request.id;
     if (requestId == null) {
@@ -234,18 +335,18 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Delete Request'),
+          title: Text(context.l10n.deleteRequest),
           content: Text(
-            'Delete "${request.title}"? This request post will be removed from your list.',
+            context.l10n.deleteRequestConfirmation(request.displayTitle),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Delete'),
+              child: Text(context.l10n.delete),
             ),
           ],
         );
@@ -265,7 +366,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Request deleted successfully.')),
+        SnackBar(content: Text(context.l10n.requestDeletedSuccessfully)),
       );
     } on ApiException catch (error) {
       if (!mounted) {
@@ -279,11 +380,70 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not delete the request.')),
+        SnackBar(content: Text(context.l10n.couldNotDeleteRequest)),
       );
     } finally {
       if (mounted) {
         setState(() => _deletingRequestId = null);
+      }
+    }
+  }
+
+  Future<void> _changeRequestStatus(PartRequest request) async {
+    final requestId = request.id;
+    if (requestId == null || _updatingStatusRequestId != null) {
+      return;
+    }
+
+    try {
+      final statuses = await ref.read(requestStatusesProvider.future);
+      if (!mounted) {
+        return;
+      }
+
+      final selectedStatus = await showRequestStatusSheet(
+        context,
+        statuses: statuses,
+        request: request,
+      );
+      if (!mounted ||
+          selectedStatus == null ||
+          selectedStatus.id == null ||
+          selectedStatus.id == request.status) {
+        return;
+      }
+
+      setState(() => _updatingStatusRequestId = requestId);
+      final updatedRequest = await ref
+          .read(requestApiProvider)
+          .updateRequestStatus(
+            requestId: requestId,
+            statusId: selectedStatus.id!,
+          );
+      ref.read(requestsNotifierProvider.notifier).upsertRequest(updatedRequest);
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.requestStatusUpdated)),
+      );
+    } on ApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.couldNotUpdateRequestStatus)),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _updatingStatusRequestId = null);
       }
     }
   }
@@ -319,7 +479,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     final ensureState = ref.read(ensureConversationNotifierProvider);
     if (conversationId == null) {
       final message =
-          ensureState.errorMessage ?? 'Could not open the conversation.';
+          ensureState.errorMessage ?? context.l10n.couldNotOpenConversation;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
@@ -329,9 +489,12 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     final requestBrief = PartRequestBrief(
       id: requestId,
       title: request.title,
+      translatedTitle: request.translatedTitle,
+      titleLanguage: request.titleLanguage,
       minPrice: request.minPrice,
       maxPrice: request.maxPrice,
       carModel: request.carModel,
+      translationTargetLanguage: request.translationTargetLanguage,
     );
     var shouldStageSharedRequest = true;
 
@@ -355,7 +518,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '${error.message} The request is attached in the chat composer so you can resend it.',
+              '${error.message} ${context.l10n.requestAttachedResendHint}',
             ),
           ),
         );
@@ -364,9 +527,9 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
           return;
         }
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'The chat opened, but the initial request could not be sent automatically.',
+              context.l10n.initialRequestCouldNotBeSentAutomatically,
             ),
           ),
         );
@@ -390,12 +553,14 @@ class _RequestsHero extends StatelessWidget {
     required this.userName,
     required this.browseCount,
     required this.mineCount,
+    required this.assignedCount,
     required this.onCreateRequest,
   });
 
   final String userName;
   final int browseCount;
   final int mineCount;
+  final int assignedCount;
   final VoidCallback onCreateRequest;
 
   @override
@@ -417,7 +582,7 @@ class _RequestsHero extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Welcome back, $userName',
+              context.l10n.welcomeBackUser(userName),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w900,
@@ -428,8 +593,12 @@ class _RequestsHero extends StatelessWidget {
               spacing: 12,
               runSpacing: 12,
               children: [
-                _HeroStat(label: 'Browse', value: '$browseCount'),
-                _HeroStat(label: 'Mine', value: '$mineCount'),
+                _HeroStat(label: context.l10n.browse, value: '$browseCount'),
+                _HeroStat(label: context.l10n.mine, value: '$mineCount'),
+                _HeroStat(
+                  label: context.l10n.assigned,
+                  value: '$assignedCount',
+                ),
               ],
             ),
             const SizedBox(height: 18),
@@ -440,7 +609,7 @@ class _RequestsHero extends StatelessWidget {
                 foregroundColor: const Color(0xFF0C4A63),
               ),
               icon: const Icon(Icons.add_circle_outline_rounded),
-              label: const Text('Create Request'),
+              label: Text(context.l10n.createRequest),
             ),
           ],
         ),

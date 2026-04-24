@@ -237,4 +237,398 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get userRole => 'משתמש';
+
+  @override
+  String get attachment => 'קובץ מצורף';
+
+  @override
+  String get attachedRequest => 'בקשה מצורפת';
+
+  @override
+  String get cancel => 'ביטול';
+
+  @override
+  String get copyMessage => 'העתק הודעה';
+
+  @override
+  String get deleteForAll => 'מחק לכולם';
+
+  @override
+  String get deleteMessage => 'מחק הודעה';
+
+  @override
+  String get deleteOnlyMe => 'מחק רק אצלי';
+
+  @override
+  String get deletedMessage => 'הודעה שנמחקה';
+
+  @override
+  String get discardVoiceMessage => 'בטל הודעה קולית';
+
+  @override
+  String get editMessage => 'ערוך הודעה';
+
+  @override
+  String get editMessageTitle => 'עריכת הודעה';
+
+  @override
+  String get edited => 'נערך';
+
+  @override
+  String fromPrice(String value) {
+    return 'החל מ-$value';
+  }
+
+  @override
+  String get messageCopied => 'ההודעה הועתקה.';
+
+  @override
+  String get messageCouldNotBeDeleted => 'לא ניתן למחוק את ההודעה.';
+
+  @override
+  String get messageCouldNotBeUpdated => 'לא ניתן לעדכן את ההודעה.';
+
+  @override
+  String get messageDeletedForEveryone => 'ההודעה נמחקה עבור כולם.';
+
+  @override
+  String get messageDeletedForYou => 'ההודעה נמחקה עבורך.';
+
+  @override
+  String get messageLabel => 'הודעה';
+
+  @override
+  String get messageUpdated => 'ההודעה עודכנה.';
+
+  @override
+  String get microphonePermissionRequiredForVoiceMessage =>
+      'נדרשת הרשאת מיקרופון כדי להקליט הודעה קולית.';
+
+  @override
+  String get noMessagesYetMessage => 'התחל בברכה ופתח את השיחה.';
+
+  @override
+  String get noPriceRange => 'אין טווח מחירים';
+
+  @override
+  String get noVoiceMessageCaptured => 'לא נקלטה הודעה קולית.';
+
+  @override
+  String get pauseVoiceMessage => 'השהה הודעה קולית';
+
+  @override
+  String get photo => 'תמונה';
+
+  @override
+  String photosCount(int count) {
+    return '$count תמונות';
+  }
+
+  @override
+  String get playVoiceMessage => 'נגן הודעה קולית';
+
+  @override
+  String get preparingRecorder => 'מכין את המקליט...';
+
+  @override
+  String get recordVoiceMessage => 'הקלט הודעה קולית';
+
+  @override
+  String replyingTo(String name) {
+    return 'משיב ל-$name';
+  }
+
+  @override
+  String requestWithTitle(String title) {
+    return 'בקשה: $title';
+  }
+
+  @override
+  String get save => 'שמור';
+
+  @override
+  String get sendMessage => 'שלח הודעה';
+
+  @override
+  String get sendOrClearDraftBeforeVoiceMessage =>
+      'שלח או נקה את הטיוטה הנוכחית לפני הקלטת הודעה קולית.';
+
+  @override
+  String get sending => 'שולח...';
+
+  @override
+  String get sendVoiceMessage => 'שלח הודעה קולית';
+
+  @override
+  String sentAttachmentsCount(int count) {
+    return 'נשלחו $count קבצים מצורפים';
+  }
+
+  @override
+  String get sharedRequest => 'שיתף בקשה';
+
+  @override
+  String get showOriginal => 'הצג מקור';
+
+  @override
+  String get showTranslation => 'הצג תרגום';
+
+  @override
+  String get typing => 'מקליד...';
+
+  @override
+  String get unableToPlayVoiceMessage => 'לא ניתן לנגן את ההודעה הקולית';
+
+  @override
+  String get unableToSeekVoiceMessage => 'לא ניתן לדלג בתוך ההודעה הקולית';
+
+  @override
+  String get updateYourMessage => 'עדכן את ההודעה שלך';
+
+  @override
+  String upToPrice(String value) {
+    return 'עד $value';
+  }
+
+  @override
+  String get uploadImages => 'העלה תמונות';
+
+  @override
+  String get voiceMessage => 'הודעה קולית';
+
+  @override
+  String get voiceMessageCouldNotBeSent => 'לא ניתן לשלוח את ההודעה הקולית.';
+
+  @override
+  String get voiceMessageDiscarded => 'ההודעה הקולית בוטלה.';
+
+  @override
+  String get voiceMessageDiscardFailed =>
+      'לא ניתן היה לבטל את ההודעה הקולית בצורה תקינה.';
+
+  @override
+  String get voiceRecordingCouldNotStart =>
+      'לא ניתן להתחיל הקלטה קולית במכשיר הזה.';
+
+  @override
+  String get writeAMessage => 'כתוב הודעה...';
+
+  @override
+  String get connecting => 'מתחבר...';
+
+  @override
+  String get liveUpdatesUnavailable => 'עדכונים חיים לא זמינים';
+
+  @override
+  String get reconnecting => 'מתחבר מחדש...';
+
+  @override
+  String get marketplaceUser => 'משתמש שוק';
+
+  @override
+  String get refreshRequests => 'רענן בקשות';
+
+  @override
+  String get browseRequestPostsFromOtherSellers =>
+      'עיין בפוסטים של בקשות ממוכרים אחרים.';
+
+  @override
+  String get seeRequestPostsYouCreated => 'צפה בפוסטים של הבקשות שיצרת.';
+
+  @override
+  String get browseRequests => 'עיון בבקשות';
+
+  @override
+  String get myRequests => 'הבקשות שלי';
+
+  @override
+  String get noRequestsYet => 'אין בקשות עדיין';
+
+  @override
+  String get createFirstRequestPostMessage =>
+      'צור את פוסט הבקשה הראשון שלך והוא יופיע כאן.';
+
+  @override
+  String get noSellerRequestsYet => 'אין עדיין בקשות ממוכרים';
+
+  @override
+  String get noSellerRequestsYetMessage =>
+      'עדיין אין פוסטים של בקשות ממוכרים אחרים. משוך כדי לרענן מאוחר יותר.';
+
+  @override
+  String get createRequest => 'צור בקשה';
+
+  @override
+  String get deleteRequest => 'מחיקת בקשה';
+
+  @override
+  String deleteRequestConfirmation(String title) {
+    return 'למחוק את \"$title\"? פוסט הבקשה הזה יוסר מהרשימה שלך.';
+  }
+
+  @override
+  String get delete => 'מחק';
+
+  @override
+  String get edit => 'ערוך';
+
+  @override
+  String get deleting => 'מוחק...';
+
+  @override
+  String get chatSeller => 'שוחח עם המוכר';
+
+  @override
+  String get opening => 'פותח...';
+
+  @override
+  String get requestDeletedSuccessfully => 'הבקשה נמחקה בהצלחה.';
+
+  @override
+  String get couldNotDeleteRequest => 'לא ניתן למחוק את הבקשה.';
+
+  @override
+  String get couldNotOpenConversation => 'לא ניתן לפתוח את השיחה.';
+
+  @override
+  String get requestAttachedResendHint =>
+      'הבקשה צורפה לעורך הצ\'אט כדי שתוכל לשלוח אותה שוב.';
+
+  @override
+  String get initialRequestCouldNotBeSentAutomatically =>
+      'הצ\'אט נפתח, אך לא ניתן היה לשלוח את הבקשה הראשונית באופן אוטומטי.';
+
+  @override
+  String welcomeBackUser(String name) {
+    return 'ברוך שובך, $name';
+  }
+
+  @override
+  String get browse => 'עיון';
+
+  @override
+  String get mine => 'שלי';
+
+  @override
+  String get assigned => 'מוקצה';
+
+  @override
+  String get assignedRequests => 'בקשות מוקצות';
+
+  @override
+  String get allStatuses => 'כל המצבים';
+
+  @override
+  String get cityNotSet => 'העיר לא הוגדרה';
+
+  @override
+  String get thisRequestBelongsToYou => 'הבקשה הזו שייכת לך.';
+
+  @override
+  String get openChatWithSellerBehindRequest =>
+      'פתח שיחה עם המוכר שמאחורי הבקשה הזו.';
+
+  @override
+  String get requestsYouCanManageNow => 'בקשות שאתה יכול לנהל כרגע.';
+
+  @override
+  String get noAssignedRequestsYet => 'עדיין אין בקשות מוקצות';
+
+  @override
+  String get noAssignedRequestsYetMessage =>
+      'כשהבעלים יאשר את בקשת הגישה שלך, הבקשה תופיע כאן.';
+
+  @override
+  String get youCanManageThisRequestStatus => 'אתה יכול לנהל את מצב הבקשה הזו.';
+
+  @override
+  String get changeStatus => 'שנה מצב';
+
+  @override
+  String get requestStatusUpdated => 'מצב הבקשה עודכן.';
+
+  @override
+  String get couldNotUpdateRequestStatus => 'לא ניתן לעדכן את מצב הבקשה.';
+
+  @override
+  String get updatingStatus => 'מעדכן...';
+
+  @override
+  String get requestControl => 'בקרת בקשה';
+
+  @override
+  String get thisChatCanManageRequestStatus =>
+      'הספק בשיחה זו יכול כעת לנהל את מצב הבקשה.';
+
+  @override
+  String get thisRequestIsAssignedToAnotherSupplier =>
+      'הבקשה הזו מוקצה כרגע לספק אחר.';
+
+  @override
+  String get noAccessRequestForThisRequestYet =>
+      'עדיין לא נשלחה בקשת גישה לבקשה זו.';
+
+  @override
+  String get youCanChangeThisRequestStatusNow =>
+      'אתה יכול לשנות את מצב הבקשה כעת.';
+
+  @override
+  String get waitingForOwnerApproval => 'ממתין לאישור הבעלים לבקשת הגישה שלך.';
+
+  @override
+  String get ownerRejectedYourAccessRequest => 'הבעלים דחה את בקשת הגישה שלך.';
+
+  @override
+  String get askOwnerForStatusAccess => 'בקש מהבעלים הרשאה לנהל את מצב הבקשה.';
+
+  @override
+  String currentManager(String name) {
+    return 'המנהל הנוכחי: $name';
+  }
+
+  @override
+  String get approving => 'מאשר...';
+
+  @override
+  String get approveAccess => 'אשר גישה';
+
+  @override
+  String get rejectAccess => 'דחה גישה';
+
+  @override
+  String get sendingRequest => 'שולח...';
+
+  @override
+  String get requestAccess => 'בקש גישה';
+
+  @override
+  String get accessRequestPending => 'בקשת הגישה שלך ממתינה.';
+
+  @override
+  String get openAssignedRequestsToUpdateStatus =>
+      'פתח בקשות מוקצות כדי לעדכן את המצב בכל עת.';
+
+  @override
+  String get accessRequestSent => 'בקשת הגישה נשלחה.';
+
+  @override
+  String get couldNotSendAccessRequest => 'לא ניתן לשלוח את בקשת הגישה.';
+
+  @override
+  String get accessRequestApproved => 'בקשת הגישה אושרה.';
+
+  @override
+  String get couldNotApproveAccessRequest => 'לא ניתן לאשר את בקשת הגישה.';
+
+  @override
+  String get accessRequestRejected => 'בקשת הגישה נדחתה.';
+
+  @override
+  String get couldNotRejectAccessRequest => 'לא ניתן לדחות את בקשת הגישה.';
+
+  @override
+  String get expandRequestControl => 'הצג את בקרות הבקשה';
+
+  @override
+  String get collapseRequestControl => 'הסתר את בקרות הבקשה';
 }

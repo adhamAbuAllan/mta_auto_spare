@@ -13,17 +13,23 @@ class ConversationTileCard extends StatelessWidget {
     required this.currentUserId,
     required this.isSelected,
     required this.onTap,
+    this.onProfileTap,
   });
 
   final ConversationListItem conversation;
   final int currentUserId;
   final bool isSelected;
   final VoidCallback onTap;
+  final VoidCallback? onProfileTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final displayName = conversationDisplayName(conversation, currentUserId, l10n);
+    final displayName = conversationDisplayName(
+      conversation,
+      currentUserId,
+      l10n,
+    );
     final participant = otherParticipant(conversation, currentUserId);
     final lastMessage = conversation.lastMessage;
     final isLastMessageMine =
@@ -60,6 +66,7 @@ class ConversationTileCard extends StatelessWidget {
                   imageUrl: participant?.user.avatar,
                   radius: 22,
                   presenceColor: presenceColor,
+                  onTap: onProfileTap,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -69,12 +76,21 @@ class ConversationTileCard extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: Text(
-                              displayName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w800),
+                            child: TextButton(
+                              onPressed: onProfileTap,
+                              style: TextButton.styleFrom(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: Text(
+                                displayName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w800),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 8),

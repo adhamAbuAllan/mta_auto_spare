@@ -129,9 +129,14 @@ const _conversationParticipantReadUnset = Object();
 class ConversationLastMessagePreview {
   const ConversationLastMessagePreview({
     required this.id,
+    required this.messageType,
     required this.text,
+    this.translatedText,
+    this.textLanguage,
     required this.senderId,
     required this.senderName,
+    this.product,
+    this.translationTargetLanguage,
     this.timestamp,
     this.editedAt,
     this.isDeleted = false,
@@ -141,9 +146,14 @@ class ConversationLastMessagePreview {
   });
 
   final int id;
+  final String messageType;
   final String text;
+  final String? translatedText;
+  final String? textLanguage;
   final int senderId;
   final String senderName;
+  final PartRequestBrief? product;
+  final String? translationTargetLanguage;
   final DateTime? timestamp;
   final DateTime? editedAt;
   final bool isDeleted;
@@ -151,13 +161,25 @@ class ConversationLastMessagePreview {
   final bool isOptimistic;
   final bool hasSendError;
 
+  String get displayText => translatedTextOrOriginal(text, translatedText);
+  bool get hasTranslatedText => hasVisibleTranslation(text, translatedText);
+
   factory ConversationLastMessagePreview.fromJson(JsonMap json) {
     final senderJson = mapFromJson(json['sender']) ?? const {};
     return ConversationLastMessagePreview(
       id: intFromJson(json['id']) ?? 0,
+      messageType: stringFromJson(json['message_type']) ?? 'text',
       text: stringFromJson(json['text']) ?? '',
+      translatedText: stringFromJson(json['translated_text']),
+      textLanguage: stringFromJson(json['text_language']),
       senderId: intFromJson(senderJson['id']) ?? 0,
       senderName: stringFromJson(senderJson['name']) ?? '',
+      product: mapFromJson(json['product']) == null
+          ? null
+          : PartRequestBrief.fromJson(mapFromJson(json['product'])!),
+      translationTargetLanguage: stringFromJson(
+        json['translation_target_language'],
+      ),
       timestamp: dateTimeFromJson(json['timestamp']),
       editedAt: dateTimeFromJson(json['edited_at']),
       isDeleted: boolFromJson(json['is_deleted']) ?? false,
@@ -170,8 +192,13 @@ class ConversationLastMessagePreview {
   JsonMap toJson() {
     return {
       'id': id,
+      'message_type': messageType,
       'text': text,
+      'translated_text': translatedText,
+      'text_language': textLanguage,
       'sender': {'id': senderId, 'name': senderName},
+      'product': product?.toJson(),
+      'translation_target_language': translationTargetLanguage,
       'timestamp': timestamp?.toIso8601String(),
       'edited_at': editedAt?.toIso8601String(),
       'is_deleted': isDeleted,
@@ -192,9 +219,14 @@ class ConversationLastMessagePreview {
 
   ConversationLastMessagePreview copyWith({
     int? id,
+    String? messageType,
     String? text,
+    Object? translatedText = _conversationLastMessagePreviewUnset,
+    Object? textLanguage = _conversationLastMessagePreviewUnset,
     int? senderId,
     String? senderName,
+    Object? product = _conversationLastMessagePreviewUnset,
+    Object? translationTargetLanguage = _conversationLastMessagePreviewUnset,
     Object? timestamp = _conversationLastMessagePreviewUnset,
     Object? editedAt = _conversationLastMessagePreviewUnset,
     bool? isDeleted,
@@ -204,9 +236,28 @@ class ConversationLastMessagePreview {
   }) {
     return ConversationLastMessagePreview(
       id: id ?? this.id,
+      messageType: messageType ?? this.messageType,
       text: text ?? this.text,
+      translatedText:
+          identical(translatedText, _conversationLastMessagePreviewUnset)
+          ? this.translatedText
+          : translatedText as String?,
+      textLanguage:
+          identical(textLanguage, _conversationLastMessagePreviewUnset)
+          ? this.textLanguage
+          : textLanguage as String?,
       senderId: senderId ?? this.senderId,
       senderName: senderName ?? this.senderName,
+      product: identical(product, _conversationLastMessagePreviewUnset)
+          ? this.product
+          : product as PartRequestBrief?,
+      translationTargetLanguage:
+          identical(
+            translationTargetLanguage,
+            _conversationLastMessagePreviewUnset,
+          )
+          ? this.translationTargetLanguage
+          : translationTargetLanguage as String?,
       timestamp: identical(timestamp, _conversationLastMessagePreviewUnset)
           ? this.timestamp
           : timestamp as DateTime?,
@@ -445,7 +496,10 @@ class MessageReplyModel {
     required this.id,
     required this.sender,
     required this.text,
+    this.translatedText,
+    this.textLanguage,
     this.product,
+    this.translationTargetLanguage,
     this.clientTimestamp,
     this.serverTimestamp,
     this.editedAt,
@@ -455,20 +509,33 @@ class MessageReplyModel {
   final int id;
   final UserBrief sender;
   final String text;
+  final String? translatedText;
+  final String? textLanguage;
   final PartRequestBrief? product;
+  final String? translationTargetLanguage;
   final DateTime? clientTimestamp;
   final DateTime? serverTimestamp;
   final DateTime? editedAt;
   final bool isDeleted;
+
+  String get displayText => translatedTextOrOriginal(text, translatedText);
+  bool get hasTranslatedText => hasVisibleTranslation(text, translatedText);
+  bool get hasTranslatedContent =>
+      hasTranslatedText || (product?.hasTranslatedTitle ?? false);
 
   factory MessageReplyModel.fromJson(JsonMap json) {
     return MessageReplyModel(
       id: intFromJson(json['id']) ?? 0,
       sender: UserBrief.fromJson(mapFromJson(json['sender']) ?? const {}),
       text: stringFromJson(json['text']) ?? '',
+      translatedText: stringFromJson(json['translated_text']),
+      textLanguage: stringFromJson(json['text_language']),
       product: mapFromJson(json['product']) == null
           ? null
           : PartRequestBrief.fromJson(mapFromJson(json['product'])!),
+      translationTargetLanguage: stringFromJson(
+        json['translation_target_language'],
+      ),
       clientTimestamp: dateTimeFromJson(json['client_timestamp']),
       serverTimestamp: dateTimeFromJson(json['server_timestamp']),
       editedAt: dateTimeFromJson(json['edited_at']),
@@ -481,7 +548,10 @@ class MessageReplyModel {
       'id': id,
       'sender': sender.toJson(),
       'text': text,
+      'translated_text': translatedText,
+      'text_language': textLanguage,
       'product': product?.toJson(),
+      'translation_target_language': translationTargetLanguage,
       'client_timestamp': clientTimestamp?.toIso8601String(),
       'server_timestamp': serverTimestamp?.toIso8601String(),
       'edited_at': editedAt?.toIso8601String(),
@@ -497,9 +567,12 @@ class MessageModel {
     required this.sender,
     required this.messageType,
     required this.text,
+    this.translatedText,
+    this.textLanguage,
     required this.media,
     this.product,
     this.replyTo,
+    this.translationTargetLanguage,
     this.clientTimestamp,
     this.serverTimestamp,
     this.editedAt,
@@ -515,9 +588,12 @@ class MessageModel {
   final UserBrief sender;
   final String messageType;
   final String text;
+  final String? translatedText;
+  final String? textLanguage;
   final List<MessageAttachmentModel> media;
   final PartRequestBrief? product;
   final MessageReplyModel? replyTo;
+  final String? translationTargetLanguage;
   final DateTime? clientTimestamp;
   final DateTime? serverTimestamp;
   final DateTime? editedAt;
@@ -527,6 +603,13 @@ class MessageModel {
   final bool isOptimistic;
   final bool hasSendError;
 
+  String get displayText => translatedTextOrOriginal(text, translatedText);
+  bool get hasTranslatedText => hasVisibleTranslation(text, translatedText);
+  bool get hasTranslatedContent =>
+      hasTranslatedText ||
+      (product?.hasTranslatedTitle ?? false) ||
+      (replyTo?.hasTranslatedContent ?? false);
+
   factory MessageModel.fromJson(JsonMap json) {
     return MessageModel(
       id: intFromJson(json['id']) ?? 0,
@@ -534,6 +617,8 @@ class MessageModel {
       sender: UserBrief.fromJson(mapFromJson(json['sender']) ?? const {}),
       messageType: stringFromJson(json['message_type']) ?? 'text',
       text: stringFromJson(json['text']) ?? '',
+      translatedText: stringFromJson(json['translated_text']),
+      textLanguage: stringFromJson(json['text_language']),
       media: listFromJson(json['media'], MessageAttachmentModel.fromJson),
       product: mapFromJson(json['product']) == null
           ? null
@@ -541,6 +626,9 @@ class MessageModel {
       replyTo: mapFromJson(json['reply_to']) == null
           ? null
           : MessageReplyModel.fromJson(mapFromJson(json['reply_to'])!),
+      translationTargetLanguage: stringFromJson(
+        json['translation_target_language'],
+      ),
       clientTimestamp: dateTimeFromJson(json['client_timestamp']),
       serverTimestamp: dateTimeFromJson(json['server_timestamp']),
       editedAt: dateTimeFromJson(json['edited_at']),
@@ -559,9 +647,12 @@ class MessageModel {
       'sender': sender.toJson(),
       'message_type': messageType,
       'text': text,
+      'translated_text': translatedText,
+      'text_language': textLanguage,
       'media': media.map((item) => item.toJson()).toList(growable: false),
       'product': product?.toJson(),
       'reply_to': replyTo?.toJson(),
+      'translation_target_language': translationTargetLanguage,
       'client_timestamp': clientTimestamp?.toIso8601String(),
       'server_timestamp': serverTimestamp?.toIso8601String(),
       'edited_at': editedAt?.toIso8601String(),
@@ -586,9 +677,12 @@ class MessageModel {
     UserBrief? sender,
     String? messageType,
     String? text,
+    Object? translatedText = _messageModelUnset,
+    Object? textLanguage = _messageModelUnset,
     List<MessageAttachmentModel>? media,
     Object? product = _messageModelUnset,
     Object? replyTo = _messageModelUnset,
+    Object? translationTargetLanguage = _messageModelUnset,
     Object? clientTimestamp = _messageModelUnset,
     Object? serverTimestamp = _messageModelUnset,
     Object? editedAt = _messageModelUnset,
@@ -604,6 +698,12 @@ class MessageModel {
       sender: sender ?? this.sender,
       messageType: messageType ?? this.messageType,
       text: text ?? this.text,
+      translatedText: identical(translatedText, _messageModelUnset)
+          ? this.translatedText
+          : translatedText as String?,
+      textLanguage: identical(textLanguage, _messageModelUnset)
+          ? this.textLanguage
+          : textLanguage as String?,
       media: media ?? this.media,
       product: identical(product, _messageModelUnset)
           ? this.product
@@ -611,6 +711,10 @@ class MessageModel {
       replyTo: identical(replyTo, _messageModelUnset)
           ? this.replyTo
           : replyTo as MessageReplyModel?,
+      translationTargetLanguage:
+          identical(translationTargetLanguage, _messageModelUnset)
+          ? this.translationTargetLanguage
+          : translationTargetLanguage as String?,
       clientTimestamp: identical(clientTimestamp, _messageModelUnset)
           ? this.clientTimestamp
           : clientTimestamp as DateTime?,
@@ -638,8 +742,11 @@ class MessageModel {
     required String text,
     required DateTime clientTimestamp,
     String? localMessageId,
+    String? translatedText,
+    String? textLanguage,
     PartRequestBrief? product,
     MessageReplyModel? replyTo,
+    String? translationTargetLanguage,
     List<MessageAttachmentModel> media = const [],
   }) {
     return MessageModel(
@@ -648,9 +755,12 @@ class MessageModel {
       sender: sender,
       messageType: messageType,
       text: text,
+      translatedText: translatedText,
+      textLanguage: textLanguage,
       media: media,
       product: product,
       replyTo: replyTo,
+      translationTargetLanguage: translationTargetLanguage,
       clientTimestamp: clientTimestamp,
       serverTimestamp: null,
       editedAt: null,

@@ -156,6 +156,7 @@ void main() {
               unreadCount: 0,
               lastMessage: ConversationLastMessagePreview(
                 id: 801,
+                messageType: 'text',
                 text: 'Latest preview',
                 senderId: 2,
                 senderName: 'Seller User',
@@ -168,6 +169,7 @@ void main() {
               unreadCount: 0,
               lastMessage: ConversationLastMessagePreview(
                 id: 601,
+                messageType: 'text',
                 text: 'Current preview',
                 senderId: 2,
                 senderName: 'Seller User',
@@ -234,6 +236,7 @@ void main() {
               unreadCount: 2,
               lastMessage: const ConversationLastMessagePreview(
                 id: 501,
+                messageType: 'text',
                 text: 'Hidden later',
                 senderId: 2,
                 senderName: 'Seller User',

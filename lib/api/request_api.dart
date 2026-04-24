@@ -72,6 +72,90 @@ class RequestApi {
     }
   }
 
+  Future<List<PartRequestAccess>> getRequestAccesses({
+    required int partRequestId,
+    int? conversationId,
+  }) async {
+    final accesses = <PartRequestAccess>[];
+    String? nextPageUrl;
+
+    do {
+      try {
+        final response = nextPageUrl == null
+            ? await _dio.get(
+                ApiEndpoints.partRequestAccesses,
+                queryParameters: {
+                  'part_request': partRequestId,
+                  if (conversationId != null) 'conversation': conversationId,
+                },
+              )
+            : await _dio.get(nextPageUrl);
+        final page = ApiPage<PartRequestAccess>.fromJson(
+          _asMap(response.data),
+          PartRequestAccess.fromJson,
+        );
+        accesses.addAll(page.results);
+        nextPageUrl = page.next;
+      } on DioException catch (error) {
+        throw ApiException.fromDioException(error);
+      }
+    } while (nextPageUrl != null && nextPageUrl.isNotEmpty);
+
+    return accesses;
+  }
+
+  Future<PartRequestAccess> requestManagementAccess({
+    required int partRequestId,
+    required int conversationId,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.partRequestAccesses,
+        data: {'part_request': partRequestId, 'conversation': conversationId},
+      );
+      return PartRequestAccess.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
+  Future<PartRequestAccess> approveRequestAccess(int accessId) async {
+    try {
+      final response = await _dio.post(
+        '${ApiEndpoints.partRequestAccesses}$accessId/approve/',
+      );
+      return PartRequestAccess.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
+  Future<PartRequestAccess> rejectRequestAccess(int accessId) async {
+    try {
+      final response = await _dio.post(
+        '${ApiEndpoints.partRequestAccesses}$accessId/reject/',
+      );
+      return PartRequestAccess.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
+  Future<PartRequest> updateRequestStatus({
+    required int requestId,
+    required int statusId,
+  }) async {
+    try {
+      final response = await _dio.patch(
+        '${ApiEndpoints.partRequests}$requestId/',
+        data: {'status': statusId},
+      );
+      return PartRequest.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
   Future<PartRequest> createRequest(
     PartRequest request, {
     List<RequestUploadImage> images = const [],
@@ -84,16 +168,14 @@ class RequestApi {
       final shouldUseMultipart = images.isNotEmpty;
       final payload = shouldUseMultipart
           ? await buildRetryData()
-          : request.toJson();
+          : _buildJsonPayload(request);
       final response = await _dio.post(
         ApiEndpoints.partRequests,
         data: payload,
         options: shouldUseMultipart
             ? Options(
                 sendTimeout: ApiConstants.requestUploadSendTimeout,
-                extra: {
-                  AppDioClient.retryDataBuilderExtraKey: buildRetryData,
-                },
+                extra: {AppDioClient.retryDataBuilderExtraKey: buildRetryData},
               )
             : null,
       );
@@ -188,6 +270,29 @@ class RequestApi {
       data['city'] = city;
     }
     return FormData.fromMap(data);
+  }
+
+  Map<String, dynamic> _buildJsonPayload(PartRequest request) {
+    final data = <String, dynamic>{
+      'requester': request.requester,
+      'title': request.title,
+      'description': request.description,
+      'status': request.status,
+    };
+    if (request.carModelId != null) {
+      data['car_model'] = request.carModelId;
+    }
+    final minPrice = request.minPrice?.trim() ?? '';
+    final maxPrice = request.maxPrice?.trim() ?? '';
+    final city = request.city?.trim() ?? '';
+    if (minPrice.isNotEmpty) {
+      data['min_price'] = minPrice;
+    }
+    if (maxPrice.isNotEmpty) {
+      data['max_price'] = maxPrice;
+    }
+    data['city'] = city.isEmpty ? null : city;
+    return data;
   }
 
   Map<String, dynamic> _asMap(dynamic data) {

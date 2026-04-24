@@ -139,6 +139,75 @@ class UserBrief {
 
 const _userBriefUnset = Object();
 
+class PublicUserProfile {
+  const PublicUserProfile({
+    required this.id,
+    required this.name,
+    this.avatar,
+    this.email,
+    this.phone,
+    this.city,
+    required this.role,
+    this.rating,
+    required this.isOnline,
+    this.lastSeenAt,
+    this.supportedCarModels = const [],
+    required this.createdAt,
+  });
+
+  final int id;
+  final String name;
+  final String? avatar;
+  final String? email;
+  final String? phone;
+  final String? city;
+  final String role;
+  final String? rating;
+  final bool isOnline;
+  final DateTime? lastSeenAt;
+  final List<CarModelOption> supportedCarModels;
+  final DateTime createdAt;
+
+  factory PublicUserProfile.fromJson(JsonMap json) {
+    return PublicUserProfile(
+      id: intFromJson(json['id']) ?? 0,
+      name: stringFromJson(json['name']) ?? '',
+      avatar: stringFromJson(json['avatar']),
+      email: stringFromJson(json['email']),
+      phone: stringFromJson(json['phone']),
+      city: stringFromJson(json['city']),
+      role: stringFromJson(json['role']) ?? '',
+      rating: stringFromJson(json['rating']),
+      isOnline: boolFromJson(json['is_online']) ?? false,
+      lastSeenAt: dateTimeFromJson(json['last_seen_at']),
+      supportedCarModels: listFromJson(
+        json['supported_car_models'],
+        CarModelOption.fromJson,
+      ),
+      createdAt: dateTimeFromJson(json['created_at']) ?? DateTime.now(),
+    );
+  }
+
+  JsonMap toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'avatar': avatar,
+      'email': email,
+      'phone': phone,
+      'city': city,
+      'role': role,
+      'rating': rating,
+      'is_online': isOnline,
+      'last_seen_at': lastSeenAt?.toIso8601String(),
+      'supported_car_models': supportedCarModels
+          .map((item) => item.toJson())
+          .toList(growable: false),
+      'created_at': createdAt.toIso8601String(),
+    };
+  }
+}
+
 class MeProfile {
   const MeProfile({
     required this.id,

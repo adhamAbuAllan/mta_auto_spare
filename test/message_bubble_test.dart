@@ -118,6 +118,37 @@ void main() {
 
     expect(find.text('Edited'), findsOneWidget);
   });
+
+  testWidgets('translated messages can toggle back to the original text', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _buildTestApp(
+        home: Scaffold(
+          body: Center(
+            child: MessageBubble(
+              message: _sampleMessage(
+                text: 'Need bumper',
+                translatedText: 'احتاج صدام',
+              ),
+              currentUserId: 1,
+              isMine: false,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('احتاج صدام'), findsOneWidget);
+    expect(find.text('Need bumper'), findsNothing);
+    expect(find.text('Show original'), findsOneWidget);
+
+    await tester.tap(find.text('Show original'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Need bumper'), findsOneWidget);
+    expect(find.text('Show translation'), findsOneWidget);
+  });
 }
 
 Widget _buildTestApp({required Widget home}) {
@@ -131,6 +162,7 @@ Widget _buildTestApp({required Widget home}) {
 
 MessageModel _sampleMessage({
   String text = 'Hello',
+  String? translatedText,
   DateTime? editedAt,
   bool isDeleted = false,
 }) {
@@ -140,6 +172,7 @@ MessageModel _sampleMessage({
     sender: const UserBrief(id: 2, name: 'Seller'),
     messageType: 'text',
     text: text,
+    translatedText: translatedText,
     media: const [],
     clientTimestamp: DateTime.parse('2026-03-31T18:00:00Z'),
     serverTimestamp: DateTime.parse('2026-03-31T18:00:01Z'),

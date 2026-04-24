@@ -6,6 +6,7 @@ import '../../../models/models.dart';
 import '../../common_widgets/app_panel.dart';
 import '../../common_widgets/car_model_card.dart';
 import '../../common_widgets/time_formatter.dart';
+import '../../common_widgets/user_avatar.dart';
 import '../../common_widgets/zoomable_network_gallery_page.dart';
 
 class RequestCard extends StatelessWidget {
@@ -13,19 +14,27 @@ class RequestCard extends StatelessWidget {
     super.key,
     required this.request,
     required this.isMine,
+    required this.canChangeStatus,
+    required this.onViewTap,
     required this.onChatTap,
     this.isChatLoading = false,
     this.onEditTap,
     this.onDeleteTap,
+    this.onChangeStatusTap,
+    this.onRequesterTap,
     this.isDeleteLoading = false,
   });
 
   final PartRequest request;
   final bool isMine;
+  final bool canChangeStatus;
+  final VoidCallback onViewTap;
   final VoidCallback onChatTap;
   final bool isChatLoading;
   final VoidCallback? onEditTap;
   final VoidCallback? onDeleteTap;
+  final VoidCallback? onChangeStatusTap;
+  final VoidCallback? onRequesterTap;
   final bool isDeleteLoading;
 
   @override
@@ -41,7 +50,7 @@ class RequestCard extends StatelessWidget {
         children: [
           if (request.images.isNotEmpty) ...[
             SizedBox(
-              height: 258,
+              height: 228,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: request.images.length,
@@ -79,22 +88,31 @@ class RequestCard extends StatelessWidget {
             const SizedBox(height: 16),
           ],
           if (request.carModel != null) ...[
-            CarModelCard(
-              carModel: request.carModel!,
-              compact: true,
-            ),
+            CarModelCard(carModel: request.carModel!, compact: true),
             const SizedBox(height: 14),
           ],
+          _RequesterSummary(
+            name: request.requesterDetails?.name,
+            avatarUrl: request.requesterDetails?.avatar,
+            fallbackLabel: 'User #${request.requester}',
+            onTap: onRequesterTap,
+          ),
+          const SizedBox(height: 14),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             alignment: WrapAlignment.spaceBetween,
             children: [
+              if (request.statusDetails != null)
+                _MetaChip(
+                  icon: Icons.flag_outlined,
+                  label: request.statusDetails!.label,
+                ),
               _MetaChip(
                 icon: Icons.location_on_outlined,
                 label: request.city?.trim().isNotEmpty == true
                     ? request.city!
-                    : 'City not set',
+                    : context.l10n.cityNotSet,
               ),
               _MetaChip(
                 icon: Icons.schedule_outlined,
@@ -103,20 +121,20 @@ class RequestCard extends StatelessWidget {
               if (request.minPrice != null || request.maxPrice != null)
                 _MetaChip(
                   icon: Icons.sell_outlined,
-                  label: _priceLabel(request),
+                  label: _priceLabel(request, context),
                 ),
             ],
           ),
           const SizedBox(height: 16),
           Text(
-            request.title,
+            request.displayTitle,
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 10),
           Text(
-            request.description,
+            request.displayDescription,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -127,8 +145,10 @@ class RequestCard extends StatelessWidget {
           const SizedBox(height: 18),
           Text(
             isMine
-                ? 'This request belongs to you.'
-                : 'Open a chat with the seller behind this request.',
+                ? context.l10n.thisRequestBelongsToYou
+                : canChangeStatus
+                ? context.l10n.youCanManageThisRequestStatus
+                : context.l10n.openChatWithSellerBehindRequest,
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: const Color(0xFF7A746C)),
@@ -140,9 +160,19 @@ class RequestCard extends StatelessWidget {
               runSpacing: 12,
               children: [
                 OutlinedButton.icon(
+                  onPressed: onViewTap,
+                  icon: const Icon(Icons.visibility_outlined),
+                  label: const Text('View Request'),
+                ),
+                FilledButton.tonalIcon(
+                  onPressed: onChangeStatusTap,
+                  icon: const Icon(Icons.flag_circle_outlined),
+                  label: Text(context.l10n.changeStatus),
+                ),
+                OutlinedButton.icon(
                   onPressed: onEditTap,
                   icon: const Icon(Icons.edit_outlined),
-                  label: const Text('Edit'),
+                  label: Text(context.l10n.edit),
                 ),
                 FilledButton.tonalIcon(
                   onPressed: isDeleteLoading ? null : onDeleteTap,
@@ -154,21 +184,72 @@ class RequestCard extends StatelessWidget {
                         ? Icons.hourglass_top_rounded
                         : Icons.delete_outline_rounded,
                   ),
-                  label: Text(isDeleteLoading ? 'Deleting...' : 'Delete'),
+                  label: Text(
+                    isDeleteLoading
+                        ? context.l10n.deleting
+                        : context.l10n.delete,
+                  ),
+                ),
+              ],
+            )
+          else if (canChangeStatus)
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              alignment: WrapAlignment.end,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: onViewTap,
+                  icon: const Icon(Icons.visibility_outlined),
+                  label: const Text('View Request'),
+                ),
+                FilledButton.tonalIcon(
+                  onPressed: onChangeStatusTap,
+                  icon: const Icon(Icons.flag_circle_outlined),
+                  label: Text(context.l10n.changeStatus),
+                ),
+                FilledButton.icon(
+                  onPressed: isChatLoading ? null : onChatTap,
+                  icon: Icon(
+                    isChatLoading
+                        ? Icons.hourglass_top_rounded
+                        : Icons.chat_bubble_outline_rounded,
+                  ),
+                  label: Text(
+                    isChatLoading
+                        ? context.l10n.opening
+                        : context.l10n.chatSeller,
+                  ),
                 ),
               ],
             )
           else
             Align(
               alignment: Alignment.centerRight,
-              child: FilledButton.icon(
-                onPressed: isChatLoading ? null : onChatTap,
-                icon: Icon(
-                  isChatLoading
-                      ? Icons.hourglass_top_rounded
-                      : Icons.chat_bubble_outline_rounded,
-                ),
-                label: Text(isChatLoading ? 'Opening...' : 'Chat Seller'),
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                alignment: WrapAlignment.end,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: onViewTap,
+                    icon: const Icon(Icons.visibility_outlined),
+                    label: const Text('View Request'),
+                  ),
+                  FilledButton.icon(
+                    onPressed: isChatLoading ? null : onChatTap,
+                    icon: Icon(
+                      isChatLoading
+                          ? Icons.hourglass_top_rounded
+                          : Icons.chat_bubble_outline_rounded,
+                    ),
+                    label: Text(
+                      isChatLoading
+                          ? context.l10n.opening
+                          : context.l10n.chatSeller,
+                    ),
+                  ),
+                ],
               ),
             ),
         ],
@@ -176,7 +257,7 @@ class RequestCard extends StatelessWidget {
     );
   }
 
-  String _priceLabel(PartRequest request) {
+  String _priceLabel(PartRequest request, dynamic context) {
     final minPrice = request.minPrice?.trim();
     final maxPrice = request.maxPrice?.trim();
 
@@ -187,12 +268,12 @@ class RequestCard extends StatelessWidget {
       return '$minPrice - $maxPrice';
     }
     if (minPrice != null && minPrice.isNotEmpty) {
-      return 'From $minPrice';
+      return context.l10n.fromPrice(minPrice);
     }
     if (maxPrice != null && maxPrice.isNotEmpty) {
-      return 'Up to $maxPrice';
+      return context.l10n.upToPrice(maxPrice);
     }
-    return 'Open budget';
+    return context.l10n.noPriceRange;
   }
 
   Object _heroTagForIndex(int index) {
@@ -215,6 +296,59 @@ class RequestCard extends StatelessWidget {
           heroTagBuilder: _heroTagForIndex,
         ),
       ),
+    );
+  }
+}
+
+class _RequesterSummary extends StatelessWidget {
+  const _RequesterSummary({
+    required this.name,
+    required this.avatarUrl,
+    required this.fallbackLabel,
+    this.onTap,
+  });
+
+  final String? name;
+  final String? avatarUrl;
+  final String fallbackLabel;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final displayName = name?.trim().isNotEmpty == true
+        ? name!.trim()
+        : fallbackLabel;
+
+    return Row(
+      children: [
+        UserAvatar(
+          label: displayName,
+          imageUrl: avatarUrl,
+          radius: 20,
+          onTap: onTap,
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: TextButton(
+            onPressed: onTap,
+            style: TextButton.styleFrom(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              displayName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF0C4A63),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

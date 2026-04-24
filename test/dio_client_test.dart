@@ -29,6 +29,7 @@ void main() {
             options.headers['Authorization'],
             'Bearer expired-access-token',
           );
+          expect(options.headers['Accept-Language'], 'en');
           return _jsonResponse({'detail': 'Unauthorized'}, 401);
         },
         (options, _) async {
@@ -38,6 +39,7 @@ void main() {
         (options, _) async {
           expect(options.path, ApiEndpoints.messages);
           expect(options.headers['Authorization'], 'Bearer fresh-access-token');
+          expect(options.headers['Accept-Language'], 'en');
           return _jsonResponse(_messagePayload(), 201);
         },
       ]);
@@ -69,6 +71,7 @@ void main() {
       dio.httpClientAdapter = _FakeHttpClientAdapter([
         (options, _) async {
           expect(options.path, ApiEndpoints.messages);
+          expect(options.headers['Accept-Language'], 'en');
           return _jsonResponse({'detail': 'Unauthorized'}, 401);
         },
         (options, _) async {
@@ -78,6 +81,7 @@ void main() {
         (options, _) async {
           expect(options.path, ApiEndpoints.messages);
           expect(options.headers['Authorization'], 'Bearer fresh-access-token');
+          expect(options.headers['Accept-Language'], 'en');
           return _jsonResponse({'detail': 'Server error'}, 500);
         },
       ]);
@@ -126,6 +130,7 @@ void main() {
         (options, _) async {
           expect(options.path, ApiEndpoints.messages);
           expect(options.data, isA<FormData>());
+          expect(options.headers['Accept-Language'], 'en');
           firstPayload = options.data as FormData;
           expect(
             firstPayload!.fields.any((field) => field.key == 'message_type'),
@@ -140,6 +145,7 @@ void main() {
         (options, _) async {
           expect(options.path, ApiEndpoints.messages);
           expect(options.data, isA<FormData>());
+          expect(options.headers['Accept-Language'], 'en');
           retriedPayload = options.data as FormData;
           expect(identical(retriedPayload, firstPayload), isFalse);
           expect(
@@ -191,6 +197,7 @@ Future<ProviderContainer> _createContainer() async {
   SharedPreferences.setMockInitialValues({
     'access_token': 'expired-access-token',
     'refresh_token': 'persisted-refresh-token',
+    'app_locale_mode': 'en',
   });
   final preferences = await SharedPreferences.getInstance();
   return ProviderContainer(

@@ -51,6 +51,14 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
     await _inboxSocketService.connect(token: accessToken);
   }
 
+  Future<void> refreshTranslationLocale(SessionState session) async {
+    await syncWithSession(session);
+    if (state.conversations.isEmpty && !state.isLoading) {
+      return;
+    }
+    await load(forceRefresh: true);
+  }
+
   void setActiveConversationId(int? conversationId) {
     _activeConversationId = conversationId;
   }
@@ -191,9 +199,14 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
   ) {
     return ConversationLastMessagePreview(
       id: message.id,
+      messageType: message.messageType,
       text: _buildPreviewText(message),
+      translatedText: message.translatedText,
+      textLanguage: message.textLanguage,
       senderId: message.sender.id,
       senderName: message.sender.name,
+      product: message.product,
+      translationTargetLanguage: message.translationTargetLanguage,
       timestamp: _messageActivityAt(message),
       editedAt: message.editedAt,
       isDeleted: message.isDeleted,
@@ -208,14 +221,14 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
       return 'This message was deleted';
     }
 
-    final trimmedText = message.text.trim();
+    final trimmedText = message.displayText.trim();
     if (trimmedText.isNotEmpty) {
       return trimmedText;
     }
 
     switch (message.messageType) {
       case 'product':
-        final title = message.product?.title.trim();
+        final title = message.product?.displayTitle.trim();
         if (title != null && title.isNotEmpty) {
           return 'Shared request: $title';
         }

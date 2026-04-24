@@ -274,6 +274,25 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     );
   }
 
+  Future<void> refreshTranslationLocale() async {
+    final conversationId = _activeConversationId;
+    if (conversationId == null) {
+      return;
+    }
+
+    final accessToken = await _resolveLiveAccessToken();
+    if (accessToken == null || accessToken.isEmpty) {
+      await _socketService.disconnect();
+      return;
+    }
+
+    await _socketService.connect(
+      conversationId: conversationId,
+      token: accessToken,
+    );
+    await load(conversationId, forceRefresh: true);
+  }
+
   Future<void> sendTyping({
     required bool isTyping,
     required bool hasText,

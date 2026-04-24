@@ -7,18 +7,21 @@ import '../models/models.dart';
 import 'chat_socket_service.dart';
 
 class InboxSocketService {
-  InboxSocketService();
+  InboxSocketService({String Function()? resolveLanguageCode})
+    : _resolveLanguageCode = resolveLanguageCode ?? _defaultLanguageCode;
 
   final StreamController<MessageModel> _messagesController =
       StreamController<MessageModel>.broadcast();
   final StreamController<ChatConnectionStatus> _statusController =
       StreamController<ChatConnectionStatus>.broadcast();
+  final String Function() _resolveLanguageCode;
 
   WebSocket? _socket;
   StreamSubscription<dynamic>? _socketSubscription;
   Timer? _heartbeatTimer;
   Timer? _reconnectTimer;
   String? _token;
+  String? _languageCode;
   bool _shouldReconnect = false;
   bool _isDisposed = false;
   int _reconnectAttempt = 0;
@@ -35,8 +38,10 @@ class InboxSocketService {
     }
 
     final normalizedToken = token.trim();
+    final languageCode = _resolveLanguageCode().trim();
     final sameConnection =
         _token == normalizedToken &&
+        _languageCode == languageCode &&
         (_status == ChatConnectionStatus.connected ||
             _status == ChatConnectionStatus.connecting ||
             _status == ChatConnectionStatus.reconnecting);
@@ -45,6 +50,7 @@ class InboxSocketService {
     }
 
     _token = normalizedToken;
+    _languageCode = languageCode;
     _shouldReconnect = true;
     _reconnectAttempt = 0;
     await _openSocket(isReconnect: false);
@@ -55,6 +61,7 @@ class InboxSocketService {
     _reconnectAttempt = 0;
     await _closeSocket();
     _token = null;
+    _languageCode = null;
     _setStatus(ChatConnectionStatus.disconnected);
   }
 
@@ -68,6 +75,7 @@ class InboxSocketService {
 
   Future<void> _openSocket({required bool isReconnect}) async {
     final token = _token;
+    final languageCode = _resolveLanguageCode().trim();
     if (_isDisposed || token == null || token.isEmpty) {
       return;
     }
@@ -79,8 +87,12 @@ class InboxSocketService {
           ? ChatConnectionStatus.reconnecting
           : ChatConnectionStatus.connecting,
     );
+    _languageCode = languageCode;
 
-    final uri = ApiConstants.buildInboxSocketUri(token: token);
+    final uri = ApiConstants.buildInboxSocketUri(
+      token: token,
+      languageCode: languageCode,
+    );
 
     try {
       final socket = await WebSocket.connect(
@@ -214,4 +226,6 @@ class InboxSocketService {
     _status = next;
     _statusController.add(next);
   }
+
+  static String _defaultLanguageCode() => 'en';
 }

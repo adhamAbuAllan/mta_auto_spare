@@ -236,4 +236,399 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get userRole => 'مستخدم';
+
+  @override
+  String get attachment => 'مرفق';
+
+  @override
+  String get attachedRequest => 'طلب مرفق';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get copyMessage => 'نسخ الرسالة';
+
+  @override
+  String get deleteForAll => 'حذف للجميع';
+
+  @override
+  String get deleteMessage => 'حذف الرسالة';
+
+  @override
+  String get deleteOnlyMe => 'حذف لدي فقط';
+
+  @override
+  String get deletedMessage => 'رسالة محذوفة';
+
+  @override
+  String get discardVoiceMessage => 'تجاهل الرسالة الصوتية';
+
+  @override
+  String get editMessage => 'تعديل الرسالة';
+
+  @override
+  String get editMessageTitle => 'تعديل الرسالة';
+
+  @override
+  String get edited => 'تم التعديل';
+
+  @override
+  String fromPrice(String value) {
+    return 'ابتداءً من $value';
+  }
+
+  @override
+  String get messageCopied => 'تم نسخ الرسالة.';
+
+  @override
+  String get messageCouldNotBeDeleted => 'تعذر حذف الرسالة.';
+
+  @override
+  String get messageCouldNotBeUpdated => 'تعذر تحديث الرسالة.';
+
+  @override
+  String get messageDeletedForEveryone => 'تم حذف الرسالة للجميع.';
+
+  @override
+  String get messageDeletedForYou => 'تم حذف الرسالة لديك.';
+
+  @override
+  String get messageLabel => 'رسالة';
+
+  @override
+  String get messageUpdated => 'تم تحديث الرسالة.';
+
+  @override
+  String get microphonePermissionRequiredForVoiceMessage =>
+      'يلزم إذن الميكروفون لتسجيل رسالة صوتية.';
+
+  @override
+  String get noMessagesYetMessage => 'ابدأ بالتحية وابدأ المحادثة.';
+
+  @override
+  String get noPriceRange => 'لا يوجد نطاق سعر';
+
+  @override
+  String get noVoiceMessageCaptured => 'لم يتم التقاط أي رسالة صوتية.';
+
+  @override
+  String get pauseVoiceMessage => 'إيقاف الرسالة الصوتية مؤقتًا';
+
+  @override
+  String get photo => 'صورة';
+
+  @override
+  String photosCount(int count) {
+    return '$count صور';
+  }
+
+  @override
+  String get playVoiceMessage => 'تشغيل الرسالة الصوتية';
+
+  @override
+  String get preparingRecorder => 'جارٍ تجهيز المسجل...';
+
+  @override
+  String get recordVoiceMessage => 'تسجيل رسالة صوتية';
+
+  @override
+  String replyingTo(String name) {
+    return 'جارٍ الرد على $name';
+  }
+
+  @override
+  String requestWithTitle(String title) {
+    return 'الطلب: $title';
+  }
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get sendMessage => 'إرسال الرسالة';
+
+  @override
+  String get sendOrClearDraftBeforeVoiceMessage =>
+      'أرسل المسودة الحالية أو امسحها قبل تسجيل رسالة صوتية.';
+
+  @override
+  String get sending => 'جارٍ الإرسال...';
+
+  @override
+  String get sendVoiceMessage => 'إرسال الرسالة الصوتية';
+
+  @override
+  String sentAttachmentsCount(int count) {
+    return 'تم إرسال $count مرفق';
+  }
+
+  @override
+  String get sharedRequest => 'تمت مشاركة طلب';
+
+  @override
+  String get showOriginal => 'إظهار الأصل';
+
+  @override
+  String get showTranslation => 'إظهار الترجمة';
+
+  @override
+  String get typing => 'يكتب...';
+
+  @override
+  String get unableToPlayVoiceMessage => 'تعذر تشغيل الرسالة الصوتية';
+
+  @override
+  String get unableToSeekVoiceMessage => 'تعذر التقديم داخل الرسالة الصوتية';
+
+  @override
+  String get updateYourMessage => 'حدّث رسالتك';
+
+  @override
+  String upToPrice(String value) {
+    return 'حتى $value';
+  }
+
+  @override
+  String get uploadImages => 'رفع الصور';
+
+  @override
+  String get voiceMessage => 'رسالة صوتية';
+
+  @override
+  String get voiceMessageCouldNotBeSent => 'تعذر إرسال الرسالة الصوتية.';
+
+  @override
+  String get voiceMessageDiscarded => 'تم تجاهل الرسالة الصوتية.';
+
+  @override
+  String get voiceMessageDiscardFailed =>
+      'تعذر تجاهل الرسالة الصوتية بشكل صحيح.';
+
+  @override
+  String get voiceRecordingCouldNotStart =>
+      'تعذر بدء تسجيل الصوت على هذا الجهاز.';
+
+  @override
+  String get writeAMessage => 'اكتب رسالة...';
+
+  @override
+  String get connecting => 'جارٍ الاتصال...';
+
+  @override
+  String get liveUpdatesUnavailable => 'التحديثات المباشرة غير متاحة';
+
+  @override
+  String get reconnecting => 'جارٍ إعادة الاتصال...';
+
+  @override
+  String get marketplaceUser => 'مستخدم السوق';
+
+  @override
+  String get refreshRequests => 'تحديث الطلبات';
+
+  @override
+  String get browseRequestPostsFromOtherSellers =>
+      'تصفح منشورات الطلبات من البائعين الآخرين.';
+
+  @override
+  String get seeRequestPostsYouCreated => 'شاهد منشورات الطلبات التي أنشأتها.';
+
+  @override
+  String get browseRequests => 'تصفح الطلبات';
+
+  @override
+  String get myRequests => 'طلباتي';
+
+  @override
+  String get noRequestsYet => 'لا توجد طلبات بعد';
+
+  @override
+  String get createFirstRequestPostMessage => 'أنشئ أول منشور طلب وسيظهر هنا.';
+
+  @override
+  String get noSellerRequestsYet => 'لا توجد طلبات بائعين بعد';
+
+  @override
+  String get noSellerRequestsYetMessage =>
+      'لا توجد منشورات طلب من البائعين الآخرين بعد. اسحب للتحديث لاحقًا.';
+
+  @override
+  String get createRequest => 'إنشاء طلب';
+
+  @override
+  String get deleteRequest => 'حذف الطلب';
+
+  @override
+  String deleteRequestConfirmation(String title) {
+    return 'حذف \"$title\"؟ ستتم إزالة منشور الطلب هذا من قائمتك.';
+  }
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String get edit => 'تعديل';
+
+  @override
+  String get deleting => 'جارٍ الحذف...';
+
+  @override
+  String get chatSeller => 'محادثة البائع';
+
+  @override
+  String get opening => 'جارٍ الفتح...';
+
+  @override
+  String get requestDeletedSuccessfully => 'تم حذف الطلب بنجاح.';
+
+  @override
+  String get couldNotDeleteRequest => 'تعذر حذف الطلب.';
+
+  @override
+  String get couldNotOpenConversation => 'تعذر فتح المحادثة.';
+
+  @override
+  String get requestAttachedResendHint =>
+      'تم إرفاق الطلب في محرر الدردشة حتى تتمكن من إعادة إرساله.';
+
+  @override
+  String get initialRequestCouldNotBeSentAutomatically =>
+      'تم فتح الدردشة، لكن تعذر إرسال الطلب الأول تلقائيًا.';
+
+  @override
+  String welcomeBackUser(String name) {
+    return 'مرحبًا بعودتك، $name';
+  }
+
+  @override
+  String get browse => 'تصفح';
+
+  @override
+  String get mine => 'طلباتي';
+
+  @override
+  String get assigned => 'مسندة';
+
+  @override
+  String get assignedRequests => 'الطلبات المسندة';
+
+  @override
+  String get allStatuses => 'كل الحالات';
+
+  @override
+  String get cityNotSet => 'المدينة غير محددة';
+
+  @override
+  String get thisRequestBelongsToYou => 'هذا الطلب يخصك.';
+
+  @override
+  String get openChatWithSellerBehindRequest =>
+      'افتح محادثة مع البائع صاحب هذا الطلب.';
+
+  @override
+  String get requestsYouCanManageNow => 'الطلبات التي يمكنك إدارتها الآن.';
+
+  @override
+  String get noAssignedRequestsYet => 'لا توجد طلبات مسندة بعد';
+
+  @override
+  String get noAssignedRequestsYetMessage =>
+      'عندما يوافق المالك على طلب الوصول سيظهر الطلب هنا.';
+
+  @override
+  String get youCanManageThisRequestStatus => 'يمكنك إدارة حالة هذا الطلب.';
+
+  @override
+  String get changeStatus => 'تغيير الحالة';
+
+  @override
+  String get requestStatusUpdated => 'تم تحديث حالة الطلب.';
+
+  @override
+  String get couldNotUpdateRequestStatus => 'تعذر تحديث حالة الطلب.';
+
+  @override
+  String get updatingStatus => 'جارٍ التحديث...';
+
+  @override
+  String get requestControl => 'التحكم في الطلب';
+
+  @override
+  String get thisChatCanManageRequestStatus =>
+      'يمكن للمورد في هذه الدردشة إدارة حالة هذا الطلب الآن.';
+
+  @override
+  String get thisRequestIsAssignedToAnotherSupplier =>
+      'هذا الطلب مسند حاليًا إلى مورد آخر.';
+
+  @override
+  String get noAccessRequestForThisRequestYet =>
+      'لم يتم إرسال طلب وصول لهذا الطلب بعد.';
+
+  @override
+  String get youCanChangeThisRequestStatusNow =>
+      'يمكنك تغيير حالة هذا الطلب الآن.';
+
+  @override
+  String get waitingForOwnerApproval =>
+      'في انتظار موافقة المالك على طلب الوصول.';
+
+  @override
+  String get ownerRejectedYourAccessRequest => 'رفض المالك طلب وصولك.';
+
+  @override
+  String get askOwnerForStatusAccess =>
+      'اطلب من المالك إذنًا لإدارة حالة هذا الطلب.';
+
+  @override
+  String currentManager(String name) {
+    return 'المدير الحالي: $name';
+  }
+
+  @override
+  String get approving => 'جارٍ الموافقة...';
+
+  @override
+  String get approveAccess => 'موافقة على الوصول';
+
+  @override
+  String get rejectAccess => 'رفض الوصول';
+
+  @override
+  String get sendingRequest => 'جارٍ الإرسال...';
+
+  @override
+  String get requestAccess => 'طلب الوصول';
+
+  @override
+  String get accessRequestPending => 'طلب الوصول الخاص بك قيد الانتظار.';
+
+  @override
+  String get openAssignedRequestsToUpdateStatus =>
+      'افتح الطلبات المسندة لتحديث الحالة في أي وقت.';
+
+  @override
+  String get accessRequestSent => 'تم إرسال طلب الوصول.';
+
+  @override
+  String get couldNotSendAccessRequest => 'تعذر إرسال طلب الوصول.';
+
+  @override
+  String get accessRequestApproved => 'تمت الموافقة على طلب الوصول.';
+
+  @override
+  String get couldNotApproveAccessRequest => 'تعذرت الموافقة على طلب الوصول.';
+
+  @override
+  String get accessRequestRejected => 'تم رفض طلب الوصول.';
+
+  @override
+  String get couldNotRejectAccessRequest => 'تعذر رفض طلب الوصول.';
+
+  @override
+  String get expandRequestControl => 'إظهار أدوات التحكم بالطلب';
+
+  @override
+  String get collapseRequestControl => 'إخفاء أدوات التحكم بالطلب';
 }

@@ -118,5 +118,189 @@
   "useAtLeastSixCharacters": "Use at least six characters",
   "username": "Username",
   "usernameHint": "Enter username",
-  "userRole": "User"
+  "userRole": "User",
+  "attachment": "Attachment",
+  "attachedRequest": "Attached request",
+  "cancel": "Cancel",
+  "copyMessage": "Copy message",
+  "deleteForAll": "Delete for all",
+  "deleteMessage": "Delete message",
+  "deleteOnlyMe": "Delete only for me",
+  "deletedMessage": "Deleted message",
+  "discardVoiceMessage": "Discard voice message",
+  "editMessage": "Edit message",
+  "editMessageTitle": "Edit message",
+  "edited": "Edited",
+  "fromPrice": "From {value}",
+  "@fromPrice": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "messageCopied": "Message copied.",
+  "messageCouldNotBeDeleted": "Message could not be deleted.",
+  "messageCouldNotBeUpdated": "Message could not be updated.",
+  "messageDeletedForEveryone": "Message deleted for everyone.",
+  "messageDeletedForYou": "Message deleted for you.",
+  "messageLabel": "Message",
+  "messageUpdated": "Message updated.",
+  "microphonePermissionRequiredForVoiceMessage": "Microphone permission is required to record a voice message.",
+  "noMessagesYetMessage": "Say hello and start the conversation.",
+  "noPriceRange": "No price range",
+  "noVoiceMessageCaptured": "No voice message was captured.",
+  "pauseVoiceMessage": "Pause voice message",
+  "photo": "Photo",
+  "photosCount": "{count} photos",
+  "@photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "playVoiceMessage": "Play voice message",
+  "preparingRecorder": "Preparing recorder...",
+  "recordVoiceMessage": "Record voice message",
+  "replyingTo": "Replying to {name}",
+  "@replyingTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "requestWithTitle": "Request: {title}",
+  "@requestWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "save": "Save",
+  "sendMessage": "Send message",
+  "sendOrClearDraftBeforeVoiceMessage": "Send or clear the current draft before recording a voice message.",
+  "sending": "Sending...",
+  "sendVoiceMessage": "Send voice message",
+  "sentAttachmentsCount": "Sent {count} attachment(s)",
+  "@sentAttachmentsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sharedRequest": "Shared a request",
+  "showOriginal": "Show original",
+  "showTranslation": "Show translation",
+  "typing": "Typing...",
+  "unableToPlayVoiceMessage": "Unable to play voice message",
+  "unableToSeekVoiceMessage": "Unable to seek voice message",
+  "updateYourMessage": "Update your message",
+  "upToPrice": "Up to {value}",
+  "@upToPrice": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "uploadImages": "Upload images",
+  "voiceMessage": "Voice message",
+  "voiceMessageCouldNotBeSent": "Voice message could not be sent.",
+  "voiceMessageDiscarded": "Voice message discarded.",
+  "voiceMessageDiscardFailed": "Voice message could not be discarded cleanly.",
+  "voiceRecordingCouldNotStart": "Voice recording could not start on this device.",
+  "writeAMessage": "Write a message..."
+,
+  "connecting": "Connecting...",
+  "liveUpdatesUnavailable": "Live updates unavailable",
+  "reconnecting": "Reconnecting...",
+  "marketplaceUser": "Marketplace user",
+  "refreshRequests": "Refresh requests",
+  "browseRequestPostsFromOtherSellers": "Browse request posts from other sellers.",
+  "seeRequestPostsYouCreated": "See the request posts you created.",
+  "browseRequests": "Browse Requests",
+  "myRequests": "My Requests",
+  "noRequestsYet": "No requests yet",
+  "createFirstRequestPostMessage": "Create your first request post and it will show up here.",
+  "noSellerRequestsYet": "No seller requests yet",
+  "noSellerRequestsYetMessage": "There are no request posts from other sellers yet. Pull to refresh later.",
+  "createRequest": "Create Request",
+  "deleteRequest": "Delete Request",
+  "deleteRequestConfirmation": "Delete \"{title}\"? This request post will be removed from your list.",
+  "@deleteRequestConfirmation": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "Delete",
+  "edit": "Edit",
+  "deleting": "Deleting...",
+  "chatSeller": "Chat Seller",
+  "opening": "Opening...",
+  "requestDeletedSuccessfully": "Request deleted successfully.",
+  "couldNotDeleteRequest": "Could not delete the request.",
+  "couldNotOpenConversation": "Could not open the conversation.",
+  "requestAttachedResendHint": "The request is attached in the chat composer so you can resend it.",
+  "initialRequestCouldNotBeSentAutomatically": "The chat opened, but the initial request could not be sent automatically.",
+  "welcomeBackUser": "Welcome back, {name}",
+  "@welcomeBackUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "browse": "Browse",
+  "mine": "Mine",
+  "assigned": "Assigned",
+  "assignedRequests": "Assigned Requests",
+  "allStatuses": "All Statuses",
+  "cityNotSet": "City not set",
+  "thisRequestBelongsToYou": "This request belongs to you.",
+  "openChatWithSellerBehindRequest": "Open a chat with the seller behind this request.",
+  "requestsYouCanManageNow": "Requests you can manage right now.",
+  "noAssignedRequestsYet": "No assigned requests yet",
+  "noAssignedRequestsYetMessage": "Once an owner approves your access, the request will appear here.",
+  "youCanManageThisRequestStatus": "You can manage this request status.",
+  "changeStatus": "Change Status",
+  "requestStatusUpdated": "Request status updated.",
+  "couldNotUpdateRequestStatus": "Could not update the request status.",
+  "updatingStatus": "Updating...",
+  "requestControl": "Request Control",
+  "thisChatCanManageRequestStatus": "The supplier in this chat can manage this request status now.",
+  "thisRequestIsAssignedToAnotherSupplier": "This request is currently assigned to another supplier.",
+  "noAccessRequestForThisRequestYet": "No access request has been sent for this request yet.",
+  "youCanChangeThisRequestStatusNow": "You can change this request status now.",
+  "waitingForOwnerApproval": "Waiting for the owner to approve your access request.",
+  "ownerRejectedYourAccessRequest": "The owner rejected your access request.",
+  "askOwnerForStatusAccess": "Ask the owner for permission to manage this request status.",
+  "currentManager": "Current manager: {name}",
+  "@currentManager": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "approving": "Approving...",
+  "approveAccess": "Approve Access",
+  "rejectAccess": "Reject Access",
+  "sendingRequest": "Sending...",
+  "requestAccess": "Request Access",
+  "accessRequestPending": "Your access request is pending.",
+  "openAssignedRequestsToUpdateStatus": "Open Assigned Requests to update the status anytime.",
+  "accessRequestSent": "Access request sent.",
+  "couldNotSendAccessRequest": "Could not send the access request.",
+  "accessRequestApproved": "Access request approved.",
+  "couldNotApproveAccessRequest": "Could not approve the access request.",
+  "accessRequestRejected": "Access request rejected.",
+  "couldNotRejectAccessRequest": "Could not reject the access request.",
+  "expandRequestControl": "Expand request controls",
+  "collapseRequestControl": "Collapse request controls"
 }

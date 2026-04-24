@@ -8,11 +8,16 @@ void main() {
       'id': 14,
       'requester': 2,
       'title': 'Need bumper',
+      'translated_title': 'احتاج صدام',
+      'title_language': 'en',
       'description': 'Original preferred',
+      'translated_description': 'يفضل الأصلي',
+      'description_language': 'en',
       'min_price': '100.00',
       'max_price': '250.00',
       'status': 1,
       'city': null,
+      'translation_target_language': 'ar',
       'images': [
         {
           'id': 9,
@@ -26,5 +31,8 @@ void main() {
     expect(request.city, isNull);
     expect(request.images, hasLength(1));
     expect(request.images.single.image, '/media/part_requests/sample.jpg');
+    expect(request.displayTitle, 'احتاج صدام');
+    expect(request.displayDescription, 'يفضل الأصلي');
+    expect(request.hasTranslatedContent, isTrue);
   });
 }
