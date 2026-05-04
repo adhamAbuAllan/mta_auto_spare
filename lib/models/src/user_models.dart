@@ -12,6 +12,10 @@ class ApiUser {
     this.city,
     required this.role,
     this.rating,
+    this.isActive = true,
+    this.isAdmin = false,
+    this.blockedAt,
+    this.blockedReason,
     this.createdAt,
     this.password,
     this.supportedCarModelIds,
@@ -26,6 +30,10 @@ class ApiUser {
   final String? city;
   final String role;
   final String? rating;
+  final bool isActive;
+  final bool isAdmin;
+  final DateTime? blockedAt;
+  final String? blockedReason;
   final DateTime? createdAt;
   final String? password;
   final List<int>? supportedCarModelIds;
@@ -41,6 +49,10 @@ class ApiUser {
       city: stringFromJson(json['city']),
       role: stringFromJson(json['role']) ?? '',
       rating: stringFromJson(json['rating']),
+      isActive: boolFromJson(json['is_active']) ?? true,
+      isAdmin: boolFromJson(json['is_admin']) ?? false,
+      blockedAt: dateTimeFromJson(json['blocked_at']),
+      blockedReason: stringFromJson(json['blocked_reason']),
       createdAt: dateTimeFromJson(json['created_at']),
       password: stringFromJson(json['password']),
     );
@@ -67,6 +79,14 @@ class ApiUser {
     }
     if (rating != null) {
       json['rating'] = rating;
+    }
+    json['is_active'] = isActive;
+    json['is_admin'] = isAdmin;
+    if (blockedAt != null) {
+      json['blocked_at'] = blockedAt!.toIso8601String();
+    }
+    if (blockedReason != null) {
+      json['blocked_reason'] = blockedReason;
     }
     if (createdAt != null) {
       json['created_at'] = createdAt!.toIso8601String();
@@ -150,6 +170,7 @@ class PublicUserProfile {
     required this.role,
     this.rating,
     required this.isOnline,
+    this.isAdmin = false,
     this.lastSeenAt,
     this.supportedCarModels = const [],
     required this.createdAt,
@@ -164,6 +185,7 @@ class PublicUserProfile {
   final String role;
   final String? rating;
   final bool isOnline;
+  final bool isAdmin;
   final DateTime? lastSeenAt;
   final List<CarModelOption> supportedCarModels;
   final DateTime createdAt;
@@ -179,6 +201,7 @@ class PublicUserProfile {
       role: stringFromJson(json['role']) ?? '',
       rating: stringFromJson(json['rating']),
       isOnline: boolFromJson(json['is_online']) ?? false,
+      isAdmin: boolFromJson(json['is_admin']) ?? false,
       lastSeenAt: dateTimeFromJson(json['last_seen_at']),
       supportedCarModels: listFromJson(
         json['supported_car_models'],
@@ -199,6 +222,7 @@ class PublicUserProfile {
       'role': role,
       'rating': rating,
       'is_online': isOnline,
+      'is_admin': isAdmin,
       'last_seen_at': lastSeenAt?.toIso8601String(),
       'supported_car_models': supportedCarModels
           .map((item) => item.toJson())
@@ -219,6 +243,10 @@ class MeProfile {
     this.city,
     required this.role,
     this.rating,
+    required this.isActive,
+    required this.isAdmin,
+    this.blockedAt,
+    this.blockedReason,
     required this.chatPushEnabled,
     required this.chatMessagePreviewEnabled,
     this.supportedCarModels = const [],
@@ -234,6 +262,10 @@ class MeProfile {
   final String? city;
   final String role;
   final String? rating;
+  final bool isActive;
+  final bool isAdmin;
+  final DateTime? blockedAt;
+  final String? blockedReason;
   final bool chatPushEnabled;
   final bool chatMessagePreviewEnabled;
   final List<CarModelOption> supportedCarModels;
@@ -250,6 +282,10 @@ class MeProfile {
       city: stringFromJson(json['city']),
       role: stringFromJson(json['role']) ?? '',
       rating: stringFromJson(json['rating']),
+      isActive: boolFromJson(json['is_active']) ?? true,
+      isAdmin: boolFromJson(json['is_admin']) ?? false,
+      blockedAt: dateTimeFromJson(json['blocked_at']),
+      blockedReason: stringFromJson(json['blocked_reason']),
       chatPushEnabled: boolFromJson(json['chat_push_enabled']) ?? false,
       chatMessagePreviewEnabled:
           boolFromJson(json['chat_message_preview_enabled']) ?? false,
@@ -272,12 +308,99 @@ class MeProfile {
       'city': city,
       'role': role,
       'rating': rating,
+      'is_active': isActive,
+      'is_admin': isAdmin,
+      'blocked_at': blockedAt?.toIso8601String(),
+      'blocked_reason': blockedReason,
       'chat_push_enabled': chatPushEnabled,
       'chat_message_preview_enabled': chatMessagePreviewEnabled,
       'supported_car_models': supportedCarModels
           .map((item) => item.toJson())
           .toList(growable: false),
       'created_at': createdAt.toIso8601String(),
+    };
+  }
+}
+
+class UserReportEntry {
+  const UserReportEntry({
+    required this.id,
+    required this.reporter,
+    this.reporterDetails,
+    required this.reportedUser,
+    this.reportedUserDetails,
+    required this.reason,
+    required this.details,
+    required this.status,
+    this.reviewedBy,
+    this.reviewedByDetails,
+    this.reviewedAt,
+    required this.adminNotes,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  final int id;
+  final int reporter;
+  final UserBrief? reporterDetails;
+  final int reportedUser;
+  final UserBrief? reportedUserDetails;
+  final String reason;
+  final String details;
+  final String status;
+  final int? reviewedBy;
+  final UserBrief? reviewedByDetails;
+  final DateTime? reviewedAt;
+  final String adminNotes;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  bool get isOpen => status == 'open';
+  bool get isReviewed => status == 'reviewed';
+  bool get isDismissed => status == 'dismissed';
+  bool get isActioned => status == 'actioned';
+
+  factory UserReportEntry.fromJson(JsonMap json) {
+    return UserReportEntry(
+      id: intFromJson(json['id']) ?? 0,
+      reporter: intFromJson(json['reporter']) ?? 0,
+      reporterDetails: mapFromJson(json['reporter_details']) == null
+          ? null
+          : UserBrief.fromJson(mapFromJson(json['reporter_details'])!),
+      reportedUser: intFromJson(json['reported_user']) ?? 0,
+      reportedUserDetails: mapFromJson(json['reported_user_details']) == null
+          ? null
+          : UserBrief.fromJson(mapFromJson(json['reported_user_details'])!),
+      reason: stringFromJson(json['reason']) ?? '',
+      details: stringFromJson(json['details']) ?? '',
+      status: stringFromJson(json['status']) ?? 'open',
+      reviewedBy: intFromJson(json['reviewed_by']),
+      reviewedByDetails: mapFromJson(json['reviewed_by_details']) == null
+          ? null
+          : UserBrief.fromJson(mapFromJson(json['reviewed_by_details'])!),
+      reviewedAt: dateTimeFromJson(json['reviewed_at']),
+      adminNotes: stringFromJson(json['admin_notes']) ?? '',
+      createdAt: dateTimeFromJson(json['created_at']),
+      updatedAt: dateTimeFromJson(json['updated_at']),
+    );
+  }
+
+  JsonMap toJson() {
+    return {
+      'id': id,
+      'reporter': reporter,
+      'reporter_details': reporterDetails?.toJson(),
+      'reported_user': reportedUser,
+      'reported_user_details': reportedUserDetails?.toJson(),
+      'reason': reason,
+      'details': details,
+      'status': status,
+      'reviewed_by': reviewedBy,
+      'reviewed_by_details': reviewedByDetails?.toJson(),
+      'reviewed_at': reviewedAt?.toIso8601String(),
+      'admin_notes': adminNotes,
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
     };
   }
 }

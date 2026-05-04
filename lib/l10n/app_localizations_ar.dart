@@ -631,4 +631,243 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get collapseRequestControl => 'إخفاء أدوات التحكم بالطلب';
+
+  @override
+  String get adminPanel => 'لوحة المشرف';
+
+  @override
+  String get adminAccessRequired => 'يمكن فقط لحسابات المشرفين فتح هذه اللوحة.';
+
+  @override
+  String get adminUsersTab => 'المستخدمون';
+
+  @override
+  String get adminReportsTab => 'البلاغات';
+
+  @override
+  String get adminUsersCouldNotBeLoaded => 'تعذر تحميل قائمة المستخدمين الآن.';
+
+  @override
+  String get adminReportsCouldNotBeLoaded => 'تعذر تحميل البلاغات الآن.';
+
+  @override
+  String get noUserReportsYet => 'لا توجد بلاغات مستخدمين بعد.';
+
+  @override
+  String blockUserTitle(String name) {
+    return 'حظر $name';
+  }
+
+  @override
+  String get blockUserAction => 'حظر المستخدم';
+
+  @override
+  String get blockReasonLabel => 'سبب الحظر';
+
+  @override
+  String get blockReasonHint => 'أضف سببًا اختياريًا لهذا الإجراء.';
+
+  @override
+  String unblockUserTitle(String name) {
+    return 'إلغاء حظر $name';
+  }
+
+  @override
+  String unblockUserMessage(String name) {
+    return 'السماح لـ $name بالوصول إلى التطبيق مرة أخرى؟';
+  }
+
+  @override
+  String get unblockUserAction => 'إلغاء الحظر';
+
+  @override
+  String get userBlocked => 'تم حظر المستخدم.';
+
+  @override
+  String get userUnblocked => 'تم إلغاء حظر المستخدم.';
+
+  @override
+  String get couldNotBlockUser => 'تعذر حظر المستخدم.';
+
+  @override
+  String get couldNotUnblockUser => 'تعذر إلغاء حظر المستخدم.';
+
+  @override
+  String get reviewReportTitle => 'مراجعة البلاغ';
+
+  @override
+  String get reviewReportAction => 'مراجعة';
+
+  @override
+  String get reportStatusLabel => 'حالة البلاغ';
+
+  @override
+  String get reportStatusOpen => 'مفتوح';
+
+  @override
+  String get reportStatusReviewed => 'تمت مراجعته';
+
+  @override
+  String get reportStatusDismissed => 'تم تجاهله';
+
+  @override
+  String get reportStatusActioned => 'تم اتخاذ إجراء';
+
+  @override
+  String get reportUpdated => 'تم تحديث البلاغ.';
+
+  @override
+  String get couldNotUpdateReport => 'تعذر تحديث البلاغ.';
+
+  @override
+  String get adminNotesLabel => 'ملاحظات المشرف';
+
+  @override
+  String get adminNotesHint => 'أضف ملاحظات لمراجعة البلاغ.';
+
+  @override
+  String get userBlockedStatus => 'محظور';
+
+  @override
+  String get userActiveStatus => 'نشط';
+
+  @override
+  String get adminCurrentAccount => 'هذا هو حسابك الحالي.';
+
+  @override
+  String get adminRole => 'مشرف';
+
+  @override
+  String reportCardTitle(String name) {
+    return 'بلاغ عن $name';
+  }
+
+  @override
+  String reportedByLabel(String name) {
+    return 'تم الإبلاغ بواسطة $name';
+  }
+
+  @override
+  String reportCreatedAt(String time) {
+    return 'أُنشئ $time';
+  }
+
+  @override
+  String reportReviewedAt(String time) {
+    return 'تمت مراجعته $time';
+  }
+
+  @override
+  String get profileTitle => 'الملف الشخصي';
+
+  @override
+  String get profileLoadError => 'تعذر تحميل هذا الملف الشخصي الآن.';
+
+  @override
+  String get contactDetails => 'بيانات التواصل';
+
+  @override
+  String get phone => 'الهاتف';
+
+  @override
+  String get quickActions => 'إجراءات سريعة';
+
+  @override
+  String get quickActionsDescription =>
+      'ابدأ محادثة مباشرة أو افتح واتساب باستخدام رقم هاتف المورد.';
+
+  @override
+  String get openingChat => 'جارٍ فتح المحادثة...';
+
+  @override
+  String get chatAction => 'محادثة';
+
+  @override
+  String get openingWhatsApp => 'جارٍ فتح واتساب...';
+
+  @override
+  String get whatsAppAction => 'واتساب';
+
+  @override
+  String get supplierCarsTitle => 'السيارات التي يعمل عليها هذا المورد';
+
+  @override
+  String get supplierCarsDescription =>
+      'هذه هي علامات السيارات المحددة في ملف المورد.';
+
+  @override
+  String ratingLabel(String value) {
+    return 'التقييم $value';
+  }
+
+  @override
+  String joinedLabel(String time) {
+    return 'انضم $time';
+  }
+
+  @override
+  String get reportUserSectionTitle => 'الإبلاغ عن مستخدم';
+
+  @override
+  String get reportUserSectionBody =>
+      'أرسل بلاغًا إذا كان هذا المستخدم يسيء استخدام الدردشة أو طلبات الوصول.';
+
+  @override
+  String get reportUserAction => 'إبلاغ';
+
+  @override
+  String get sendingReport => 'جارٍ إرسال البلاغ...';
+
+  @override
+  String reportUserDialogTitle(String name) {
+    return 'إبلاغ عن $name';
+  }
+
+  @override
+  String get reportReasonLabel => 'السبب';
+
+  @override
+  String get reportDetailsLabel => 'التفاصيل';
+
+  @override
+  String get reportDetailsHint =>
+      'أضف أي معلومات تساعد المشرف على مراجعة البلاغ.';
+
+  @override
+  String get sendReport => 'إرسال البلاغ';
+
+  @override
+  String get userReportSubmitted => 'تم إرسال البلاغ.';
+
+  @override
+  String get couldNotSendUserReport => 'تعذر إرسال البلاغ.';
+
+  @override
+  String get reportReasonSpam => 'رسائل مزعجة';
+
+  @override
+  String get reportReasonFraud => 'احتيال';
+
+  @override
+  String get reportReasonHarassment => 'مضايقة';
+
+  @override
+  String get reportReasonImpersonation => 'انتحال صفة';
+
+  @override
+  String get reportReasonOther => 'أخرى';
+
+  @override
+  String get couldNotOpenChatRightNow => 'تعذر فتح المحادثة الآن.';
+
+  @override
+  String get whatsAppPhoneNotReady => 'رقم الهاتف هذا غير جاهز لواتساب.';
+
+  @override
+  String get couldNotOpenWhatsApp => 'تعذر فتح واتساب الآن.';
+
+  @override
+  String whatsAppGreeting(String name) {
+    return 'مرحبًا $name';
+  }
 }

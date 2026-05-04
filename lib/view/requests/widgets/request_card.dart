@@ -15,6 +15,7 @@ class RequestCard extends StatelessWidget {
     required this.request,
     required this.isMine,
     required this.canChangeStatus,
+    required this.showStatus,
     required this.onViewTap,
     required this.onChatTap,
     this.isChatLoading = false,
@@ -28,6 +29,7 @@ class RequestCard extends StatelessWidget {
   final PartRequest request;
   final bool isMine;
   final bool canChangeStatus;
+  final bool showStatus;
   final VoidCallback onViewTap;
   final VoidCallback onChatTap;
   final bool isChatLoading;
@@ -103,7 +105,7 @@ class RequestCard extends StatelessWidget {
             runSpacing: 8,
             alignment: WrapAlignment.spaceBetween,
             children: [
-              if (request.statusDetails != null)
+              if (showStatus && request.statusDetails != null)
                 _MetaChip(
                   icon: Icons.flag_outlined,
                   label: request.statusDetails!.label,

@@ -1239,6 +1239,432 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Collapse request controls'**
   String get collapseRequestControl;
+
+  /// No description provided for @adminPanel.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Panel'**
+  String get adminPanel;
+
+  /// No description provided for @adminAccessRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Only admin accounts can open this panel.'**
+  String get adminAccessRequired;
+
+  /// No description provided for @adminUsersTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get adminUsersTab;
+
+  /// No description provided for @adminReportsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get adminReportsTab;
+
+  /// No description provided for @adminUsersCouldNotBeLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'The user list could not be loaded right now.'**
+  String get adminUsersCouldNotBeLoaded;
+
+  /// No description provided for @adminReportsCouldNotBeLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'The reports could not be loaded right now.'**
+  String get adminReportsCouldNotBeLoaded;
+
+  /// No description provided for @noUserReportsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No user reports yet.'**
+  String get noUserReportsYet;
+
+  /// No description provided for @blockUserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Block {name}'**
+  String blockUserTitle(String name);
+
+  /// No description provided for @blockUserAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Block User'**
+  String get blockUserAction;
+
+  /// No description provided for @blockReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Block reason'**
+  String get blockReasonLabel;
+
+  /// No description provided for @blockReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an optional reason for this action.'**
+  String get blockReasonHint;
+
+  /// No description provided for @unblockUserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock {name}'**
+  String unblockUserTitle(String name);
+
+  /// No description provided for @unblockUserMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow {name} to access the app again?'**
+  String unblockUserMessage(String name);
+
+  /// No description provided for @unblockUserAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock User'**
+  String get unblockUserAction;
+
+  /// No description provided for @userBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'User blocked.'**
+  String get userBlocked;
+
+  /// No description provided for @userUnblocked.
+  ///
+  /// In en, this message translates to:
+  /// **'User unblocked.'**
+  String get userUnblocked;
+
+  /// No description provided for @couldNotBlockUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not block the user.'**
+  String get couldNotBlockUser;
+
+  /// No description provided for @couldNotUnblockUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not unblock the user.'**
+  String get couldNotUnblockUser;
+
+  /// No description provided for @reviewReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Report'**
+  String get reviewReportTitle;
+
+  /// No description provided for @reviewReportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get reviewReportAction;
+
+  /// No description provided for @reportStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Report status'**
+  String get reportStatusLabel;
+
+  /// No description provided for @reportStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get reportStatusOpen;
+
+  /// No description provided for @reportStatusReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed'**
+  String get reportStatusReviewed;
+
+  /// No description provided for @reportStatusDismissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismissed'**
+  String get reportStatusDismissed;
+
+  /// No description provided for @reportStatusActioned.
+  ///
+  /// In en, this message translates to:
+  /// **'Actioned'**
+  String get reportStatusActioned;
+
+  /// No description provided for @reportUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Report updated.'**
+  String get reportUpdated;
+
+  /// No description provided for @couldNotUpdateReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update the report.'**
+  String get couldNotUpdateReport;
+
+  /// No description provided for @adminNotesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin notes'**
+  String get adminNotesLabel;
+
+  /// No description provided for @adminNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add review notes for the moderation team.'**
+  String get adminNotesHint;
+
+  /// No description provided for @userBlockedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get userBlockedStatus;
+
+  /// No description provided for @userActiveStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get userActiveStatus;
+
+  /// No description provided for @adminCurrentAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'This is your current account.'**
+  String get adminCurrentAccount;
+
+  /// No description provided for @adminRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get adminRole;
+
+  /// No description provided for @reportCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report about {name}'**
+  String reportCardTitle(String name);
+
+  /// No description provided for @reportedByLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported by {name}'**
+  String reportedByLabel(String name);
+
+  /// No description provided for @reportCreatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created {time}'**
+  String reportCreatedAt(String time);
+
+  /// No description provided for @reportReviewedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed {time}'**
+  String reportReviewedAt(String time);
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTitle;
+
+  /// No description provided for @profileLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'This profile could not be loaded right now.'**
+  String get profileLoadError;
+
+  /// No description provided for @contactDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Details'**
+  String get contactDetails;
+
+  /// No description provided for @phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phone;
+
+  /// No description provided for @quickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get quickActions;
+
+  /// No description provided for @quickActionsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a direct conversation or open WhatsApp using the supplier phone number.'**
+  String get quickActionsDescription;
+
+  /// No description provided for @openingChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening chat...'**
+  String get openingChat;
+
+  /// No description provided for @chatAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chatAction;
+
+  /// No description provided for @openingWhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening WhatsApp...'**
+  String get openingWhatsApp;
+
+  /// No description provided for @whatsAppAction.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get whatsAppAction;
+
+  /// No description provided for @supplierCarsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cars This Supplier Works With'**
+  String get supplierCarsTitle;
+
+  /// No description provided for @supplierCarsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'These are the car brands selected on the supplier profile.'**
+  String get supplierCarsDescription;
+
+  /// No description provided for @ratingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating {value}'**
+  String ratingLabel(String value);
+
+  /// No description provided for @joinedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {time}'**
+  String joinedLabel(String time);
+
+  /// No description provided for @reportUserSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report User'**
+  String get reportUserSectionTitle;
+
+  /// No description provided for @reportUserSectionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a safety report if this user is abusing chat or request access.'**
+  String get reportUserSectionBody;
+
+  /// No description provided for @reportUserAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Report User'**
+  String get reportUserAction;
+
+  /// No description provided for @sendingReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending report...'**
+  String get sendingReport;
+
+  /// No description provided for @reportUserDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report {name}'**
+  String reportUserDialogTitle(String name);
+
+  /// No description provided for @reportReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get reportReasonLabel;
+
+  /// No description provided for @reportDetailsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get reportDetailsLabel;
+
+  /// No description provided for @reportDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add any context that would help the admin review this report.'**
+  String get reportDetailsHint;
+
+  /// No description provided for @sendReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Report'**
+  String get sendReport;
+
+  /// No description provided for @userReportSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Report sent.'**
+  String get userReportSubmitted;
+
+  /// No description provided for @couldNotSendUserReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the report.'**
+  String get couldNotSendUserReport;
+
+  /// No description provided for @reportReasonSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam'**
+  String get reportReasonSpam;
+
+  /// No description provided for @reportReasonFraud.
+  ///
+  /// In en, this message translates to:
+  /// **'Fraud'**
+  String get reportReasonFraud;
+
+  /// No description provided for @reportReasonHarassment.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment'**
+  String get reportReasonHarassment;
+
+  /// No description provided for @reportReasonImpersonation.
+  ///
+  /// In en, this message translates to:
+  /// **'Impersonation'**
+  String get reportReasonImpersonation;
+
+  /// No description provided for @reportReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get reportReasonOther;
+
+  /// No description provided for @couldNotOpenChatRightNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the chat right now.'**
+  String get couldNotOpenChatRightNow;
+
+  /// No description provided for @whatsAppPhoneNotReady.
+  ///
+  /// In en, this message translates to:
+  /// **'This phone number is not ready for WhatsApp.'**
+  String get whatsAppPhoneNotReady;
+
+  /// No description provided for @couldNotOpenWhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open WhatsApp right now.'**
+  String get couldNotOpenWhatsApp;
+
+  /// No description provided for @whatsAppGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello {name}'**
+  String whatsAppGreeting(String name);
 }
 
 class _AppLocalizationsDelegate

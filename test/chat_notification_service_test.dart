@@ -312,6 +312,8 @@ SessionState _signedInSession() {
       username: 'buyer',
       name: 'Buyer User',
       role: 'user',
+      isActive: true,
+      isAdmin: false,
       chatPushEnabled: true,
       chatMessagePreviewEnabled: true,
       createdAt: DateTime.utc(2026, 4, 1),

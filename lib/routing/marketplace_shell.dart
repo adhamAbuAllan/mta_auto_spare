@@ -8,6 +8,7 @@ import '../controllers/providers/request_provider.dart';
 import '../localization/app_localizations_x.dart';
 import '../models/models.dart';
 import '../notifications/chat_notification_service.dart';
+import '../view/admin/admin_panel_page.dart';
 import '../view/chat/chat_detail_page.dart';
 import '../view/chat/conversations_view.dart';
 import '../view/common_widgets/app_panel.dart';
@@ -117,13 +118,16 @@ class _MarketplaceShellPageState extends ConsumerState<MarketplaceShellPage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 980;
+        final isAdmin = session.profile?.isAdmin ?? false;
         return isWide
             ? _WideMarketplaceLayout(
                 userName: session.profile?.name ?? context.l10n.userRole,
+                isAdmin: isAdmin,
               )
             : _MobileMarketplaceLayout(
                 index: _mobileIndex,
                 userName: session.profile?.name ?? context.l10n.userRole,
+                isAdmin: isAdmin,
                 onDestinationSelected: (index) {
                   setState(() => _mobileIndex = index);
                 },
@@ -134,9 +138,13 @@ class _MarketplaceShellPageState extends ConsumerState<MarketplaceShellPage> {
 }
 
 class _WideMarketplaceLayout extends ConsumerWidget {
-  const _WideMarketplaceLayout({required this.userName});
+  const _WideMarketplaceLayout({
+    required this.userName,
+    required this.isAdmin,
+  });
 
   final String userName;
+  final bool isAdmin;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -157,6 +165,12 @@ class _WideMarketplaceLayout extends ConsumerWidget {
               ),
             ),
           ),
+          if (isAdmin)
+            IconButton(
+              tooltip: context.l10n.adminPanel,
+              onPressed: () => _openAdminPanel(context),
+              icon: const Icon(Icons.admin_panel_settings_outlined),
+            ),
           IconButton(
             tooltip: context.l10n.editProfile,
             onPressed: () => _openEditProfile(context),
@@ -231,17 +245,25 @@ class _WideMarketplaceLayout extends ConsumerWidget {
       context,
     ).push(MaterialPageRoute<void>(builder: (_) => const EditProfilePage()));
   }
+
+  void _openAdminPanel(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const AdminPanelPage()));
+  }
 }
 
 class _MobileMarketplaceLayout extends ConsumerWidget {
   const _MobileMarketplaceLayout({
     required this.index,
     required this.userName,
+    required this.isAdmin,
     required this.onDestinationSelected,
   });
 
   final int index;
   final String userName;
+  final bool isAdmin;
   final ValueChanged<int> onDestinationSelected;
 
   @override
@@ -261,6 +283,12 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
               ),
             ),
           ),
+          if (isAdmin)
+            IconButton(
+              tooltip: context.l10n.adminPanel,
+              onPressed: () => _openAdminPanel(context),
+              icon: const Icon(Icons.admin_panel_settings_outlined),
+            ),
           IconButton(
             tooltip: context.l10n.editProfile,
             onPressed: () => _openEditProfile(context),
@@ -326,5 +354,11 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
     Navigator.of(
       context,
     ).push(MaterialPageRoute<void>(builder: (_) => const EditProfilePage()));
+  }
+
+  void _openAdminPanel(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const AdminPanelPage()));
   }
 }

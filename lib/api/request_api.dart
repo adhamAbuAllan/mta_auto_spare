@@ -78,16 +78,17 @@ class RequestApi {
   }) async {
     final accesses = <PartRequestAccess>[];
     String? nextPageUrl;
+    final queryParameters = <String, dynamic>{'part_request': partRequestId};
+    if (conversationId != null) {
+      queryParameters['conversation'] = conversationId;
+    }
 
     do {
       try {
         final response = nextPageUrl == null
             ? await _dio.get(
                 ApiEndpoints.partRequestAccesses,
-                queryParameters: {
-                  'part_request': partRequestId,
-                  if (conversationId != null) 'conversation': conversationId,
-                },
+                queryParameters: queryParameters,
               )
             : await _dio.get(nextPageUrl);
         final page = ApiPage<PartRequestAccess>.fromJson(

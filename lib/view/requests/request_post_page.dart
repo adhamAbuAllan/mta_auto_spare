@@ -446,7 +446,7 @@ class _RequestPostContent extends StatelessWidget {
                 icon: Icons.schedule_outlined,
                 label: formatRelativeTime(request.createdAt, context.l10n),
               ),
-              if (request.statusDetails != null)
+              if (canChangeStatus && request.statusDetails != null)
                 _MetaChip(
                   icon: Icons.flag_outlined,
                   label: request.statusDetails!.label,

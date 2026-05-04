@@ -72,6 +72,9 @@ final activeRequestsProvider = Provider<List<PartRequest>>((ref) {
     RequestSegment.mine => ref.watch(myRequestsProvider),
     RequestSegment.assigned => ref.watch(assignedRequestsProvider),
   };
+  if (state.segment == RequestSegment.browse) {
+    return requests;
+  }
   final selectedStatusId = state.selectedStatusId;
   if (selectedStatusId == null) {
     return requests;

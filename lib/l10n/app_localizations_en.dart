@@ -639,4 +639,246 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get collapseRequestControl => 'Collapse request controls';
+
+  @override
+  String get adminPanel => 'Admin Panel';
+
+  @override
+  String get adminAccessRequired => 'Only admin accounts can open this panel.';
+
+  @override
+  String get adminUsersTab => 'Users';
+
+  @override
+  String get adminReportsTab => 'Reports';
+
+  @override
+  String get adminUsersCouldNotBeLoaded =>
+      'The user list could not be loaded right now.';
+
+  @override
+  String get adminReportsCouldNotBeLoaded =>
+      'The reports could not be loaded right now.';
+
+  @override
+  String get noUserReportsYet => 'No user reports yet.';
+
+  @override
+  String blockUserTitle(String name) {
+    return 'Block $name';
+  }
+
+  @override
+  String get blockUserAction => 'Block User';
+
+  @override
+  String get blockReasonLabel => 'Block reason';
+
+  @override
+  String get blockReasonHint => 'Add an optional reason for this action.';
+
+  @override
+  String unblockUserTitle(String name) {
+    return 'Unblock $name';
+  }
+
+  @override
+  String unblockUserMessage(String name) {
+    return 'Allow $name to access the app again?';
+  }
+
+  @override
+  String get unblockUserAction => 'Unblock User';
+
+  @override
+  String get userBlocked => 'User blocked.';
+
+  @override
+  String get userUnblocked => 'User unblocked.';
+
+  @override
+  String get couldNotBlockUser => 'Could not block the user.';
+
+  @override
+  String get couldNotUnblockUser => 'Could not unblock the user.';
+
+  @override
+  String get reviewReportTitle => 'Review Report';
+
+  @override
+  String get reviewReportAction => 'Review';
+
+  @override
+  String get reportStatusLabel => 'Report status';
+
+  @override
+  String get reportStatusOpen => 'Open';
+
+  @override
+  String get reportStatusReviewed => 'Reviewed';
+
+  @override
+  String get reportStatusDismissed => 'Dismissed';
+
+  @override
+  String get reportStatusActioned => 'Actioned';
+
+  @override
+  String get reportUpdated => 'Report updated.';
+
+  @override
+  String get couldNotUpdateReport => 'Could not update the report.';
+
+  @override
+  String get adminNotesLabel => 'Admin notes';
+
+  @override
+  String get adminNotesHint => 'Add review notes for the moderation team.';
+
+  @override
+  String get userBlockedStatus => 'Blocked';
+
+  @override
+  String get userActiveStatus => 'Active';
+
+  @override
+  String get adminCurrentAccount => 'This is your current account.';
+
+  @override
+  String get adminRole => 'Admin';
+
+  @override
+  String reportCardTitle(String name) {
+    return 'Report about $name';
+  }
+
+  @override
+  String reportedByLabel(String name) {
+    return 'Reported by $name';
+  }
+
+  @override
+  String reportCreatedAt(String time) {
+    return 'Created $time';
+  }
+
+  @override
+  String reportReviewedAt(String time) {
+    return 'Reviewed $time';
+  }
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get profileLoadError => 'This profile could not be loaded right now.';
+
+  @override
+  String get contactDetails => 'Contact Details';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get quickActions => 'Quick Actions';
+
+  @override
+  String get quickActionsDescription =>
+      'Start a direct conversation or open WhatsApp using the supplier phone number.';
+
+  @override
+  String get openingChat => 'Opening chat...';
+
+  @override
+  String get chatAction => 'Chat';
+
+  @override
+  String get openingWhatsApp => 'Opening WhatsApp...';
+
+  @override
+  String get whatsAppAction => 'WhatsApp';
+
+  @override
+  String get supplierCarsTitle => 'Cars This Supplier Works With';
+
+  @override
+  String get supplierCarsDescription =>
+      'These are the car brands selected on the supplier profile.';
+
+  @override
+  String ratingLabel(String value) {
+    return 'Rating $value';
+  }
+
+  @override
+  String joinedLabel(String time) {
+    return 'Joined $time';
+  }
+
+  @override
+  String get reportUserSectionTitle => 'Report User';
+
+  @override
+  String get reportUserSectionBody =>
+      'Send a safety report if this user is abusing chat or request access.';
+
+  @override
+  String get reportUserAction => 'Report User';
+
+  @override
+  String get sendingReport => 'Sending report...';
+
+  @override
+  String reportUserDialogTitle(String name) {
+    return 'Report $name';
+  }
+
+  @override
+  String get reportReasonLabel => 'Reason';
+
+  @override
+  String get reportDetailsLabel => 'Details';
+
+  @override
+  String get reportDetailsHint =>
+      'Add any context that would help the admin review this report.';
+
+  @override
+  String get sendReport => 'Send Report';
+
+  @override
+  String get userReportSubmitted => 'Report sent.';
+
+  @override
+  String get couldNotSendUserReport => 'Could not send the report.';
+
+  @override
+  String get reportReasonSpam => 'Spam';
+
+  @override
+  String get reportReasonFraud => 'Fraud';
+
+  @override
+  String get reportReasonHarassment => 'Harassment';
+
+  @override
+  String get reportReasonImpersonation => 'Impersonation';
+
+  @override
+  String get reportReasonOther => 'Other';
+
+  @override
+  String get couldNotOpenChatRightNow => 'Could not open the chat right now.';
+
+  @override
+  String get whatsAppPhoneNotReady =>
+      'This phone number is not ready for WhatsApp.';
+
+  @override
+  String get couldNotOpenWhatsApp => 'Could not open WhatsApp right now.';
+
+  @override
+  String whatsAppGreeting(String name) {
+    return 'Hello $name';
+  }
 }

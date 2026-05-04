@@ -302,5 +302,153 @@
   "accessRequestRejected": "Access request rejected.",
   "couldNotRejectAccessRequest": "Could not reject the access request.",
   "expandRequestControl": "Expand request controls",
-  "collapseRequestControl": "Collapse request controls"
+  "collapseRequestControl": "Collapse request controls",
+  "adminPanel": "Admin Panel",
+  "adminAccessRequired": "Only admin accounts can open this panel.",
+  "adminUsersTab": "Users",
+  "adminReportsTab": "Reports",
+  "adminUsersCouldNotBeLoaded": "The user list could not be loaded right now.",
+  "adminReportsCouldNotBeLoaded": "The reports could not be loaded right now.",
+  "noUserReportsYet": "No user reports yet.",
+  "blockUserTitle": "Block {name}",
+  "@blockUserTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "blockUserAction": "Block User",
+  "blockReasonLabel": "Block reason",
+  "blockReasonHint": "Add an optional reason for this action.",
+  "unblockUserTitle": "Unblock {name}",
+  "@unblockUserTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unblockUserMessage": "Allow {name} to access the app again?",
+  "@unblockUserMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unblockUserAction": "Unblock User",
+  "userBlocked": "User blocked.",
+  "userUnblocked": "User unblocked.",
+  "couldNotBlockUser": "Could not block the user.",
+  "couldNotUnblockUser": "Could not unblock the user.",
+  "reviewReportTitle": "Review Report",
+  "reviewReportAction": "Review",
+  "reportStatusLabel": "Report status",
+  "reportStatusOpen": "Open",
+  "reportStatusReviewed": "Reviewed",
+  "reportStatusDismissed": "Dismissed",
+  "reportStatusActioned": "Actioned",
+  "reportUpdated": "Report updated.",
+  "couldNotUpdateReport": "Could not update the report.",
+  "adminNotesLabel": "Admin notes",
+  "adminNotesHint": "Add review notes for the moderation team.",
+  "userBlockedStatus": "Blocked",
+  "userActiveStatus": "Active",
+  "adminCurrentAccount": "This is your current account.",
+  "adminRole": "Admin",
+  "reportCardTitle": "Report about {name}",
+  "@reportCardTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reportedByLabel": "Reported by {name}",
+  "@reportedByLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reportCreatedAt": "Created {time}",
+  "@reportCreatedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reportReviewedAt": "Reviewed {time}",
+  "@reportReviewedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "profileTitle": "Profile",
+  "profileLoadError": "This profile could not be loaded right now.",
+  "contactDetails": "Contact Details",
+  "phone": "Phone",
+  "quickActions": "Quick Actions",
+  "quickActionsDescription": "Start a direct conversation or open WhatsApp using the supplier phone number.",
+  "openingChat": "Opening chat...",
+  "chatAction": "Chat",
+  "openingWhatsApp": "Opening WhatsApp...",
+  "whatsAppAction": "WhatsApp",
+  "supplierCarsTitle": "Cars This Supplier Works With",
+  "supplierCarsDescription": "These are the car brands selected on the supplier profile.",
+  "ratingLabel": "Rating {value}",
+  "@ratingLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedLabel": "Joined {time}",
+  "@joinedLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reportUserSectionTitle": "Report User",
+  "reportUserSectionBody": "Send a safety report if this user is abusing chat or request access.",
+  "reportUserAction": "Report User",
+  "sendingReport": "Sending report...",
+  "reportUserDialogTitle": "Report {name}",
+  "@reportUserDialogTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reportReasonLabel": "Reason",
+  "reportDetailsLabel": "Details",
+  "reportDetailsHint": "Add any context that would help the admin review this report.",
+  "sendReport": "Send Report",
+  "userReportSubmitted": "Report sent.",
+  "couldNotSendUserReport": "Could not send the report.",
+  "reportReasonSpam": "Spam",
+  "reportReasonFraud": "Fraud",
+  "reportReasonHarassment": "Harassment",
+  "reportReasonImpersonation": "Impersonation",
+  "reportReasonOther": "Other",
+  "couldNotOpenChatRightNow": "Could not open the chat right now.",
+  "whatsAppPhoneNotReady": "This phone number is not ready for WhatsApp.",
+  "couldNotOpenWhatsApp": "Could not open WhatsApp right now.",
+  "whatsAppGreeting": "Hello {name}",
+  "@whatsAppGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

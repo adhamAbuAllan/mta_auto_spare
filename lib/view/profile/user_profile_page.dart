@@ -1,6 +1,6 @@
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../api/api_exception.dart';
 import '../../constants/api_constants.dart';
@@ -31,19 +31,22 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
   late Future<PublicUserProfile> _profileFuture = _loadProfile();
   bool _isOpeningChat = false;
   bool _isOpeningWhatsApp = false;
+  bool _isSubmittingReport = false;
 
   @override
   Widget build(BuildContext context) {
-    final currentUserId = ref.watch(currentSessionProvider).profile?.id;
+    final currentProfile = ref.watch(currentSessionProvider).profile;
+    final currentUserId = currentProfile?.id;
     final isCurrentUser = currentUserId == widget.userId;
+    final viewerIsAdmin = currentProfile?.isAdmin ?? false;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(context.l10n.profileTitle),
         actions: [
           if (isCurrentUser)
             IconButton(
-              tooltip: 'Edit profile',
+              tooltip: context.l10n.editProfile,
               onPressed: _openEditProfile,
               icon: const Icon(Icons.manage_accounts_outlined),
             ),
@@ -67,7 +70,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                   children: [
                     const SizedBox(height: 120),
                     AppErrorCard(
-                      message: 'This profile could not be loaded right now.',
+                      message: context.l10n.profileLoadError,
                       onRetry: _refreshProfile,
                     ),
                   ],
@@ -77,10 +80,8 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
 
             final profile = snapshot.data;
             if (profile == null) {
-              return const Center(
-                child: AppErrorCard(
-                  message: 'This profile could not be loaded right now.',
-                ),
+              return Center(
+                child: AppErrorCard(message: context.l10n.profileLoadError),
               );
             }
 
@@ -136,7 +137,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                           ),
                                           const SizedBox(height: 8),
                                           Text(
-                                            _roleLabel(profile.role),
+                                            _roleLabel(context, profile),
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleMedium
@@ -182,12 +183,18 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                         true)
                                       _ProfileMetaChip(
                                         icon: Icons.star_outline_rounded,
-                                        label: 'Rating ${profile.rating}',
+                                        label: context.l10n.ratingLabel(
+                                          profile.rating!,
+                                        ),
                                       ),
                                     _ProfileMetaChip(
                                       icon: Icons.schedule_outlined,
-                                      label:
-                                          'Joined ${formatRelativeTime(profile.createdAt, context.l10n)}',
+                                      label: context.l10n.joinedLabel(
+                                        formatRelativeTime(
+                                          profile.createdAt,
+                                          context.l10n,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -198,12 +205,55 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                     icon: const Icon(
                                       Icons.manage_accounts_outlined,
                                     ),
-                                    label: const Text('Edit Profile'),
+                                    label: Text(context.l10n.editProfile),
                                   ),
                                 ],
                               ],
                             ),
                           ),
+                          if (!isCurrentUser && !viewerIsAdmin) ...[
+                            const SizedBox(height: 18),
+                            AppPanel(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    context.l10n.reportUserSectionTitle,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.w900),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    context.l10n.reportUserSectionBody,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: const Color(0xFF6F6A63),
+                                        ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  FilledButton.tonalIcon(
+                                    onPressed: _isSubmittingReport
+                                        ? null
+                                        : () => _submitUserReport(profile),
+                                    icon: Icon(
+                                      _isSubmittingReport
+                                          ? Icons.hourglass_top_rounded
+                                          : Icons.flag_outlined,
+                                    ),
+                                    label: Text(
+                                      _isSubmittingReport
+                                          ? context.l10n.sendingReport
+                                          : context.l10n.reportUserAction,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                           if (isSupplier && hasContactDetails) ...[
                             const SizedBox(height: 18),
                             AppPanel(
@@ -211,7 +261,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Contact Details',
+                                    context.l10n.contactDetails,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge
@@ -221,7 +271,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                   if (profile.email?.trim().isNotEmpty == true)
                                     _ProfileInfoRow(
                                       icon: Icons.email_outlined,
-                                      title: 'Email',
+                                      title: context.l10n.email,
                                       value: profile.email!.trim(),
                                     ),
                                   if (profile.email?.trim().isNotEmpty ==
@@ -231,7 +281,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                   if (profile.phone?.trim().isNotEmpty == true)
                                     _ProfileInfoRow(
                                       icon: Icons.phone_outlined,
-                                      title: 'Phone',
+                                      title: context.l10n.phone,
                                       value: profile.phone!.trim(),
                                     ),
                                 ],
@@ -245,7 +295,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Quick Actions',
+                                    context.l10n.quickActions,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge
@@ -253,7 +303,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Start a direct conversation or open WhatsApp using the supplier phone number.',
+                                    context.l10n.quickActionsDescription,
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
@@ -278,8 +328,8 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                         ),
                                         label: Text(
                                           _isOpeningChat
-                                              ? 'Opening chat...'
-                                              : 'Chat',
+                                              ? context.l10n.openingChat
+                                              : context.l10n.chatAction,
                                         ),
                                       ),
                                       if (profile.phone?.trim().isNotEmpty ==
@@ -295,8 +345,8 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                           ),
                                           label: Text(
                                             _isOpeningWhatsApp
-                                                ? 'Opening WhatsApp...'
-                                                : 'WhatsApp',
+                                                ? context.l10n.openingWhatsApp
+                                                : context.l10n.whatsAppAction,
                                           ),
                                         ),
                                     ],
@@ -312,7 +362,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Cars This Supplier Works With',
+                                    context.l10n.supplierCarsTitle,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge
@@ -320,7 +370,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'These are the car brands selected on the supplier profile.',
+                                    context.l10n.supplierCarsDescription,
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
@@ -410,6 +460,135 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     return makes;
   }
 
+  Future<void> _submitUserReport(PublicUserProfile profile) async {
+    if (_isSubmittingReport) {
+      return;
+    }
+
+    final draft = await _showReportDialog(profile);
+    if (draft == null) {
+      return;
+    }
+
+    setState(() => _isSubmittingReport = true);
+    try {
+      await ref.read(userApiProvider).createUserReport(
+            reportedUserId: profile.id,
+            reason: draft.reason,
+            details: draft.details,
+          );
+      if (!mounted) {
+        return;
+      }
+      _showSnackBar(context.l10n.userReportSubmitted);
+    } on ApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      _showSnackBar(error.message);
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      _showSnackBar(context.l10n.couldNotSendUserReport);
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmittingReport = false);
+      }
+    }
+  }
+
+  Future<_UserReportDraft?> _showReportDialog(
+    PublicUserProfile profile,
+  ) async {
+    final detailsController = TextEditingController();
+    final reasons = _reportReasonOptions(context);
+    var selectedReason = reasons.first.value;
+
+    try {
+      return await showDialog<_UserReportDraft>(
+        context: context,
+        builder: (dialogContext) {
+          return StatefulBuilder(
+            builder: (dialogContext, setDialogState) {
+              return AlertDialog(
+                title: Text(context.l10n.reportUserDialogTitle(profile.name)),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      DropdownButtonFormField<String>(
+                        initialValue: selectedReason,
+                        decoration: InputDecoration(
+                          labelText: context.l10n.reportReasonLabel,
+                        ),
+                        items: [
+                          for (final reason in reasons)
+                            DropdownMenuItem<String>(
+                              value: reason.value,
+                              child: Text(reason.label),
+                            ),
+                        ],
+                        onChanged: (value) {
+                          if (value == null) {
+                            return;
+                          }
+                          setDialogState(() => selectedReason = value);
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: detailsController,
+                        maxLines: 4,
+                        decoration: InputDecoration(
+                          labelText: context.l10n.reportDetailsLabel,
+                          hintText: context.l10n.reportDetailsHint,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    child: Text(context.l10n.cancel),
+                  ),
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop(
+                        _UserReportDraft(
+                          reason: selectedReason,
+                          details: detailsController.text.trim(),
+                        ),
+                      );
+                    },
+                    child: Text(context.l10n.sendReport),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    } finally {
+      detailsController.dispose();
+    }
+  }
+
+  List<_ReportReasonOption> _reportReasonOptions(BuildContext context) {
+    return [
+      _ReportReasonOption('Spam', context.l10n.reportReasonSpam),
+      _ReportReasonOption('Fraud', context.l10n.reportReasonFraud),
+      _ReportReasonOption('Harassment', context.l10n.reportReasonHarassment),
+      _ReportReasonOption(
+        'Impersonation',
+        context.l10n.reportReasonImpersonation,
+      ),
+      _ReportReasonOption('Other', context.l10n.reportReasonOther),
+    ];
+  }
+
   Future<void> _openChat(PublicUserProfile profile) async {
     if (_isOpeningChat) {
       return;
@@ -441,7 +620,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
       final ensureState = ref.read(ensureConversationNotifierProvider);
       if (conversationId == null) {
         _showSnackBar(
-          ensureState.errorMessage ?? 'Could not open the chat right now.',
+          ensureState.errorMessage ?? context.l10n.couldNotOpenChatRightNow,
         );
         return;
       }
@@ -471,7 +650,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
       if (!mounted) {
         return;
       }
-      _showSnackBar('Could not open the chat right now.');
+      _showSnackBar(context.l10n.couldNotOpenChatRightNow);
     } finally {
       if (mounted && _isOpeningChat) {
         setState(() => _isOpeningChat = false);
@@ -486,7 +665,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
 
     final normalizedPhone = _normalizeWhatsAppPhone(profile.phone);
     if (normalizedPhone == null) {
-      _showSnackBar('This supplier phone number is not ready for WhatsApp.');
+      _showSnackBar(context.l10n.whatsAppPhoneNotReady);
       return;
     }
 
@@ -497,7 +676,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
         scheme: 'https',
         host: 'wa.me',
         path: '/$normalizedPhone',
-        queryParameters: {'text': 'Hello ${profile.name}'},
+        queryParameters: {
+          'text': context.l10n.whatsAppGreeting(profile.name),
+        },
       );
       final didLaunch = await launchUrl(
         uri,
@@ -505,13 +686,13 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
       );
 
       if (!didLaunch && mounted) {
-        _showSnackBar('Could not open WhatsApp right now.');
+        _showSnackBar(context.l10n.couldNotOpenWhatsApp);
       }
     } catch (_) {
       if (!mounted) {
         return;
       }
-      _showSnackBar('Could not open WhatsApp right now.');
+      _showSnackBar(context.l10n.couldNotOpenWhatsApp);
     } finally {
       if (mounted) {
         setState(() => _isOpeningWhatsApp = false);
@@ -543,13 +724,36 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  String _roleLabel(String role) {
-    final trimmed = role.trim();
-    if (trimmed.isEmpty) {
-      return 'Member';
+  String _roleLabel(BuildContext context, PublicUserProfile profile) {
+    if (profile.isAdmin) {
+      return context.l10n.adminRole;
     }
-    return '${trimmed[0].toUpperCase()}${trimmed.substring(1)}';
+    final normalizedRole = profile.role.trim().toLowerCase();
+    if (normalizedRole == 'supplier') {
+      return context.l10n.supplierRole;
+    }
+    if (normalizedRole == 'user') {
+      return context.l10n.userRole;
+    }
+    return context.l10n.marketplaceUser;
   }
+}
+
+class _UserReportDraft {
+  const _UserReportDraft({
+    required this.reason,
+    required this.details,
+  });
+
+  final String reason;
+  final String details;
+}
+
+class _ReportReasonOption {
+  const _ReportReasonOption(this.value, this.label);
+
+  final String value;
+  final String label;
 }
 
 class _ProfileInfoRow extends StatelessWidget {

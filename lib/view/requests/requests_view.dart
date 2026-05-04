@@ -150,45 +150,47 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
                 ),
               ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 12)),
-            SliverToBoxAdapter(
-              child: requestStatusesAsync.when(
-                data: (statuses) {
-                  final chips = <Widget>[
-                    FilterChip(
-                      label: Text(context.l10n.allStatuses),
-                      selected: requestState.selectedStatusId == null,
-                      onSelected: (_) {
-                        ref
-                            .read(requestsNotifierProvider.notifier)
-                            .setStatusFilter(null);
-                      },
-                    ),
-                    for (final status in statuses)
+            if (requestState.segment != RequestSegment.browse) ...[
+              const SliverToBoxAdapter(child: SizedBox(height: 12)),
+              SliverToBoxAdapter(
+                child: requestStatusesAsync.when(
+                  data: (statuses) {
+                    final chips = <Widget>[
                       FilterChip(
-                        label: Text(status.label),
-                        selected: requestState.selectedStatusId == status.id,
+                        label: Text(context.l10n.allStatuses),
+                        selected: requestState.selectedStatusId == null,
                         onSelected: (_) {
                           ref
                               .read(requestsNotifierProvider.notifier)
-                              .setStatusFilter(status.id);
+                              .setStatusFilter(null);
                         },
                       ),
-                  ];
-                  return SizedBox(
-                    height: 42,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: chips.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: 8),
-                      itemBuilder: (context, index) => chips[index],
-                    ),
-                  );
-                },
-                error: (_, _) => const SizedBox.shrink(),
-                loading: () => const LinearProgressIndicator(),
+                      for (final status in statuses)
+                        FilterChip(
+                          label: Text(status.label),
+                          selected: requestState.selectedStatusId == status.id,
+                          onSelected: (_) {
+                            ref
+                                .read(requestsNotifierProvider.notifier)
+                                .setStatusFilter(status.id);
+                          },
+                        ),
+                    ];
+                    return SizedBox(
+                      height: 42,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: chips.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 8),
+                        itemBuilder: (context, index) => chips[index],
+                      ),
+                    );
+                  },
+                  error: (_, _) => const SizedBox.shrink(),
+                  loading: () => const LinearProgressIndicator(),
+                ),
               ),
-            ),
+            ],
             if (requestState.errorMessage != null &&
                 requestState.requests.isNotEmpty) ...[
               const SliverToBoxAdapter(child: SizedBox(height: 16)),
@@ -263,11 +265,13 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
         final isMine =
             currentUserId != null && request.requester == currentUserId;
         final canChangeStatus = request.canUpdateStatus;
+        final showStatus = requestState.segment != RequestSegment.browse;
 
         return RequestCard(
           request: request,
           isMine: isMine,
           canChangeStatus: canChangeStatus,
+          showStatus: showStatus,
           isChatLoading: _pendingChatRequestId == request.id,
           isDeleteLoading: _deletingRequestId == request.id,
           onViewTap: () => _openRequest(request),

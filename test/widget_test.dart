@@ -136,6 +136,48 @@ void main() {
     expect(find.text('Chat Seller'), findsNothing);
   });
 
+  testWidgets('browse requests hide request statuses and status filters', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      await _buildRequestsHarness(
+        requestState: const RequestState(
+          segment: RequestSegment.browse,
+          selectedStatusId: 91,
+          requests: [
+            PartRequest(
+              id: 12,
+              requester: 5,
+              title: 'Radiator fan',
+              description: 'Need a clean radiator fan.',
+              status: 91,
+              statusDetails: PartRequestStatus(
+                id: 91,
+                code: 'private_status',
+                label: 'Private Status',
+                isTerminal: false,
+              ),
+              city: 'Cairo',
+            ),
+          ],
+        ),
+        requestStatuses: const [
+          PartRequestStatus(
+            id: 91,
+            code: 'private_status',
+            label: 'Private Status',
+            isTerminal: false,
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Radiator fan'), findsOneWidget);
+    expect(find.text('Private Status'), findsNothing);
+    expect(find.text('All statuses'), findsNothing);
+  });
+
   testWidgets('own request cards show edit and delete actions', (
     WidgetTester tester,
   ) async {
@@ -764,6 +806,7 @@ Future<Widget> _buildRequestsHarness({
   ValueChanged<int>? onOpenConversation,
   ChatApi? chatApi,
   RequestApi? requestApi,
+  List<PartRequestStatus>? requestStatuses,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final preferences = await SharedPreferences.getInstance();
@@ -782,6 +825,8 @@ Future<Widget> _buildRequestsHarness({
         (ref) =>
             ensureConversationNotifier ?? TestEnsureConversationNotifier(44),
       ),
+      if (requestStatuses != null)
+        requestStatusesProvider.overrideWith((ref) async => requestStatuses),
       if (chatApi != null) chatApiProvider.overrideWithValue(chatApi),
       if (requestApi != null) requestApiProvider.overrideWithValue(requestApi),
     ],
@@ -806,6 +851,8 @@ SessionState _signedInSession() {
       username: 'buyer',
       name: 'Buyer User',
       role: 'user',
+      isActive: true,
+      isAdmin: false,
       chatPushEnabled: true,
       chatMessagePreviewEnabled: true,
       createdAt: DateTime.utc(2026, 3, 27),

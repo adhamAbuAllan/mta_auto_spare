@@ -631,4 +631,242 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get collapseRequestControl => 'הסתר את בקרות הבקשה';
+
+  @override
+  String get adminPanel => 'לוח בקרה';
+
+  @override
+  String get adminAccessRequired => 'רק חשבונות מנהל יכולים לפתוח את המסך הזה.';
+
+  @override
+  String get adminUsersTab => 'משתמשים';
+
+  @override
+  String get adminReportsTab => 'דיווחים';
+
+  @override
+  String get adminUsersCouldNotBeLoaded =>
+      'לא ניתן לטעון כעת את רשימת המשתמשים.';
+
+  @override
+  String get adminReportsCouldNotBeLoaded => 'לא ניתן לטעון כעת את הדיווחים.';
+
+  @override
+  String get noUserReportsYet => 'אין עדיין דיווחי משתמשים.';
+
+  @override
+  String blockUserTitle(String name) {
+    return 'חסום את $name';
+  }
+
+  @override
+  String get blockUserAction => 'חסום משתמש';
+
+  @override
+  String get blockReasonLabel => 'סיבת החסימה';
+
+  @override
+  String get blockReasonHint => 'הוסף סיבה אופציונלית לפעולה זו.';
+
+  @override
+  String unblockUserTitle(String name) {
+    return 'בטל חסימה של $name';
+  }
+
+  @override
+  String unblockUserMessage(String name) {
+    return 'לאפשר ל-$name לגשת שוב לאפליקציה?';
+  }
+
+  @override
+  String get unblockUserAction => 'בטל חסימה';
+
+  @override
+  String get userBlocked => 'המשתמש נחסם.';
+
+  @override
+  String get userUnblocked => 'חסימת המשתמש בוטלה.';
+
+  @override
+  String get couldNotBlockUser => 'לא ניתן לחסום את המשתמש.';
+
+  @override
+  String get couldNotUnblockUser => 'לא ניתן לבטל את חסימת המשתמש.';
+
+  @override
+  String get reviewReportTitle => 'סקירת דיווח';
+
+  @override
+  String get reviewReportAction => 'סקירה';
+
+  @override
+  String get reportStatusLabel => 'סטטוס הדיווח';
+
+  @override
+  String get reportStatusOpen => 'פתוח';
+
+  @override
+  String get reportStatusReviewed => 'נבדק';
+
+  @override
+  String get reportStatusDismissed => 'נדחה';
+
+  @override
+  String get reportStatusActioned => 'טופל';
+
+  @override
+  String get reportUpdated => 'הדיווח עודכן.';
+
+  @override
+  String get couldNotUpdateReport => 'לא ניתן לעדכן את הדיווח.';
+
+  @override
+  String get adminNotesLabel => 'הערות מנהל';
+
+  @override
+  String get adminNotesHint => 'הוסף הערות לצוות הניהול.';
+
+  @override
+  String get userBlockedStatus => 'חסום';
+
+  @override
+  String get userActiveStatus => 'פעיל';
+
+  @override
+  String get adminCurrentAccount => 'זה החשבון הנוכחי שלך.';
+
+  @override
+  String get adminRole => 'מנהל';
+
+  @override
+  String reportCardTitle(String name) {
+    return 'דיווח על $name';
+  }
+
+  @override
+  String reportedByLabel(String name) {
+    return 'דווח על ידי $name';
+  }
+
+  @override
+  String reportCreatedAt(String time) {
+    return 'נוצר $time';
+  }
+
+  @override
+  String reportReviewedAt(String time) {
+    return 'נבדק $time';
+  }
+
+  @override
+  String get profileTitle => 'פרופיל';
+
+  @override
+  String get profileLoadError => 'לא ניתן לטעון כעת את הפרופיל.';
+
+  @override
+  String get contactDetails => 'פרטי קשר';
+
+  @override
+  String get phone => 'טלפון';
+
+  @override
+  String get quickActions => 'פעולות מהירות';
+
+  @override
+  String get quickActionsDescription =>
+      'התחל שיחה ישירה או פתח WhatsApp עם מספר הטלפון של הספק.';
+
+  @override
+  String get openingChat => 'פותח צ\'אט...';
+
+  @override
+  String get chatAction => 'צ\'אט';
+
+  @override
+  String get openingWhatsApp => 'פותח WhatsApp...';
+
+  @override
+  String get whatsAppAction => 'WhatsApp';
+
+  @override
+  String get supplierCarsTitle => 'הרכבים שהספק הזה עובד איתם';
+
+  @override
+  String get supplierCarsDescription => 'אלו מותגי הרכב שנבחרו בפרופיל הספק.';
+
+  @override
+  String ratingLabel(String value) {
+    return 'דירוג $value';
+  }
+
+  @override
+  String joinedLabel(String time) {
+    return 'הצטרף $time';
+  }
+
+  @override
+  String get reportUserSectionTitle => 'דווח על משתמש';
+
+  @override
+  String get reportUserSectionBody =>
+      'שלח דיווח בטיחות אם המשתמש הזה מנצל לרעה את הצ\'אט או את בקשות הגישה.';
+
+  @override
+  String get reportUserAction => 'דווח';
+
+  @override
+  String get sendingReport => 'שולח דיווח...';
+
+  @override
+  String reportUserDialogTitle(String name) {
+    return 'דווח על $name';
+  }
+
+  @override
+  String get reportReasonLabel => 'סיבה';
+
+  @override
+  String get reportDetailsLabel => 'פרטים';
+
+  @override
+  String get reportDetailsHint => 'הוסף כל מידע שיעזור למנהל לבדוק את הדיווח.';
+
+  @override
+  String get sendReport => 'שלח דיווח';
+
+  @override
+  String get userReportSubmitted => 'הדיווח נשלח.';
+
+  @override
+  String get couldNotSendUserReport => 'לא ניתן לשלוח את הדיווח.';
+
+  @override
+  String get reportReasonSpam => 'ספאם';
+
+  @override
+  String get reportReasonFraud => 'הונאה';
+
+  @override
+  String get reportReasonHarassment => 'הטרדה';
+
+  @override
+  String get reportReasonImpersonation => 'התחזות';
+
+  @override
+  String get reportReasonOther => 'אחר';
+
+  @override
+  String get couldNotOpenChatRightNow => 'לא ניתן לפתוח כעת את הצ\'אט.';
+
+  @override
+  String get whatsAppPhoneNotReady => 'מספר הטלפון הזה אינו מתאים ל-WhatsApp.';
+
+  @override
+  String get couldNotOpenWhatsApp => 'לא ניתן לפתוח כעת את WhatsApp.';
+
+  @override
+  String whatsAppGreeting(String name) {
+    return 'שלום $name';
+  }
 }
