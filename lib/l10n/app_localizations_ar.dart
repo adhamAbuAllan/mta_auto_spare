@@ -867,6 +867,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get couldNotOpenWhatsApp => 'تعذر فتح واتساب الآن.';
 
   @override
+  String get privacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get privacyPolicyDescription =>
+      'اقرأ كيف يجمع هذا التطبيق بياناتك ويستخدمها ويحميها.';
+
+  @override
+  String get openPrivacyPolicy => 'فتح سياسة الخصوصية';
+
+  @override
+  String get couldNotOpenPrivacyPolicy => 'تعذر فتح سياسة الخصوصية الآن.';
+
+  @override
   String whatsAppGreeting(String name) {
     return 'مرحبًا $name';
   }

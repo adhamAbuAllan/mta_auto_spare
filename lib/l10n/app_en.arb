@@ -443,6 +443,10 @@
   "couldNotOpenChatRightNow": "Could not open the chat right now.",
   "whatsAppPhoneNotReady": "This phone number is not ready for WhatsApp.",
   "couldNotOpenWhatsApp": "Could not open WhatsApp right now.",
+  "privacyPolicy": "Privacy Policy",
+  "privacyPolicyDescription": "Read how this app collects, uses, and protects your data.",
+  "openPrivacyPolicy": "Open Privacy Policy",
+  "couldNotOpenPrivacyPolicy": "The privacy policy could not be opened right now.",
   "whatsAppGreeting": "Hello {name}",
   "@whatsAppGreeting": {
     "placeholders": {

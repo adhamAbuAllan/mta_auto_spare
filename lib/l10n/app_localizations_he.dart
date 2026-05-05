@@ -866,6 +866,20 @@ class AppLocalizationsHe extends AppLocalizations {
   String get couldNotOpenWhatsApp => 'לא ניתן לפתוח כעת את WhatsApp.';
 
   @override
+  String get privacyPolicy => 'מדיניות פרטיות';
+
+  @override
+  String get privacyPolicyDescription =>
+      'קרא כיצד האפליקציה אוספת, משתמשת ומגנה על הנתונים שלך.';
+
+  @override
+  String get openPrivacyPolicy => 'פתח את מדיניות הפרטיות';
+
+  @override
+  String get couldNotOpenPrivacyPolicy =>
+      'לא ניתן לפתוח כעת את מדיניות הפרטיות.';
+
+  @override
   String whatsAppGreeting(String name) {
     return 'שלום $name';
   }

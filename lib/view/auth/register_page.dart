@@ -9,6 +9,7 @@ import '../../localization/language_selector.dart';
 import '../../models/models.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/async_error_message.dart';
+import '../common_widgets/privacy_policy_link.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -329,6 +330,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 16),
+                    const PrivacyPolicyLink(),
                   ],
                 ),
               ),

@@ -6,6 +6,7 @@ import '../../controllers/providers/auth_provider.dart';
 import '../../localization/app_localizations_x.dart';
 import '../../localization/language_selector.dart';
 import '../common_widgets/app_error_card.dart';
+import '../common_widgets/privacy_policy_link.dart';
 import 'register_page.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -55,11 +56,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(28),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Align(
                             alignment: AlignmentDirectional.centerEnd,
                             child: AppLanguageMenuButton(
@@ -166,6 +167,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               child: Text(context.l10n.createNewAccount),
                             ),
                           ),
+                          const SizedBox(height: 4),
+                          const PrivacyPolicyLink(),
                         ],
                       ),
                     ),

@@ -1660,6 +1660,30 @@ abstract class AppLocalizations {
   /// **'Could not open WhatsApp right now.'**
   String get couldNotOpenWhatsApp;
 
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @privacyPolicyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Read how this app collects, uses, and protects your data.'**
+  String get privacyPolicyDescription;
+
+  /// No description provided for @openPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Privacy Policy'**
+  String get openPrivacyPolicy;
+
+  /// No description provided for @couldNotOpenPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'The privacy policy could not be opened right now.'**
+  String get couldNotOpenPrivacyPolicy;
+
   /// No description provided for @whatsAppGreeting.
   ///
   /// In en, this message translates to:
