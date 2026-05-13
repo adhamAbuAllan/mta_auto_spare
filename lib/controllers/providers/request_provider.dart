@@ -1,5 +1,6 @@
 import 'dart:async';
 
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../localization/app_locale_notifier.dart';
@@ -13,9 +14,22 @@ import 'auth_provider.dart';
 final requestsNotifierProvider =
     StateNotifierProvider<LoadRequestsNotifier, RequestState>((ref) {
       final notifier = LoadRequestsNotifier(ref.read(requestApiProvider));
+      ref.listen(currentSessionProvider, (previous, next) {
+        final previousUserId = previous?.profile?.id;
+        final nextUserId = next.profile?.id;
+        if (previousUserId == nextUserId) {
+          return;
+        }
+        unawaited(notifier.syncWithSession(userId: nextUserId));
+      });
       ref.listen(appLocaleProvider, (previous, next) {
         unawaited(notifier.refreshTranslationLocale());
       });
+      unawaited(
+        notifier.syncWithSession(
+          userId: ref.read(currentSessionProvider).profile?.id,
+        ),
+      );
       return notifier;
     });
 

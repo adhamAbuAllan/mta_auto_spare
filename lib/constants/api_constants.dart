@@ -22,10 +22,34 @@ abstract final class ApiConstants {
 
     final parsed = Uri.tryParse(trimmed);
     if (parsed != null && parsed.hasScheme) {
+      if (_shouldReplaceWithBaseHost(parsed)) {
+        return _rebuildAgainstBaseUrl(parsed);
+      }
       return trimmed;
     }
 
     return Uri.parse(baseUrl).resolve(trimmed).toString();
+  }
+
+  static bool _shouldReplaceWithBaseHost(Uri uri) {
+    final host = uri.host.trim().toLowerCase();
+    return host == '127.0.0.1' ||
+        host == 'localhost' ||
+        host == '0.0.0.0';
+  }
+
+  static String _rebuildAgainstBaseUrl(Uri original) {
+    final base = Uri.parse(baseUrl);
+    final normalizedPath = original.path.startsWith('/')
+        ? original.path
+        : '/${original.path}';
+    return base
+        .replace(
+          path: normalizedPath,
+          queryParameters: original.hasQuery ? original.queryParameters : null,
+          fragment: original.fragment.isEmpty ? null : original.fragment,
+        )
+        .toString();
   }
 
   static Uri buildChatSocketUri({

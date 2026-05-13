@@ -160,16 +160,27 @@ class RequestApi {
   Future<PartRequest> createRequest(
     PartRequest request, {
     List<RequestUploadImage> images = const [],
+    String? customCarMake,
+    String? customCarModel,
   }) async {
     try {
       Future<FormData> buildRetryData() {
-        return _buildMultipartPayload(request, images: images);
+        return _buildMultipartPayload(
+          request,
+          images: images,
+          customCarMake: customCarMake,
+          customCarModel: customCarModel,
+        );
       }
 
       final shouldUseMultipart = images.isNotEmpty;
       final payload = shouldUseMultipart
           ? await buildRetryData()
-          : _buildJsonPayload(request);
+          : _buildJsonPayload(
+              request,
+              customCarMake: customCarMake,
+              customCarModel: customCarModel,
+            );
       final response = await _dio.post(
         ApiEndpoints.partRequests,
         data: payload,
@@ -190,6 +201,8 @@ class RequestApi {
     PartRequest request, {
     required List<int> keepImageIds,
     List<RequestUploadImage> newImages = const [],
+    String? customCarMake,
+    String? customCarModel,
   }) async {
     final requestId = request.id;
     if (requestId == null) {
@@ -202,6 +215,8 @@ class RequestApi {
         images: newImages,
         keepImageIds: keepImageIds,
         syncImages: true,
+        customCarMake: customCarMake,
+        customCarModel: customCarModel,
       );
       final response = await _dio.patch(
         '${ApiEndpoints.partRequests}$requestId/',
@@ -230,6 +245,8 @@ class RequestApi {
     List<RequestUploadImage> images = const [],
     List<int> keepImageIds = const [],
     bool syncImages = false,
+    String? customCarMake,
+    String? customCarModel,
   }) async {
     final data = <String, dynamic>{
       'requester': request.requester.toString(),
@@ -270,10 +287,22 @@ class RequestApi {
     if (city.isNotEmpty || syncImages) {
       data['city'] = city;
     }
+    final normalizedCustomCarMake = customCarMake?.trim() ?? '';
+    final normalizedCustomCarModel = customCarModel?.trim() ?? '';
+    if (normalizedCustomCarMake.isNotEmpty) {
+      data['car_make_name'] = normalizedCustomCarMake;
+    }
+    if (normalizedCustomCarModel.isNotEmpty) {
+      data['car_model_name'] = normalizedCustomCarModel;
+    }
     return FormData.fromMap(data);
   }
 
-  Map<String, dynamic> _buildJsonPayload(PartRequest request) {
+  Map<String, dynamic> _buildJsonPayload(
+    PartRequest request, {
+    String? customCarMake,
+    String? customCarModel,
+  }) {
     final data = <String, dynamic>{
       'requester': request.requester,
       'title': request.title,
@@ -293,6 +322,14 @@ class RequestApi {
       data['max_price'] = maxPrice;
     }
     data['city'] = city.isEmpty ? null : city;
+    final normalizedCustomCarMake = customCarMake?.trim() ?? '';
+    final normalizedCustomCarModel = customCarModel?.trim() ?? '';
+    if (normalizedCustomCarMake.isNotEmpty) {
+      data['car_make_name'] = normalizedCustomCarMake;
+    }
+    if (normalizedCustomCarModel.isNotEmpty) {
+      data['car_model_name'] = normalizedCustomCarModel;
+    }
     return data;
   }
 

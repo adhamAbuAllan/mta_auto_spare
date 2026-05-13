@@ -59,7 +59,7 @@ NotificationStrings notificationStringsForLanguageCode(String languageCode) {
   switch (languageCode.toLowerCase()) {
     case 'ar':
       return const NotificationStrings(
-        appName: 'قطع غيار السيارات MTA',
+        appName: ' MTA',
         defaultChatMessageBody: 'لديك رسالة جديدة.',
         newMessageTitle: 'رسالة جديدة',
         newSellerRequestTitle: 'طلب جديد من البائع',

@@ -24,7 +24,7 @@ class AppLocalizationsHe extends AppLocalizations {
       'כל שמות הרכבים הזמינים כבר נבחרו.';
 
   @override
-  String get appTitle => 'MTA חלקי חילוף לרכב';
+  String get appTitle => 'MTA';
 
   @override
   String get backend => 'שרת';
@@ -72,6 +72,21 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get editProfile => 'עריכת פרופיל';
+
+  @override
+  String get profileCouldNotBeLoadedRightNow =>
+      'לא ניתן לטעון את הפרופיל שלך כרגע.';
+
+  @override
+  String get keepYourProfileUpToDate => 'שמור על הפרופיל שלך מעודכן';
+
+  @override
+  String get supplierProfileIntro =>
+      'עדכן את הפרטים שהקונים רואים, כוון את התראות הצ\'אט ובחר את דגמי הרכב שיש לך עבורם כבר חלקים במלאי.';
+
+  @override
+  String get buyerProfileIntro =>
+      'עדכן את הפרטים שהספקים רואים והגדר כיצד התראות הצ\'אט יגיעו אליך.';
 
   @override
   String get email => 'אימייל';
@@ -476,7 +491,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get deleting => 'מוחק...';
 
   @override
-  String get chatSeller => 'שוחח עם המוכר';
+  String get chat => 'שוחח';
 
   @override
   String get opening => 'פותח...';
@@ -771,6 +786,74 @@ class AppLocalizationsHe extends AppLocalizations {
   String get phone => 'טלפון';
 
   @override
+  String get cityLabel => 'עיר';
+
+  @override
+  String get filterByCarMake => 'סנן לפי יצרן';
+
+  @override
+  String get chatPushNotifications => 'התראות צ\'אט';
+
+  @override
+  String get chatPushNotificationsDescription =>
+      'קבל התראה כשמישהו שולח הודעת צ\'אט.';
+
+  @override
+  String get showMessagePreview => 'הצג תצוגת מסר';
+
+  @override
+  String get showMessagePreviewDescription =>
+      'כולל חלק מהודעת הצ\'אט בתוך ההתראה.';
+
+  @override
+  String get profileUpdatedSuccessfully => 'הפרופיל עודכן בהצלחה.';
+
+  @override
+  String get profilePhoto => 'תמונת פרופיל';
+
+  @override
+  String get newPhotoReadyMessage =>
+      'תמונה חדשה מוכנה. שמור את הפרופיל כדי להחיל אותה.';
+
+  @override
+  String get choosePhotoForRequestsAndChats =>
+      'בחר תמונה כדי שיהיה קל יותר לזהות אותך בבקשות ובצ\'אט.';
+
+  @override
+  String get chooseAnotherPhoto => 'בחר תמונה אחרת';
+
+  @override
+  String get changePhoto => 'שנה תמונה';
+
+  @override
+  String get undoPhotoChange => 'בטל את שינוי התמונה';
+
+  @override
+  String get noCarModelsSelectedYetMessage =>
+      'עדיין לא נבחרו דגמים. בחר את הדגמים שאתה תומך בהם מהקטלוג שלמטה.';
+
+  @override
+  String get deleteAccountTitle => 'מחק חשבון';
+
+  @override
+  String get deleteAccountPermanentMessage =>
+      'פעולה זו תמחק לצמיתות את החשבון שלך, הבקשות, היסטוריית הצ\'אט והמכשירים הרשומים. אי אפשר לבטל את הפעולה.';
+
+  @override
+  String get accountDeletedSuccessfully => 'החשבון שלך נמחק.';
+
+  @override
+  String get accountCouldNotBeDeletedRightNow =>
+      'לא ניתן למחוק את החשבון שלך כרגע.';
+
+  @override
+  String get deleteAccountDangerDescription =>
+      'הסר את הפרופיל שלך ומחק לצמיתות את המידע השייך לחשבון אם אינך רוצה להשתמש באפליקציה.';
+
+  @override
+  String get pleaseWait => 'אנא המתן...';
+
+  @override
   String get quickActions => 'פעולות מהירות';
 
   @override
@@ -878,6 +961,152 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get couldNotOpenPrivacyPolicy =>
       'לא ניתן לפתוח כעת את מדיניות הפרטיות.';
+
+  @override
+  String get requestUpdatedSuccessfully => 'הבקשה עודכנה בהצלחה.';
+
+  @override
+  String get requestCreatedSuccessfully => 'הבקשה נוצרה בהצלחה.';
+
+  @override
+  String get editRequestTitle => 'עריכת בקשה';
+
+  @override
+  String get createRequestTitle => 'צור בקשה';
+
+  @override
+  String get updateYourRequest => 'עדכן את הבקשה שלך';
+
+  @override
+  String get postNewRequest => 'פרסם בקשה חדשה';
+
+  @override
+  String get editRequestDescription =>
+      'רענן את פרטי הבקשה ואת התמונות שאתה רוצה שקונים יראו.';
+
+  @override
+  String get createRequestDescription =>
+      'צור בקשה שקונים יוכלו לעיין בה ולפתוח ממנה שיחות.';
+
+  @override
+  String get requestCreationBlocked => 'יצירת הבקשה חסומה';
+
+  @override
+  String get currentStatus => 'מצב נוכחי';
+
+  @override
+  String get initialStatus => 'מצב ראשוני';
+
+  @override
+  String currentStatusMessage(String status) {
+    return 'הבקשה הזו מסומנת כעת כ-\"$status\".';
+  }
+
+  @override
+  String initialStatusMessage(String status) {
+    return 'בקשות חדשות יתחילו במצב \"$status\".';
+  }
+
+  @override
+  String get requestTitleLabel => 'כותרת הבקשה';
+
+  @override
+  String get requestTitleHint => 'פגוש קדמי ל-Toyota Camry 2022';
+
+  @override
+  String get enterRequestTitle => 'הזן כותרת לבקשה.';
+
+  @override
+  String get requestDescriptionLabel => 'תיאור';
+
+  @override
+  String get requestDescriptionHint =>
+      'תאר את המצב, המותג המועדף או פרטי הדגם שקונים צריכים לדעת.';
+
+  @override
+  String get addShortDescription => 'הוסף תיאור קצר.';
+
+  @override
+  String get carModelLabel => 'דגם רכב';
+
+  @override
+  String get carModelDescription =>
+      'בחר את דגם הרכב המדויק של בקשה זו כדי שרק קונים מתאימים יקבלו התראה.';
+
+  @override
+  String get addCarManually => 'הוסף רכב ידנית';
+
+  @override
+  String get addCarManuallyDescription =>
+      'השתמש בזה אם אין את היצרן או הדגם בקטלוג.';
+
+  @override
+  String get carMakeLabel => 'יצרן רכב';
+
+  @override
+  String get newCarMakeLabel => 'יצרן רכב חדש';
+
+  @override
+  String get newCarMakeHint => 'Toyota';
+
+  @override
+  String get newCarModelLabel => 'דגם רכב חדש';
+
+  @override
+  String get newCarModelHint => 'Camry 2024';
+
+  @override
+  String get cityOptionalLabel => 'עיר (אופציונלי)';
+
+  @override
+  String get cityOptionalHint => 'ריאד';
+
+  @override
+  String get addPhotos => 'הוסף תמונות';
+
+  @override
+  String get addMorePhotos => 'הוסף עוד תמונות';
+
+  @override
+  String get minPriceLabel => 'מחיר מינימלי';
+
+  @override
+  String get maxPriceLabel => 'מחיר מקסימלי';
+
+  @override
+  String get maxPriceMustBeGreaterThanMinPrice =>
+      'המחיר המקסימלי חייב להיות גבוה יותר מהמחיר המינימלי.';
+
+  @override
+  String get saving => 'שומר...';
+
+  @override
+  String get saveChanges => 'שמור שינויים';
+
+  @override
+  String get enterValidNumber => 'הזן מספר תקין.';
+
+  @override
+  String get enterCarMake => 'הזן את יצרן הרכב.';
+
+  @override
+  String get enterCarModel => 'הזן את דגם הרכב.';
+
+  @override
+  String get enterCarMakeAndModelBeforeSaving =>
+      'הזן גם את יצרן הרכב וגם את הדגם לפני שמירת הבקשה.';
+
+  @override
+  String get chooseCarModelBeforeSaving => 'בחר דגם רכב לפני שמירת הבקשה.';
+
+  @override
+  String get viewMyRequests => 'צפה בבקשות שלי';
+
+  @override
+  String get viewRequest => 'צפה בבקשה';
+
+  @override
+  String get dismiss => 'סגור';
 
   @override
   String whatsAppGreeting(String name) {

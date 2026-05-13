@@ -13,6 +13,7 @@ if (file("google-services.json").exists()) {
 
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
+val isAdiVerificationBuild = providers.gradleProperty("adiVerification").orNull == "true"
 
 if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
@@ -58,7 +59,9 @@ android {
     buildTypes {
         release {
             signingConfig =
-                if (keystorePropertiesFile.exists()) {
+                if (isAdiVerificationBuild) {
+                    signingConfigs.getByName("debug")
+                } else if (keystorePropertiesFile.exists()) {
                     signingConfigs.getByName("release")
                 } else {
                     signingConfigs.getByName("debug")

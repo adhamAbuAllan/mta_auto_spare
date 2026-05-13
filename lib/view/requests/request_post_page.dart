@@ -68,7 +68,7 @@ class _RequestPostPageState extends ConsumerState<RequestPostPage> {
     final canChangeStatus = request?.canUpdateStatus == true;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Request Post')),
+      appBar: AppBar(title: Text(context.l10n.viewRequest)),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _loadRequest,
@@ -469,7 +469,7 @@ class _RequestPostContent extends StatelessWidget {
                 ? 'Open a chat with the seller behind this request.'
                 : canChangeStatus
                 ? context.l10n.youCanManageThisRequestStatus
-                : 'This request belongs to you.',
+                : context.l10n.thisRequestBelongsToYou,
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: const Color(0xFF7A746C)),
@@ -504,7 +504,11 @@ class _RequestPostContent extends StatelessWidget {
                       ? Icons.hourglass_top_rounded
                       : Icons.chat_bubble_outline_rounded,
                 ),
-                label: Text(isChatLoading ? 'Opening...' : 'Chat Seller'),
+                label: Text(
+                  isChatLoading
+                      ? context.l10n.opening
+                      : context.l10n.chat,
+                ),
               ),
             ),
           ],

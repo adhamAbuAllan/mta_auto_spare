@@ -9,6 +9,7 @@ class LoadRequestsNotifier extends StateNotifier<RequestState> {
   LoadRequestsNotifier(this._requestApi) : super(const RequestState());
 
   final RequestApi _requestApi;
+  int? _activeUserId;
 
   Future<void> load() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
@@ -31,6 +32,21 @@ class LoadRequestsNotifier extends StateNotifier<RequestState> {
     if (state.requests.isEmpty && !state.isLoading) {
       return;
     }
+    await load();
+  }
+
+  Future<void> syncWithSession({required int? userId}) async {
+    if (_activeUserId == userId) {
+      return;
+    }
+
+    _activeUserId = userId;
+    reset();
+
+    if (userId == null) {
+      return;
+    }
+
     await load();
   }
 
@@ -84,5 +100,9 @@ class LoadRequestsNotifier extends StateNotifier<RequestState> {
           .where((request) => request.id != requestId)
           .toList(growable: false),
     );
+  }
+
+  void reset() {
+    state = const RequestState();
   }
 }

@@ -129,7 +129,6 @@ abstract class _ChatDetailPageStateBase extends ConsumerState<ChatDetailPage> {
 
 class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
     with WidgetsBindingObserver {
-
   @override
   void initState() {
     super.initState();
@@ -278,6 +277,8 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
 
   @override
   Widget build(BuildContext context) {
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final isKeyboardVisible = keyboardInset > 0;
     final conversationsState = ref.watch(conversationsNotifierProvider);
     final currentUserId = ref.watch(currentUserIdProvider) ?? 0;
     final messageState = _messageState.conversationId == widget.conversationId
@@ -354,7 +355,8 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
       });
     }
 
-    final content = Column(
+    final topSection = Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         _ChatHeader(
           title: title,
@@ -375,7 +377,7 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
               ? null
               : () => _openUserProfile(otherUserId),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: isKeyboardVisible ? 10 : 16),
         if (selectedSharedProduct != null) ...[
           _RequestAccessPanel(
             sharedProducts: sharedProducts,
@@ -399,8 +401,23 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
             onApproveAccess: _approveSharedAccess,
             onRejectAccess: _rejectSharedAccess,
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: isKeyboardVisible ? 10 : 14),
         ],
+      ],
+    );
+
+    final content = Column(
+      children: [
+        if (isKeyboardVisible)
+          Flexible(
+            fit: FlexFit.loose,
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: topSection,
+            ),
+          )
+        else
+          topSection,
         Expanded(
           child: _buildMessagesBody(
             context,
@@ -415,7 +432,7 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
             padding: const EdgeInsets.only(top: 12),
             child: AppErrorCard(message: messageState.errorMessage!),
           ),
-        const SizedBox(height: 14),
+        SizedBox(height: isKeyboardVisible ? 8 : 14),
         _Composer(
           controller: _messageController,
           focusNode: _composerFocusNode,

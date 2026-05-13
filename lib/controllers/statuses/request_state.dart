@@ -22,7 +22,9 @@ class RequestState {
         .where(
           (request) =>
               request.requester != currentUserId &&
-              !request.isAssignedToCurrentUser,
+              !request.isAssignedToCurrentUser &&
+              (request.grantedUser == null ||
+                  request.grantedUser!.id == currentUserId),
         )
         .toList(growable: false);
   }

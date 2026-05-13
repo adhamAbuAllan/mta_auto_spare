@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mta_auto_spare/view/requests/create_request_page.dart';
 
 import '../controllers/providers/auth_provider.dart';
 import '../controllers/providers/chat_provider.dart';
 import '../controllers/providers/notification_provider.dart';
 import '../controllers/providers/request_provider.dart';
+import '../controllers/statuses/request_state.dart';
 import '../localization/app_localizations_x.dart';
 import '../models/models.dart';
 import '../notifications/chat_notification_service.dart';
@@ -138,10 +140,7 @@ class _MarketplaceShellPageState extends ConsumerState<MarketplaceShellPage> {
 }
 
 class _WideMarketplaceLayout extends ConsumerWidget {
-  const _WideMarketplaceLayout({
-    required this.userName,
-    required this.isAdmin,
-  });
+  const _WideMarketplaceLayout({required this.userName, required this.isAdmin});
 
   final String userName;
   final bool isAdmin;
@@ -317,6 +316,14 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
                 );
               },
             ),
+            CreateRequestPage(
+              onNavigateToMyRequests: () {
+                ref
+                    .read(requestsNotifierProvider.notifier)
+                    .setSegment(RequestSegment.mine);
+                onDestinationSelected(0);
+              },
+            ),
             ConversationsView(
               wideMode: false,
               onOpenConversation: (conversationId) {
@@ -334,15 +341,18 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
         onDestinationSelected: onDestinationSelected,
-        destinations:  [
+        destinations: [
           NavigationDestination(
             icon: Icon(Icons.inventory_2_outlined),
             selectedIcon: Icon(Icons.inventory_2_rounded),
             label: context.l10n.requests,
           ),
+          NavigationDestination(icon: Icon(Icons.add),
+              label: context.l10n.add),
           NavigationDestination(
             icon: Icon(Icons.chat_bubble_outline_rounded),
             selectedIcon: Icon(Icons.chat_bubble_rounded),
+
             label: context.l10n.chats,
           ),
         ],

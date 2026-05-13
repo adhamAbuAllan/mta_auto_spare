@@ -9,6 +9,7 @@ import '../../api/api_exception.dart';
 import '../../controllers/providers/api_provider.dart';
 import '../../controllers/providers/auth_provider.dart';
 import '../../controllers/providers/catalog_provider.dart';
+import '../../localization/app_localizations_x.dart';
 import '../../models/models.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/app_panel.dart';
@@ -60,10 +61,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final profile = ref.watch(currentSessionProvider).profile;
     if (profile == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Edit Profile')),
-        body: const Center(
+        appBar: AppBar(title: Text(context.l10n.editProfile)),
+        body: Center(
           child: AppErrorCard(
-            message: 'Your profile could not be loaded right now.',
+            message: context.l10n.profileCouldNotBeLoadedRightNow,
           ),
         ),
       );
@@ -85,11 +86,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final isSupplierProfile = profile.role == 'supplier';
     final carCatalogErrorMessage = asyncErrorMessage(
       carCatalog.error,
-      fallback: 'The car catalog could not be loaded right now.',
+      fallback: context.l10n.carCatalogCouldNotBeLoadedRightNow,
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Profile')),
+      appBar: AppBar(title: Text(context.l10n.editProfile)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -103,15 +104,15 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Keep your profile up to date',
+                        context.l10n.keepYourProfileUpToDate,
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.w900),
                       ),
                       const SizedBox(height: 10),
                       Text(
                         isSupplierProfile
-                            ? 'Update the details buyers see, tune chat notifications, and choose the car models you already stock parts for.'
-                            : 'Update the details suppliers see and tune how chat notifications reach you.',
+                            ? context.l10n.supplierProfileIntro
+                            : context.l10n.buyerProfileIntro,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: const Color(0xFF6F6A63),
                         ),
@@ -141,13 +142,13 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       TextFormField(
                         controller: _nameController,
                         textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
-                          labelText: 'Display name',
-                          hintText: 'Your name',
+                        decoration: InputDecoration(
+                          labelText: context.l10n.fullName,
+                          hintText: context.l10n.fullNameHint,
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Enter your name.';
+                            return context.l10n.enterYourFullName;
                           }
                           return null;
                         },
@@ -157,8 +158,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                         controller: _phoneController,
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.phone,
-                        decoration: const InputDecoration(
-                          labelText: 'Phone',
+                        decoration: InputDecoration(
+                          labelText: context.l10n.phone,
                           hintText: '+201000000000',
                         ),
                       ),
@@ -166,21 +167,21 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       TextFormField(
                         controller: _cityController,
                         textInputAction: TextInputAction.done,
-                        decoration: const InputDecoration(
-                          labelText: 'City',
-                          hintText: 'Cairo',
+                        decoration: InputDecoration(
+                          labelText: context.l10n.cityLabel,
+                          hintText: context.l10n.cityOptionalHint,
                         ),
                       ),
                       if (isSupplierProfile) ...[
                         const SizedBox(height: 22),
                         Text(
-                          'Cars I Have Parts For',
+                          context.l10n.carsIHavePartsFor,
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.w900),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Choose every car model you can supply so new matching requests notify you.',
+                          context.l10n.pickTheCarNamesYouSupplyPartsFor,
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(color: const Color(0xFF6F6A63)),
                         ),
@@ -197,7 +198,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               ),
                             ),
                             child: Text(
-                              'No car models selected yet. Pick the models you support from the catalog below.',
+                              context.l10n.noCarModelsSelectedYetMessage,
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(color: const Color(0xFF6F6A63)),
                             ),
@@ -230,14 +231,14 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                         else if (carCatalog.hasError)
                           AppErrorCard(
                             message:
-                                'The car catalog could not be loaded.\n$carCatalogErrorMessage',
+                                '${context.l10n.theCarCatalogCouldNotBeLoaded}\n$carCatalogErrorMessage',
                             onRetry: () => ref.invalidate(carCatalogProvider),
                           )
                         else ...[
                           DropdownButtonFormField<int>(
                             initialValue: selectedMake?.id,
-                            decoration: const InputDecoration(
-                              labelText: 'Filter by car make',
+                            decoration: InputDecoration(
+                              labelText: context.l10n.filterByCarMake,
                             ),
                             items: [
                               for (final make in availableMakes)
@@ -288,9 +289,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       ],
                       const SizedBox(height: 20),
                       _PreferenceToggle(
-                        title: 'Chat push notifications',
-                        subtitle:
-                            'Receive a notification when someone sends a chat message.',
+                        title: context.l10n.chatPushNotifications,
+                        subtitle: context.l10n.chatPushNotificationsDescription,
                         value: _chatPushEnabled,
                         onChanged: (value) {
                           setState(() => _chatPushEnabled = value);
@@ -298,9 +298,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       ),
                       const SizedBox(height: 12),
                       _PreferenceToggle(
-                        title: 'Show message preview',
-                        subtitle:
-                            'Include part of the chat message inside notifications.',
+                        title: context.l10n.showMessagePreview,
+                        subtitle: context.l10n.showMessagePreviewDescription,
                         value: _chatMessagePreviewEnabled,
                         onChanged: (value) {
                           setState(() => _chatMessagePreviewEnabled = value);
@@ -314,8 +313,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               onPressed: isBusy ? null : _submit,
                               child: Text(
                                 updateState.isLoading
-                                    ? 'Saving...'
-                                    : 'Save Profile',
+                                    ? context.l10n.saving
+                                    : context.l10n.saveChanges,
                               ),
                             ),
                           ),
@@ -370,7 +369,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile updated successfully.')),
+      SnackBar(content: Text(context.l10n.profileUpdatedSuccessfully)),
     );
     setState(() => _selectedAvatarImage = null);
     Navigator.of(context).pop();
@@ -406,21 +405,19 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Delete Account'),
-          content: const Text(
-            'This permanently deletes your account, your request posts, your chat history, and your registered devices. This action cannot be undone.',
-          ),
+          title: Text(context.l10n.deleteAccountTitle),
+          content: Text(context.l10n.deleteAccountPermanentMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.cancel),
             ),
             FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0xFFB42318),
               ),
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Delete Account'),
+              child: Text(context.l10n.deleteAccountTitle),
             ),
           ],
         );
@@ -443,7 +440,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Your account has been deleted.')),
+        SnackBar(content: Text(context.l10n.accountDeletedSuccessfully)),
       );
       await ref.read(logoutNotifierProvider.notifier).logout();
     } on ApiException catch (error) {
@@ -456,8 +453,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         return;
       }
       setState(
-        () => _deleteAccountError =
-            'Your account could not be deleted right now.',
+        () =>
+            _deleteAccountError = context.l10n.accountCouldNotBeDeletedRightNow,
       );
     } finally {
       if (mounted) {
@@ -599,7 +596,7 @@ class _AvatarEditorSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Profile Photo',
+                  context.l10n.profilePhoto,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                   ),
@@ -607,8 +604,8 @@ class _AvatarEditorSection extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   hasPendingPhoto
-                      ? 'A new photo is ready. Save your profile to apply it.'
-                      : 'Choose a photo so your name is easier to recognize in requests and chats.',
+                      ? context.l10n.newPhotoReadyMessage
+                      : context.l10n.choosePhotoForRequestsAndChats,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: const Color(0xFF6F6A63),
                   ),
@@ -627,14 +624,14 @@ class _AvatarEditorSection extends StatelessWidget {
                       icon: const Icon(Icons.photo_camera_back_outlined),
                       label: Text(
                         hasPendingPhoto
-                            ? 'Choose Another Photo'
-                            : 'Change Photo',
+                            ? context.l10n.chooseAnotherPhoto
+                            : context.l10n.changePhoto,
                       ),
                     ),
                     if (hasPendingPhoto)
                       TextButton(
                         onPressed: onClearSelection,
-                        child: const Text('Undo Photo Change'),
+                        child: Text(context.l10n.undoPhotoChange),
                       ),
                   ],
                 ),
@@ -710,7 +707,7 @@ class _DangerZoneCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Delete Account',
+            context.l10n.deleteAccountTitle,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w900,
               color: const Color(0xFFB42318),
@@ -718,7 +715,7 @@ class _DangerZoneCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Remove your profile and permanently delete the data that belongs to your account if you no longer want to use the app.',
+            context.l10n.deleteAccountDangerDescription,
             style: Theme.of(
               context,
             ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF7A271A)),
@@ -735,7 +732,11 @@ class _DangerZoneCard extends StatelessWidget {
               side: const BorderSide(color: Color(0xFFF0A7A7)),
             ),
             icon: const Icon(Icons.delete_forever_outlined),
-            label: Text(isBusy ? 'Please wait...' : 'Delete Account'),
+            label: Text(
+              isBusy
+                  ? context.l10n.pleaseWait
+                  : context.l10n.deleteAccountTitle,
+            ),
           ),
         ],
       ),

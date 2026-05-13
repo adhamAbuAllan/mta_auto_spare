@@ -24,7 +24,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'All available car names are already selected.';
 
   @override
-  String get appTitle => 'MTA Auto Spare';
+  String get appTitle => 'MTA';
 
   @override
   String get backend => 'Backend';
@@ -72,6 +72,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editProfile => 'Edit profile';
+
+  @override
+  String get profileCouldNotBeLoadedRightNow =>
+      'Your profile could not be loaded right now.';
+
+  @override
+  String get keepYourProfileUpToDate => 'Keep your profile up to date';
+
+  @override
+  String get supplierProfileIntro =>
+      'Update the details buyers see, tune chat notifications, and choose the car models you already stock parts for.';
+
+  @override
+  String get buyerProfileIntro =>
+      'Update the details suppliers see and tune how chat notifications reach you.';
 
   @override
   String get email => 'Email';
@@ -477,7 +492,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleting => 'Deleting...';
 
   @override
-  String get chatSeller => 'Chat Seller';
+  String get chat => 'Chat';
 
   @override
   String get opening => 'Opening...';
@@ -780,6 +795,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phone => 'Phone';
 
   @override
+  String get cityLabel => 'City';
+
+  @override
+  String get filterByCarMake => 'Filter by car make';
+
+  @override
+  String get chatPushNotifications => 'Chat push notifications';
+
+  @override
+  String get chatPushNotificationsDescription =>
+      'Receive a notification when someone sends a chat message.';
+
+  @override
+  String get showMessagePreview => 'Show message preview';
+
+  @override
+  String get showMessagePreviewDescription =>
+      'Include part of the chat message inside notifications.';
+
+  @override
+  String get profileUpdatedSuccessfully => 'Profile updated successfully.';
+
+  @override
+  String get profilePhoto => 'Profile Photo';
+
+  @override
+  String get newPhotoReadyMessage =>
+      'A new photo is ready. Save your profile to apply it.';
+
+  @override
+  String get choosePhotoForRequestsAndChats =>
+      'Choose a photo so your name is easier to recognize in requests and chats.';
+
+  @override
+  String get chooseAnotherPhoto => 'Choose Another Photo';
+
+  @override
+  String get changePhoto => 'Change Photo';
+
+  @override
+  String get undoPhotoChange => 'Undo Photo Change';
+
+  @override
+  String get noCarModelsSelectedYetMessage =>
+      'No car models selected yet. Pick the models you support from the catalog below.';
+
+  @override
+  String get deleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountPermanentMessage =>
+      'This permanently deletes your account, your request posts, your chat history, and your registered devices. This action cannot be undone.';
+
+  @override
+  String get accountDeletedSuccessfully => 'Your account has been deleted.';
+
+  @override
+  String get accountCouldNotBeDeletedRightNow =>
+      'Your account could not be deleted right now.';
+
+  @override
+  String get deleteAccountDangerDescription =>
+      'Remove your profile and permanently delete the data that belongs to your account if you no longer want to use the app.';
+
+  @override
+  String get pleaseWait => 'Please wait...';
+
+  @override
   String get quickActions => 'Quick Actions';
 
   @override
@@ -890,6 +973,153 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get couldNotOpenPrivacyPolicy =>
       'The privacy policy could not be opened right now.';
+
+  @override
+  String get requestUpdatedSuccessfully => 'Request updated successfully.';
+
+  @override
+  String get requestCreatedSuccessfully => 'Request created successfully.';
+
+  @override
+  String get editRequestTitle => 'Edit Request';
+
+  @override
+  String get createRequestTitle => 'Create Request';
+
+  @override
+  String get updateYourRequest => 'Update your request';
+
+  @override
+  String get postNewRequest => 'Post a new request';
+
+  @override
+  String get editRequestDescription =>
+      'Refresh the request details and the photos you want buyers to see.';
+
+  @override
+  String get createRequestDescription =>
+      'Create a request that buyers can browse and open chats from.';
+
+  @override
+  String get requestCreationBlocked => 'Request creation is blocked';
+
+  @override
+  String get currentStatus => 'Current status';
+
+  @override
+  String get initialStatus => 'Initial status';
+
+  @override
+  String currentStatusMessage(String status) {
+    return 'This request is currently marked as \"$status\".';
+  }
+
+  @override
+  String initialStatusMessage(String status) {
+    return 'New requests will start as \"$status\".';
+  }
+
+  @override
+  String get requestTitleLabel => 'Request title';
+
+  @override
+  String get requestTitleHint => 'Front bumper for Toyota Camry 2022';
+
+  @override
+  String get enterRequestTitle => 'Enter a request title.';
+
+  @override
+  String get requestDescriptionLabel => 'Description';
+
+  @override
+  String get requestDescriptionHint =>
+      'Describe the condition, brand preference, or model details buyers should know.';
+
+  @override
+  String get addShortDescription => 'Add a short description.';
+
+  @override
+  String get carModelLabel => 'Car model';
+
+  @override
+  String get carModelDescription =>
+      'Choose the exact car model this request is for so only matching buyers get notified.';
+
+  @override
+  String get addCarManually => 'Add car manually';
+
+  @override
+  String get addCarManuallyDescription =>
+      'Use this if you cannot find the make or model in the catalog yet.';
+
+  @override
+  String get carMakeLabel => 'Car make';
+
+  @override
+  String get newCarMakeLabel => 'New car make';
+
+  @override
+  String get newCarMakeHint => 'Toyota';
+
+  @override
+  String get newCarModelLabel => 'New car model';
+
+  @override
+  String get newCarModelHint => 'Camry 2024';
+
+  @override
+  String get cityOptionalLabel => 'City (Optional)';
+
+  @override
+  String get cityOptionalHint => 'Riyadh';
+
+  @override
+  String get addPhotos => 'Add Photos';
+
+  @override
+  String get addMorePhotos => 'Add More Photos';
+
+  @override
+  String get minPriceLabel => 'Min price';
+
+  @override
+  String get maxPriceLabel => 'Max price';
+
+  @override
+  String get maxPriceMustBeGreaterThanMinPrice =>
+      'Max price must be greater than min price.';
+
+  @override
+  String get saving => 'Saving...';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get enterValidNumber => 'Enter a valid number.';
+
+  @override
+  String get enterCarMake => 'Enter the car make.';
+
+  @override
+  String get enterCarModel => 'Enter the car model.';
+
+  @override
+  String get enterCarMakeAndModelBeforeSaving =>
+      'Enter both the car make and model before saving this request.';
+
+  @override
+  String get chooseCarModelBeforeSaving =>
+      'Choose a car model before saving this request.';
+
+  @override
+  String get viewMyRequests => 'View My Requests';
+
+  @override
+  String get viewRequest => 'View Request';
+
+  @override
+  String get dismiss => 'Dismiss';
 
   @override
   String whatsAppGreeting(String name) {

@@ -24,7 +24,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'تم اختيار جميع أسماء السيارات المتاحة.';
 
   @override
-  String get appTitle => 'قطع غيار السيارات MTA';
+  String get appTitle => 'MTA';
 
   @override
   String get backend => 'الخادم';
@@ -72,6 +72,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get editProfile => 'تعديل الملف الشخصي';
+
+  @override
+  String get profileCouldNotBeLoadedRightNow => 'تعذر تحميل ملفك الشخصي الآن.';
+
+  @override
+  String get keepYourProfileUpToDate => 'حافظ على تحديث ملفك الشخصي';
+
+  @override
+  String get supplierProfileIntro =>
+      'حدّث التفاصيل التي يراها المشترون، واضبط إشعارات الدردشة، واختر موديلات السيارات التي تملك قطعها بالفعل.';
+
+  @override
+  String get buyerProfileIntro =>
+      'حدّث التفاصيل التي يراها الموردون واضبط طريقة وصول إشعارات الدردشة إليك.';
 
   @override
   String get email => 'البريد الإلكتروني';
@@ -474,7 +488,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get deleting => 'جارٍ الحذف...';
 
   @override
-  String get chatSeller => 'محادثة البائع';
+  String get chat => 'المحادثة';
 
   @override
   String get opening => 'جارٍ الفتح...';
@@ -770,6 +784,73 @@ class AppLocalizationsAr extends AppLocalizations {
   String get phone => 'الهاتف';
 
   @override
+  String get cityLabel => 'المدينة';
+
+  @override
+  String get filterByCarMake => 'تصفية حسب الشركة المصنّعة';
+
+  @override
+  String get chatPushNotifications => 'إشعارات الدردشة';
+
+  @override
+  String get chatPushNotificationsDescription =>
+      'استقبل إشعارًا عند وصول رسالة دردشة جديدة.';
+
+  @override
+  String get showMessagePreview => 'إظهار معاينة الرسالة';
+
+  @override
+  String get showMessagePreviewDescription =>
+      'تضمين جزء من رسالة الدردشة داخل الإشعار.';
+
+  @override
+  String get profileUpdatedSuccessfully => 'تم تحديث الملف الشخصي بنجاح.';
+
+  @override
+  String get profilePhoto => 'صورة الملف الشخصي';
+
+  @override
+  String get newPhotoReadyMessage =>
+      'الصورة الجديدة جاهزة. احفظ ملفك الشخصي لتطبيقها.';
+
+  @override
+  String get choosePhotoForRequestsAndChats =>
+      'اختر صورة ليسهل التعرف عليك في الطلبات والدردشات.';
+
+  @override
+  String get chooseAnotherPhoto => 'اختر صورة أخرى';
+
+  @override
+  String get changePhoto => 'تغيير الصورة';
+
+  @override
+  String get undoPhotoChange => 'التراجع عن تغيير الصورة';
+
+  @override
+  String get noCarModelsSelectedYetMessage =>
+      'لم يتم اختيار أي موديلات بعد. اختر الموديلات التي تدعمها من القائمة أدناه.';
+
+  @override
+  String get deleteAccountTitle => 'حذف الحساب';
+
+  @override
+  String get deleteAccountPermanentMessage =>
+      'سيؤدي هذا إلى حذف حسابك وطلباتك وسجل الدردشة والأجهزة المسجلة نهائيًا. لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get accountDeletedSuccessfully => 'تم حذف حسابك.';
+
+  @override
+  String get accountCouldNotBeDeletedRightNow => 'تعذر حذف حسابك الآن.';
+
+  @override
+  String get deleteAccountDangerDescription =>
+      'احذف ملفك الشخصي والبيانات المرتبطة بحسابك نهائيًا إذا لم تعد ترغب في استخدام التطبيق.';
+
+  @override
+  String get pleaseWait => 'يرجى الانتظار...';
+
+  @override
   String get quickActions => 'إجراءات سريعة';
 
   @override
@@ -878,6 +959,153 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get couldNotOpenPrivacyPolicy => 'تعذر فتح سياسة الخصوصية الآن.';
+
+  @override
+  String get requestUpdatedSuccessfully => 'تم تحديث الطلب بنجاح.';
+
+  @override
+  String get requestCreatedSuccessfully => 'تم إنشاء الطلب بنجاح.';
+
+  @override
+  String get editRequestTitle => 'تعديل الطلب';
+
+  @override
+  String get createRequestTitle => 'إنشاء طلب';
+
+  @override
+  String get updateYourRequest => 'حدّث طلبك';
+
+  @override
+  String get postNewRequest => 'انشر طلبًا جديدًا';
+
+  @override
+  String get editRequestDescription =>
+      'حدّث تفاصيل الطلب والصور التي تريد أن يراها المشترون.';
+
+  @override
+  String get createRequestDescription =>
+      'أنشئ طلبًا يمكن للمشترين تصفحه وفتح محادثات من خلاله.';
+
+  @override
+  String get requestCreationBlocked => 'إنشاء الطلب محظور';
+
+  @override
+  String get currentStatus => 'الحالة الحالية';
+
+  @override
+  String get initialStatus => 'الحالة الأولية';
+
+  @override
+  String currentStatusMessage(String status) {
+    return 'هذا الطلب مصنف حاليًا باسم \"$status\".';
+  }
+
+  @override
+  String initialStatusMessage(String status) {
+    return 'ستبدأ الطلبات الجديدة بالحالة \"$status\".';
+  }
+
+  @override
+  String get requestTitleLabel => 'عنوان الطلب';
+
+  @override
+  String get requestTitleHint => 'صدام أمامي لتويوتا كامري 2022';
+
+  @override
+  String get enterRequestTitle => 'أدخل عنوانًا للطلب.';
+
+  @override
+  String get requestDescriptionLabel => 'الوصف';
+
+  @override
+  String get requestDescriptionHint =>
+      'صف الحالة أو العلامة المفضلة أو تفاصيل الموديل التي يجب أن يعرفها المشترون.';
+
+  @override
+  String get addShortDescription => 'أضف وصفًا قصيرًا.';
+
+  @override
+  String get carModelLabel => 'موديل السيارة';
+
+  @override
+  String get carModelDescription =>
+      'اختر موديل السيارة الدقيق لهذا الطلب حتى يصل الإشعار فقط للمشترين المناسبين.';
+
+  @override
+  String get addCarManually => 'إضافة سيارة يدويًا';
+
+  @override
+  String get addCarManuallyDescription =>
+      'استخدم هذا إذا لم تجد الشركة أو الموديل في الدليل بعد.';
+
+  @override
+  String get carMakeLabel => 'شركة السيارة';
+
+  @override
+  String get newCarMakeLabel => 'شركة سيارة جديدة';
+
+  @override
+  String get newCarMakeHint => 'تويوتا';
+
+  @override
+  String get newCarModelLabel => 'موديل سيارة جديد';
+
+  @override
+  String get newCarModelHint => 'كامري 2024';
+
+  @override
+  String get cityOptionalLabel => 'المدينة (اختياري)';
+
+  @override
+  String get cityOptionalHint => 'الرياض';
+
+  @override
+  String get addPhotos => 'إضافة صور';
+
+  @override
+  String get addMorePhotos => 'إضافة المزيد من الصور';
+
+  @override
+  String get minPriceLabel => 'السعر الأدنى';
+
+  @override
+  String get maxPriceLabel => 'السعر الأقصى';
+
+  @override
+  String get maxPriceMustBeGreaterThanMinPrice =>
+      'يجب أن يكون السعر الأقصى أكبر من السعر الأدنى.';
+
+  @override
+  String get saving => 'جارٍ الحفظ...';
+
+  @override
+  String get saveChanges => 'حفظ التغييرات';
+
+  @override
+  String get enterValidNumber => 'أدخل رقمًا صالحًا.';
+
+  @override
+  String get enterCarMake => 'أدخل شركة السيارة.';
+
+  @override
+  String get enterCarModel => 'أدخل موديل السيارة.';
+
+  @override
+  String get enterCarMakeAndModelBeforeSaving =>
+      'أدخل شركة السيارة وموديلها قبل حفظ الطلب.';
+
+  @override
+  String get chooseCarModelBeforeSaving =>
+      'اختر موديل سيارة قبل حفظ هذا الطلب.';
+
+  @override
+  String get viewMyRequests => 'عرض طلباتي';
+
+  @override
+  String get viewRequest => 'عرض الطلب';
+
+  @override
+  String get dismiss => 'إغلاق';
 
   @override
   String whatsAppGreeting(String name) {

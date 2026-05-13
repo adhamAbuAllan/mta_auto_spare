@@ -127,7 +127,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'MTA Auto Spare'**
+  /// **'MTA'**
   String get appTitle;
 
   /// No description provided for @backend.
@@ -213,6 +213,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit profile'**
   String get editProfile;
+
+  /// No description provided for @profileCouldNotBeLoadedRightNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile could not be loaded right now.'**
+  String get profileCouldNotBeLoadedRightNow;
+
+  /// No description provided for @keepYourProfileUpToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your profile up to date'**
+  String get keepYourProfileUpToDate;
+
+  /// No description provided for @supplierProfileIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Update the details buyers see, tune chat notifications, and choose the car models you already stock parts for.'**
+  String get supplierProfileIntro;
+
+  /// No description provided for @buyerProfileIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Update the details suppliers see and tune how chat notifications reach you.'**
+  String get buyerProfileIntro;
 
   /// No description provided for @email.
   ///
@@ -952,11 +976,11 @@ abstract class AppLocalizations {
   /// **'Deleting...'**
   String get deleting;
 
-  /// No description provided for @chatSeller.
+  /// No description provided for @chat.
   ///
   /// In en, this message translates to:
-  /// **'Chat Seller'**
-  String get chatSeller;
+  /// **'Chat'**
+  String get chat;
 
   /// No description provided for @opening.
   ///
@@ -1486,6 +1510,126 @@ abstract class AppLocalizations {
   /// **'Phone'**
   String get phone;
 
+  /// No description provided for @cityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get cityLabel;
+
+  /// No description provided for @filterByCarMake.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by car make'**
+  String get filterByCarMake;
+
+  /// No description provided for @chatPushNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat push notifications'**
+  String get chatPushNotifications;
+
+  /// No description provided for @chatPushNotificationsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive a notification when someone sends a chat message.'**
+  String get chatPushNotificationsDescription;
+
+  /// No description provided for @showMessagePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Show message preview'**
+  String get showMessagePreview;
+
+  /// No description provided for @showMessagePreviewDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Include part of the chat message inside notifications.'**
+  String get showMessagePreviewDescription;
+
+  /// No description provided for @profileUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully.'**
+  String get profileUpdatedSuccessfully;
+
+  /// No description provided for @profilePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Photo'**
+  String get profilePhoto;
+
+  /// No description provided for @newPhotoReadyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A new photo is ready. Save your profile to apply it.'**
+  String get newPhotoReadyMessage;
+
+  /// No description provided for @choosePhotoForRequestsAndChats.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a photo so your name is easier to recognize in requests and chats.'**
+  String get choosePhotoForRequestsAndChats;
+
+  /// No description provided for @chooseAnotherPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Another Photo'**
+  String get chooseAnotherPhoto;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Photo'**
+  String get changePhoto;
+
+  /// No description provided for @undoPhotoChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo Photo Change'**
+  String get undoPhotoChange;
+
+  /// No description provided for @noCarModelsSelectedYetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No car models selected yet. Pick the models you support from the catalog below.'**
+  String get noCarModelsSelectedYetMessage;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountPermanentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes your account, your request posts, your chat history, and your registered devices. This action cannot be undone.'**
+  String get deleteAccountPermanentMessage;
+
+  /// No description provided for @accountDeletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been deleted.'**
+  String get accountDeletedSuccessfully;
+
+  /// No description provided for @accountCouldNotBeDeletedRightNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account could not be deleted right now.'**
+  String get accountCouldNotBeDeletedRightNow;
+
+  /// No description provided for @deleteAccountDangerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove your profile and permanently delete the data that belongs to your account if you no longer want to use the app.'**
+  String get deleteAccountDangerDescription;
+
+  /// No description provided for @pleaseWait.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait...'**
+  String get pleaseWait;
+
   /// No description provided for @quickActions.
   ///
   /// In en, this message translates to:
@@ -1683,6 +1827,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The privacy policy could not be opened right now.'**
   String get couldNotOpenPrivacyPolicy;
+
+  /// No description provided for @requestUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Request updated successfully.'**
+  String get requestUpdatedSuccessfully;
+
+  /// No description provided for @requestCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Request created successfully.'**
+  String get requestCreatedSuccessfully;
+
+  /// No description provided for @editRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Request'**
+  String get editRequestTitle;
+
+  /// No description provided for @createRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Request'**
+  String get createRequestTitle;
+
+  /// No description provided for @updateYourRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your request'**
+  String get updateYourRequest;
+
+  /// No description provided for @postNewRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a new request'**
+  String get postNewRequest;
+
+  /// No description provided for @editRequestDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh the request details and the photos you want buyers to see.'**
+  String get editRequestDescription;
+
+  /// No description provided for @createRequestDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a request that buyers can browse and open chats from.'**
+  String get createRequestDescription;
+
+  /// No description provided for @requestCreationBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Request creation is blocked'**
+  String get requestCreationBlocked;
+
+  /// No description provided for @currentStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Current status'**
+  String get currentStatus;
+
+  /// No description provided for @initialStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial status'**
+  String get initialStatus;
+
+  /// No description provided for @currentStatusMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This request is currently marked as \"{status}\".'**
+  String currentStatusMessage(String status);
+
+  /// No description provided for @initialStatusMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'New requests will start as \"{status}\".'**
+  String initialStatusMessage(String status);
+
+  /// No description provided for @requestTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Request title'**
+  String get requestTitleLabel;
+
+  /// No description provided for @requestTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Front bumper for Toyota Camry 2022'**
+  String get requestTitleHint;
+
+  /// No description provided for @enterRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a request title.'**
+  String get enterRequestTitle;
+
+  /// No description provided for @requestDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get requestDescriptionLabel;
+
+  /// No description provided for @requestDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the condition, brand preference, or model details buyers should know.'**
+  String get requestDescriptionHint;
+
+  /// No description provided for @addShortDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a short description.'**
+  String get addShortDescription;
+
+  /// No description provided for @carModelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Car model'**
+  String get carModelLabel;
+
+  /// No description provided for @carModelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the exact car model this request is for so only matching buyers get notified.'**
+  String get carModelDescription;
+
+  /// No description provided for @addCarManually.
+  ///
+  /// In en, this message translates to:
+  /// **'Add car manually'**
+  String get addCarManually;
+
+  /// No description provided for @addCarManuallyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this if you cannot find the make or model in the catalog yet.'**
+  String get addCarManuallyDescription;
+
+  /// No description provided for @carMakeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Car make'**
+  String get carMakeLabel;
+
+  /// No description provided for @newCarMakeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New car make'**
+  String get newCarMakeLabel;
+
+  /// No description provided for @newCarMakeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Toyota'**
+  String get newCarMakeHint;
+
+  /// No description provided for @newCarModelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New car model'**
+  String get newCarModelLabel;
+
+  /// No description provided for @newCarModelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Camry 2024'**
+  String get newCarModelHint;
+
+  /// No description provided for @cityOptionalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'City (Optional)'**
+  String get cityOptionalLabel;
+
+  /// No description provided for @cityOptionalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Riyadh'**
+  String get cityOptionalHint;
+
+  /// No description provided for @addPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Photos'**
+  String get addPhotos;
+
+  /// No description provided for @addMorePhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Add More Photos'**
+  String get addMorePhotos;
+
+  /// No description provided for @minPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Min price'**
+  String get minPriceLabel;
+
+  /// No description provided for @maxPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Max price'**
+  String get maxPriceLabel;
+
+  /// No description provided for @maxPriceMustBeGreaterThanMinPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Max price must be greater than min price.'**
+  String get maxPriceMustBeGreaterThanMinPrice;
+
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get saving;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @enterValidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid number.'**
+  String get enterValidNumber;
+
+  /// No description provided for @enterCarMake.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the car make.'**
+  String get enterCarMake;
+
+  /// No description provided for @enterCarModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the car model.'**
+  String get enterCarModel;
+
+  /// No description provided for @enterCarMakeAndModelBeforeSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter both the car make and model before saving this request.'**
+  String get enterCarMakeAndModelBeforeSaving;
+
+  /// No description provided for @chooseCarModelBeforeSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a car model before saving this request.'**
+  String get chooseCarModelBeforeSaving;
+
+  /// No description provided for @viewMyRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'View My Requests'**
+  String get viewMyRequests;
+
+  /// No description provided for @viewRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'View Request'**
+  String get viewRequest;
+
+  /// No description provided for @dismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
 
   /// No description provided for @whatsAppGreeting.
   ///

@@ -185,57 +185,60 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           onRetry: () => ref.invalidate(carCatalogProvider),
                         )
                       else ...[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: DropdownButtonFormField<int>(
-                                key: ValueKey(
-                                  'make-picker-${_selectedCarMakeId ?? 'none'}-${selectableMakes.length}',
+                        SizedBox(
+                          height: 120,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: DropdownButtonFormField<int>(
+                                  key: ValueKey(
+                                    'make-picker-${_selectedCarMakeId ?? 'none'}-${selectableMakes.length}',
+                                  ),
+                                  initialValue: _selectedCarMakeId,
+                                  decoration: InputDecoration(
+                                    labelText: context.l10n.carName,
+                                  ),
+                                  items: [
+                                    for (final make in selectableMakes)
+                                      DropdownMenuItem<int>(
+                                        value: make.id,
+                                        child: Text(make.name),
+                                      ),
+                                  ],
+                                  onChanged: selectableMakes.isEmpty
+                                      ? null
+                                      : (value) {
+                                          setState(() {
+                                            _selectedCarMakeId = value;
+                                          });
+                                        },
                                 ),
-                                initialValue: _selectedCarMakeId,
-                                decoration: InputDecoration(
-                                  labelText: context.l10n.carName,
-                                ),
-                                items: [
-                                  for (final make in selectableMakes)
-                                    DropdownMenuItem<int>(
-                                      value: make.id,
-                                      child: Text(make.name),
-                                    ),
-                                ],
-                                onChanged: selectableMakes.isEmpty
+                              ),
+                              const SizedBox(width: 12),
+                              FilledButton.tonalIcon(
+                                onPressed: _selectedCarMakeId == null
                                     ? null
-                                    : (value) {
+                                    : () {
+                                        final selectedMakeId = _selectedCarMakeId;
+                                        if (selectedMakeId == null) {
+                                          return;
+                                        }
                                         setState(() {
-                                          _selectedCarMakeId = value;
+                                          _selectedCarMakeIds.add(selectedMakeId);
+                                          _selectedCarMakeId = null;
                                         });
                                       },
+                                icon: const Icon(Icons.add_rounded),
+                                label: Text(context.l10n.add),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            FilledButton.tonalIcon(
-                              onPressed: _selectedCarMakeId == null
-                                  ? null
-                                  : () {
-                                      final selectedMakeId = _selectedCarMakeId;
-                                      if (selectedMakeId == null) {
-                                        return;
-                                      }
-                                      setState(() {
-                                        _selectedCarMakeIds.add(selectedMakeId);
-                                        _selectedCarMakeId = null;
-                                      });
-                                    },
-                              icon: const Icon(Icons.add_rounded),
-                              label: Text(context.l10n.add),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                        if (selectableMakes.isEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 12),
-                            child: Text(
+                          if (selectableMakes.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: Text(
                               context.l10n.allAvailableCarNamesAlreadySelected,
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(color: const Color(0xFF6F6A63)),

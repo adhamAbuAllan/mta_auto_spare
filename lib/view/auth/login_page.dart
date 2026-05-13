@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../constants/api_constants.dart';
 import '../../controllers/providers/auth_provider.dart';
 import '../../localization/app_localizations_x.dart';
 import '../../localization/language_selector.dart';
@@ -80,11 +79,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 ?.copyWith(color: const Color(0xFF6F6A63)),
                           ),
                           const SizedBox(height: 24),
-                          _InfoBanner(
-                            title: context.l10n.backend,
-                            message: ApiConstants.baseUrl,
-                          ),
-                          const SizedBox(height: 20),
+                          // _InfoBanner(
+                          //   title: context.l10n.backend,
+                          //   message: ApiConstants.baseUrl,
+                          // ),
+                          // const SizedBox(height: 20),
                           TextFormField(
                             controller: usernameController,
                             textInputAction: TextInputAction.next,

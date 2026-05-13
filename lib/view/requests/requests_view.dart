@@ -78,7 +78,8 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
                 browseCount: browseRequests.length,
                 mineCount: myRequests.length,
                 assignedCount: assignedRequests.length,
-                onCreateRequest: _openCreateRequest,
+              //Unused
+              onCreateRequest: _openCreateRequest,
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 12)),
@@ -605,16 +606,16 @@ class _RequestsHero extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 18),
-            FilledButton.tonalIcon(
-              onPressed: onCreateRequest,
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: const Color(0xFF0C4A63),
-              ),
-              icon: const Icon(Icons.add_circle_outline_rounded),
-              label: Text(context.l10n.createRequest),
-            ),
+            // const SizedBox(height: 18),
+            // FilledButton.tonalIcon(
+            //   onPressed: onCreateRequest,
+            //   style: FilledButton.styleFrom(
+            //     backgroundColor: Colors.white,
+            //     foregroundColor: const Color(0xFF0C4A63),
+            //   ),
+            //   icon: const Icon(Icons.add_circle_outline_rounded),
+            //   label: Text(context.l10n.createRequest),
+            // ),
           ],
         ),
       ),

@@ -164,7 +164,7 @@ class RequestCard extends StatelessWidget {
                 OutlinedButton.icon(
                   onPressed: onViewTap,
                   icon: const Icon(Icons.visibility_outlined),
-                  label: const Text('View Request'),
+                  label: Text(context.l10n.viewRequest),
                 ),
                 FilledButton.tonalIcon(
                   onPressed: onChangeStatusTap,
@@ -203,7 +203,7 @@ class RequestCard extends StatelessWidget {
                 OutlinedButton.icon(
                   onPressed: onViewTap,
                   icon: const Icon(Icons.visibility_outlined),
-                  label: const Text('View Request'),
+                  label: Text(context.l10n.viewRequest),
                 ),
                 FilledButton.tonalIcon(
                   onPressed: onChangeStatusTap,
@@ -220,7 +220,7 @@ class RequestCard extends StatelessWidget {
                   label: Text(
                     isChatLoading
                         ? context.l10n.opening
-                        : context.l10n.chatSeller,
+                        : context.l10n.chat,
                   ),
                 ),
               ],
@@ -236,7 +236,7 @@ class RequestCard extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: onViewTap,
                     icon: const Icon(Icons.visibility_outlined),
-                    label: const Text('View Request'),
+                    label: Text(context.l10n.viewRequest),
                   ),
                   FilledButton.icon(
                     onPressed: isChatLoading ? null : onChatTap,
@@ -248,7 +248,7 @@ class RequestCard extends StatelessWidget {
                     label: Text(
                       isChatLoading
                           ? context.l10n.opening
-                          : context.l10n.chatSeller,
+                          : context.l10n.chat,
                     ),
                   ),
                 ],

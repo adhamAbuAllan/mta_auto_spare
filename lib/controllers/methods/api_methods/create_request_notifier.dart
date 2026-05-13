@@ -63,7 +63,9 @@ class CreateRequestNotifier extends StateNotifier<CreateRequestState> {
     required int requesterId,
     required String title,
     required String description,
-    required int carModelId,
+    int? carModelId,
+    String? customCarMake,
+    String? customCarModel,
     required String? city,
     required String? minPrice,
     required String? maxPrice,
@@ -97,6 +99,8 @@ class CreateRequestNotifier extends StateNotifier<CreateRequestState> {
           city: _normalizeOptionalText(city),
         ),
         images: images,
+        customCarMake: _normalizeOptionalText(customCarMake),
+        customCarModel: _normalizeOptionalText(customCarModel),
       );
 
       state = state.copyWith(
@@ -119,7 +123,9 @@ class CreateRequestNotifier extends StateNotifier<CreateRequestState> {
     required int requesterId,
     required String title,
     required String description,
-    required int carModelId,
+    int? carModelId,
+    String? customCarMake,
+    String? customCarModel,
     required String? city,
     required String? minPrice,
     required String? maxPrice,
@@ -155,6 +161,8 @@ class CreateRequestNotifier extends StateNotifier<CreateRequestState> {
         ),
         keepImageIds: keepImageIds,
         newImages: newImages,
+        customCarMake: _normalizeOptionalText(customCarMake),
+        customCarModel: _normalizeOptionalText(customCarModel),
       );
 
       state = state.copyWith(

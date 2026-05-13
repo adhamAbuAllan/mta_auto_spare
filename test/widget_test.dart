@@ -133,7 +133,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Oil filter'), findsOneWidget);
-    expect(find.text('Chat Seller'), findsNothing);
+    expect(find.text('Chat'), findsNothing);
   });
 
   testWidgets('browse requests hide request statuses and status filters', (
@@ -406,7 +406,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final chatButton = find.widgetWithText(FilledButton, 'Chat Seller');
+    final chatButton = find.widgetWithText(FilledButton, 'Chat');
     await tester.tap(chatButton);
     await tester.pumpAndSettle();
 
@@ -443,7 +443,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final chatButton = find.widgetWithText(FilledButton, 'Chat Seller');
+      final chatButton = find.widgetWithText(FilledButton, 'Chat');
       await tester.ensureVisible(chatButton);
       await tester.tap(chatButton);
       await tester.pumpAndSettle();
@@ -485,7 +485,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final chatButton = find.widgetWithText(FilledButton, 'Chat Seller');
+      final chatButton = find.widgetWithText(FilledButton, 'Chat');
       await tester.ensureVisible(chatButton);
       await tester.tap(chatButton);
       await tester.pumpAndSettle();

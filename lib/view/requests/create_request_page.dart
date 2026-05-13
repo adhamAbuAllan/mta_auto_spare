@@ -9,6 +9,7 @@ import '../../constants/api_constants.dart';
 import '../../controllers/providers/catalog_provider.dart';
 import '../../controllers/providers/request_provider.dart';
 import '../../controllers/statuses/request_state.dart';
+import '../../localization/app_localizations_x.dart';
 import '../../models/models.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/app_panel.dart';
@@ -16,9 +17,14 @@ import '../common_widgets/async_error_message.dart';
 import '../common_widgets/car_model_card.dart';
 
 class CreateRequestPage extends ConsumerStatefulWidget {
-  const CreateRequestPage({super.key, this.initialRequest});
+  const CreateRequestPage({
+    super.key,
+    this.initialRequest,
+    this.onNavigateToMyRequests,
+  });
 
   final PartRequest? initialRequest;
+  final VoidCallback? onNavigateToMyRequests;
 
   bool get isEditing => initialRequest != null;
 
@@ -36,6 +42,8 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
   final _cityController = TextEditingController();
   final _minPriceController = TextEditingController();
   final _maxPriceController = TextEditingController();
+  final _customCarMakeController = TextEditingController();
+  final _customCarModelController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
 
   List<PartImage> _existingImages = const [];
@@ -43,6 +51,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
   int? _selectedCarMakeId;
   int? _selectedCarModelId;
   String? _carSelectionError;
+  bool _useCustomCarEntry = false;
 
   @override
   void initState() {
@@ -59,6 +68,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
       _selectedCarModelId = initialRequest.carModelId;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.invalidate(carCatalogProvider);
       ref
           .read(createRequestNotifierProvider.notifier)
           .loadStatuses(preferredStatusId: initialRequest?.status);
@@ -72,6 +82,8 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
     _cityController.dispose();
     _minPriceController.dispose();
     _maxPriceController.dispose();
+    _customCarMakeController.dispose();
+    _customCarModelController.dispose();
     super.dispose();
   }
 
@@ -96,19 +108,41 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
           .setSegment(RequestSegment.mine);
       ref.read(createRequestNotifierProvider.notifier).clearCreatedRequest();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            widget.isEditing
-                ? 'Request updated successfully.'
-                : 'Request created successfully.',
-          ),
-        ),
+      _showTopBanner(
+        message: widget.isEditing
+            ? context.l10n.requestUpdatedSuccessfully
+            : context.l10n.requestCreatedSuccessfully,
+        isSuccess: true,
+        showMyRequestsAction: !widget.isEditing,
       );
-      Navigator.of(context).pop();
+
+      if (widget.isEditing || widget.onNavigateToMyRequests == null) {
+        Navigator.of(context).pop();
+        return;
+      }
+
+      _resetCreateForm();
+    });
+
+    ref.listen<CreateRequestState>(createRequestNotifierProvider, (
+      previous,
+      next,
+    ) {
+      final errorMessage = next.errorMessage;
+      if (errorMessage == null ||
+          errorMessage == previous?.errorMessage ||
+          next.isSubmitting) {
+        return;
+      }
+
+      _showTopBanner(
+        message: errorMessage,
+        isSuccess: false,
+      );
     });
 
     final createState = ref.watch(createRequestNotifierProvider);
+    final l10n = context.l10n;
     final carCatalog = ref.watch(carCatalogProvider);
     final availableMakes = carCatalog.valueOrNull ?? const <CarMakeOption>[];
     final selectedMake =
@@ -123,7 +157,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
     final currentUserId = ref.watch(currentUserIdProvider);
     final carCatalogErrorMessage = asyncErrorMessage(
       carCatalog.error,
-      fallback: 'The car catalog could not be loaded right now.',
+      fallback: l10n.carCatalogCouldNotBeLoadedRightNow,
     );
     PartRequestStatus? selectedStatus;
     for (final status in createState.statuses) {
@@ -135,7 +169,9 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isEditing ? 'Edit Request' : 'Create Request'),
+        title: Text(
+          widget.isEditing ? l10n.editRequestTitle : l10n.createRequestTitle,
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -151,16 +187,16 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                     children: [
                       Text(
                         widget.isEditing
-                            ? 'Update your request'
-                            : 'Post a new request',
+                            ? l10n.updateYourRequest
+                            : l10n.postNewRequest,
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.w900),
                       ),
                       const SizedBox(height: 10),
                       Text(
                         widget.isEditing
-                            ? 'Refresh the request details and the photos you want buyers to see.'
-                            : 'Create a request that buyers can browse and open chats from.',
+                            ? l10n.editRequestDescription
+                            : l10n.createRequestDescription,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: const Color(0xFF6F6A63),
                         ),
@@ -173,7 +209,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                         ),
                       if (createState.blockedMessage != null) ...[
                         _StatusNotice(
-                          title: 'Request creation is blocked',
+                          title: l10n.requestCreationBlocked,
                           message: createState.blockedMessage!,
                           tone: _NoticeTone.warning,
                         ),
@@ -181,11 +217,15 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                       ] else if (selectedStatus != null) ...[
                         _StatusNotice(
                           title: widget.isEditing
-                              ? 'Current status'
-                              : 'Initial status',
+                              ? l10n.currentStatus
+                              : l10n.initialStatus,
                           message: widget.isEditing
-                              ? 'This request is currently marked as "${selectedStatus.label}".'
-                              : 'New requests will start as "${selectedStatus.label}".',
+                              ? l10n.currentStatusMessage(
+                                  selectedStatus.label,
+                                )
+                              : l10n.initialStatusMessage(
+                                  selectedStatus.label,
+                                ),
                           tone: _NoticeTone.info,
                         ),
                         const SizedBox(height: 16),
@@ -197,13 +237,13 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                       TextFormField(
                         controller: _titleController,
                         textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
-                          labelText: 'Request title',
-                          hintText: 'Front bumper for Toyota Camry 2022',
+                        decoration: InputDecoration(
+                          labelText: l10n.requestTitleLabel,
+                          hintText: l10n.requestTitleHint,
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Enter a request title.';
+                            return l10n.enterRequestTitle;
                           }
                           return null;
                         },
@@ -214,32 +254,51 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                         textInputAction: TextInputAction.newline,
                         minLines: 4,
                         maxLines: 6,
-                        decoration: const InputDecoration(
-                          labelText: 'Description',
-                          hintText:
-                              'Describe the condition, brand preference, or model details buyers should know.',
+                        decoration: InputDecoration(
+                          labelText: l10n.requestDescriptionLabel,
+                          hintText: l10n.requestDescriptionHint,
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Add a short description.';
+                            return l10n.addShortDescription;
                           }
                           return null;
                         },
                       ),
                       const SizedBox(height: 18),
                       Text(
-                        'Car model',
+                        l10n.carModelLabel,
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.w900),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Choose the exact car model this request is for so only matching buyers get notified.',
+                        l10n.carModelDescription,
                         style: Theme.of(context).textTheme.bodyMedium
                             ?.copyWith(color: const Color(0xFF6F6A63)),
                       ),
+                      const SizedBox(height: 10),
+                      SwitchListTile.adaptive(
+                        contentPadding: EdgeInsets.zero,
+                        value: _useCustomCarEntry,
+                        title: Text(l10n.addCarManually),
+                        subtitle: Text(l10n.addCarManuallyDescription),
+                        onChanged: (value) {
+                          setState(() {
+                            _useCustomCarEntry = value;
+                            _carSelectionError = null;
+                            if (value) {
+                              _selectedCarMakeId = null;
+                              _selectedCarModelId = null;
+                            } else {
+                              _customCarMakeController.clear();
+                              _customCarModelController.clear();
+                            }
+                          });
+                        },
+                      ),
                       const SizedBox(height: 14),
-                      if (selectedCarModel != null) ...[
+                      if (!_useCustomCarEntry && selectedCarModel != null) ...[
                         CarModelCard(
                           carModel: selectedCarModel,
                           compact: true,
@@ -251,19 +310,55 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                         AppErrorCard(message: _carSelectionError!),
                         const SizedBox(height: 12),
                       ],
-                      if (carCatalog.isLoading)
+                      if (_useCustomCarEntry) ...[
+                        TextFormField(
+                          controller: _customCarMakeController,
+                          textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(
+                            labelText: l10n.newCarMakeLabel,
+                            hintText: l10n.newCarMakeHint,
+                          ),
+                          validator: (value) {
+                            if (!_useCustomCarEntry) {
+                              return null;
+                            }
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.enterCarMake;
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: _customCarModelController,
+                          textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(
+                            labelText: l10n.newCarModelLabel,
+                            hintText: l10n.newCarModelHint,
+                          ),
+                          validator: (value) {
+                            if (!_useCustomCarEntry) {
+                              return null;
+                            }
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.enterCarModel;
+                            }
+                            return null;
+                          },
+                        ),
+                      ] else if (carCatalog.isLoading)
                         const LinearProgressIndicator()
                       else if (carCatalog.hasError)
                         AppErrorCard(
                           message:
-                              'The car catalog could not be loaded.\n$carCatalogErrorMessage',
+                              '${l10n.theCarCatalogCouldNotBeLoaded}\n$carCatalogErrorMessage',
                           onRetry: () => ref.invalidate(carCatalogProvider),
                         )
                       else ...[
                         DropdownButtonFormField<int>(
                           initialValue: selectedMake?.id,
-                          decoration: const InputDecoration(
-                            labelText: 'Car make',
+                          decoration: InputDecoration(
+                            labelText: l10n.carMakeLabel,
                           ),
                           items: [
                             for (final make in availableMakes)
@@ -320,9 +415,9 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                       TextFormField(
                         controller: _cityController,
                         textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
-                          labelText: 'City (Optional)',
-                          hintText: 'Riyadh',
+                        decoration: InputDecoration(
+                          labelText: l10n.cityOptionalLabel,
+                          hintText: l10n.cityOptionalHint,
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -336,8 +431,8 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                               icon: const Icon(Icons.photo_library_outlined),
                               label: Text(
                                 _selectedImages.isEmpty
-                                    ? 'Add Photos'
-                                    : 'Add More Photos',
+                                    ? l10n.addPhotos
+                                    : l10n.addMorePhotos,
                               ),
                             ),
                           ),
@@ -375,59 +470,59 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                         ),
                       ],
                       const SizedBox(height: 14),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _minPriceController,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                    decimal: true,
-                                  ),
-                              decoration: const InputDecoration(
-                                labelText: 'Min price',
-                                hintText: '150',
-                              ),
-                              validator: _validateOptionalNumber,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _maxPriceController,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                    decimal: true,
-                                  ),
-                              decoration: const InputDecoration(
-                                labelText: 'Max price',
-                                hintText: '350',
-                              ),
-                              validator: (value) {
-                                final numberError = _validateOptionalNumber(
-                                  value,
-                                );
-                                if (numberError != null) {
-                                  return numberError;
-                                }
-
-                                final minValue = double.tryParse(
-                                  _minPriceController.text.trim(),
-                                );
-                                final maxValue = double.tryParse(
-                                  value?.trim() ?? '',
-                                );
-                                if (minValue != null &&
-                                    maxValue != null &&
-                                    maxValue < minValue) {
-                                  return 'Max price must be greater than min price.';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
+                      // Row(
+                      //   children: [
+                      //     Expanded(
+                      //       child: TextFormField(
+                      //         controller: _minPriceController,
+                      //         keyboardType:
+                      //             const TextInputType.numberWithOptions(
+                      //               decimal: true,
+                      //             ),
+                      //         decoration: InputDecoration(
+                      //           labelText: l10n.minPriceLabel,
+                      //           hintText: '150',
+                      //         ),
+                      //         validator: _validateOptionalNumber,
+                      //       ),
+                      //     ),
+                      //     const SizedBox(width: 14),
+                      //     Expanded(
+                      //       child: TextFormField(
+                      //         controller: _maxPriceController,
+                      //         keyboardType:
+                      //             const TextInputType.numberWithOptions(
+                      //               decimal: true,
+                      //             ),
+                      //         decoration: InputDecoration(
+                      //           labelText: l10n.maxPriceLabel,
+                      //           hintText: '350',
+                      //         ),
+                      //         validator: (value) {
+                      //           final numberError = _validateOptionalNumber(
+                      //             value,
+                      //           );
+                      //           if (numberError != null) {
+                      //             return numberError;
+                      //           }
+                      //
+                      //           final minValue = double.tryParse(
+                      //             _minPriceController.text.trim(),
+                      //           );
+                      //           final maxValue = double.tryParse(
+                      //             value?.trim() ?? '',
+                      //           );
+                      //           if (minValue != null &&
+                      //               maxValue != null &&
+                      //               maxValue < minValue) {
+                      //             return l10n.maxPriceMustBeGreaterThanMinPrice;
+                      //           }
+                      //           return null;
+                      //         },
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                       const SizedBox(height: 24),
                       Row(
                         children: [
@@ -442,11 +537,11 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                               child: Text(
                                 createState.isSubmitting
                                     ? widget.isEditing
-                                          ? 'Saving...'
-                                          : 'Creating...'
+                                          ? l10n.saving
+                                          : l10n.creating
                                     : widget.isEditing
-                                    ? 'Save Changes'
-                                    : 'Create Request',
+                                    ? l10n.saveChanges
+                                    : l10n.createRequest,
                               ),
                             ),
                           ),
@@ -468,7 +563,82 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
     if (trimmed.isEmpty) {
       return null;
     }
-    return double.tryParse(trimmed) == null ? 'Enter a valid number.' : null;
+    return double.tryParse(trimmed) == null
+        ? context.l10n.enterValidNumber
+        : null;
+  }
+
+  void _showTopBanner({
+    required String message,
+    required bool isSuccess,
+    bool showMyRequestsAction = false,
+  }) {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentMaterialBanner();
+    messenger.showMaterialBanner(
+      MaterialBanner(
+        backgroundColor: isSuccess
+            ? const Color(0xFFE8F4EA)
+            : const Color(0xFFFCE8E5),
+        content: Text(
+          message,
+          style: TextStyle(
+            color: isSuccess
+                ? const Color(0xFF1E5E33)
+                : const Color(0xFF8A2D1F),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        leading: Icon(
+          isSuccess ? Icons.check_circle_outline : Icons.error_outline,
+          color: isSuccess
+              ? const Color(0xFF1E5E33)
+              : const Color(0xFF8A2D1F),
+        ),
+        actions: [
+          if (showMyRequestsAction && widget.onNavigateToMyRequests != null)
+            TextButton(
+              onPressed: () {
+                messenger.hideCurrentMaterialBanner();
+                widget.onNavigateToMyRequests?.call();
+              },
+              child: Text(context.l10n.viewMyRequests),
+            ),
+          TextButton(
+            onPressed: messenger.hideCurrentMaterialBanner,
+            child: Text(context.l10n.dismiss),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _resetCreateForm() {
+    _titleController.clear();
+    _descriptionController.clear();
+    _cityController.clear();
+    _minPriceController.clear();
+    _maxPriceController.clear();
+    final notifier = ref.read(createRequestNotifierProvider.notifier);
+
+    setState(() {
+      _existingImages = const [];
+      _selectedImages = const [];
+      _carSelectionError = null;
+      _selectedCarMakeId = null;
+      _selectedCarModelId = null;
+      _useCustomCarEntry = false;
+    });
+    _customCarMakeController.clear();
+    _customCarModelController.clear();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      ref.invalidate(carCatalogProvider);
+      notifier.loadStatuses();
+    });
   }
 
   void _submit() {
@@ -481,9 +651,20 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
       return;
     }
     final selectedCarModelId = _selectedCarModelId;
-    if (selectedCarModelId == null) {
+    final customCarMake = _customCarMakeController.text.trim();
+    final customCarModel = _customCarModelController.text.trim();
+    final hasCustomCarEntry = _useCustomCarEntry;
+
+    if (!hasCustomCarEntry && selectedCarModelId == null) {
       setState(() {
-        _carSelectionError = 'Choose a car model before saving this request.';
+        _carSelectionError = context.l10n.chooseCarModelBeforeSaving;
+      });
+      return;
+    }
+    if (hasCustomCarEntry &&
+        (customCarMake.isEmpty || customCarModel.isEmpty)) {
+      setState(() {
+        _carSelectionError = context.l10n.enterCarMakeAndModelBeforeSaving;
       });
       return;
     }
@@ -496,7 +677,9 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
         requesterId: requesterId,
         title: _titleController.text,
         description: _descriptionController.text,
-        carModelId: selectedCarModelId,
+        carModelId: hasCustomCarEntry ? null : selectedCarModelId,
+        customCarMake: hasCustomCarEntry ? customCarMake : null,
+        customCarModel: hasCustomCarEntry ? customCarModel : null,
         city: _cityController.text,
         minPrice: _minPriceController.text,
         maxPrice: _maxPriceController.text,
@@ -513,7 +696,9 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
       requesterId: requesterId,
       title: _titleController.text,
       description: _descriptionController.text,
-      carModelId: selectedCarModelId,
+      carModelId: hasCustomCarEntry ? null : selectedCarModelId,
+      customCarMake: hasCustomCarEntry ? customCarMake : null,
+      customCarModel: hasCustomCarEntry ? customCarModel : null,
       city: _cityController.text,
       minPrice: _minPriceController.text,
       maxPrice: _maxPriceController.text,
