@@ -74,26 +74,26 @@ class ConversationTileCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+
                         children: [
-                          Expanded(
-                            child: TextButton(
-                              onPressed: onProfileTap,
-                              style: TextButton.styleFrom(
-                                alignment: Alignment.centerLeft,
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: Text(
-                                displayName,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.w800),
-                              ),
+                          TextButton(
+                            onPressed: onProfileTap,
+                            style: TextButton.styleFrom(
+                              alignment: Alignment.centerLeft,
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              displayName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.w800),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          Spacer(),
+
                           Text(
                             formatRelativeTime(
                               conversation.lastMessage?.timestamp,

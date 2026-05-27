@@ -131,10 +131,12 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
     }
 
     if (conversationState.conversations.isEmpty) {
-      return EmptyStateCard(
-        title: context.l10n.noConversationsYet,
-        message: context.l10n.noConversationsYetMessage,
-        icon: Icons.chat_bubble_outline_rounded,
+      return Center(
+        child: EmptyStateCard(
+          title: context.l10n.noConversationsYet,
+          message: context.l10n.noConversationsYetMessage,
+          icon: Icons.chat_bubble_outline_rounded,
+        ),
       );
     }
     return ListView.separated(

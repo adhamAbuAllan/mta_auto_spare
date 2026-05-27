@@ -322,6 +322,7 @@ class _RequesterSummary extends StatelessWidget {
         : fallbackLabel;
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         UserAvatar(
           label: displayName,
@@ -330,7 +331,8 @@ class _RequesterSummary extends StatelessWidget {
           onTap: onTap,
         ),
         const SizedBox(width: 10),
-        Expanded(
+        Padding(
+          padding: const EdgeInsets.only(top: 5.0),
           child: TextButton(
             onPressed: onTap,
             style: TextButton.styleFrom(
@@ -344,7 +346,7 @@ class _RequesterSummary extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w700,
                 color: const Color(0xFF0C4A63),
               ),
             ),

@@ -151,7 +151,7 @@ class _WideMarketplaceLayout extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.appTitle),
+        title: Text(context.l10n.appTitle,style: TextStyle(fontWeight: FontWeight.w800),),
         actions: [
           Padding(
             padding: const EdgeInsetsDirectional.only(end: 8),
