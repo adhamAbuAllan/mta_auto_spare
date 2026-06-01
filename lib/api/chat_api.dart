@@ -52,7 +52,7 @@ class ChatApi {
     try {
       final response = pageUrl == null
           ? await _dio.get(ApiEndpoints.conversations)
-          : await _dio.get(pageUrl);
+          : await _dio.get(ApiConstants.resolveBackendUrl(pageUrl));
       return ApiPage<ConversationListItem>.fromJson(
         _asMap(response.data),
         ConversationListItem.fromJson,
@@ -112,7 +112,7 @@ class ChatApi {
               ApiEndpoints.messages,
               queryParameters: {'conversation_id': conversationId},
             )
-          : await _dio.get(pageUrl);
+          : await _dio.get(ApiConstants.resolveBackendUrl(pageUrl));
       return ApiPage<MessageModel>.fromJson(
         _asMap(response.data),
         MessageModel.fromJson,

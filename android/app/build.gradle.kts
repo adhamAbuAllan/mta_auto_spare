@@ -20,7 +20,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.mta_auto_spare"
+    namespace = "com.mta_spare_auto"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -36,7 +36,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.mta_auto_spare"
+        applicationId = "com.mta_spare_auto"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -44,6 +44,8 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
+
+
 
     signingConfigs {
         create("release") {

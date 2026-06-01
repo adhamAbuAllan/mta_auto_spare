@@ -13,7 +13,7 @@ class UserApi {
     try {
       final response = pageUrl == null
           ? await _dio.get(ApiEndpoints.users)
-          : await _dio.get(pageUrl);
+          : await _dio.get(ApiConstants.resolveBackendUrl(pageUrl));
       return ApiPage<ApiUser>.fromJson(_asMap(response.data), ApiUser.fromJson);
     } on DioException catch (error) {
       throw ApiException.fromDioException(error);
@@ -53,7 +53,7 @@ class UserApi {
               ApiEndpoints.userReports,
               queryParameters: queryParameters,
             )
-          : await _dio.get(pageUrl);
+          : await _dio.get(ApiConstants.resolveBackendUrl(pageUrl));
       return ApiPage<UserReportEntry>.fromJson(
         _asMap(response.data),
         UserReportEntry.fromJson,
@@ -102,10 +102,7 @@ class UserApi {
     }
   }
 
-  Future<ApiUser> blockUser({
-    required int userId,
-    String? reason,
-  }) async {
+  Future<ApiUser> blockUser({required int userId, String? reason}) async {
     try {
       final response = await _dio.post(
         '${ApiEndpoints.users}$userId/block/',

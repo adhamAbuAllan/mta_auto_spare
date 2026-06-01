@@ -1,8 +1,7 @@
 abstract final class ApiConstants {
   static const String ngrok = 'https://polishedly-bouncy-jerry.ngrok-free.dev';
   static const String render = 'https://auto-spare-api.onrender.com';
-  static const String baseUrl =
-     render;
+  static const String baseUrl =render ;
   static const String acceptHeader = 'application/json';
   static const String ngrokHeaderKey = 'ngrok-skip-browser-warning';
   static const String ngrokHeaderValue = 'true';
@@ -33,11 +32,28 @@ abstract final class ApiConstants {
     return Uri.parse(baseUrl).resolve(trimmed).toString();
   }
 
+  static String resolveBackendUrl(String url) {
+    final trimmed = url.trim();
+    if (trimmed.isEmpty) {
+      return trimmed;
+    }
+
+    final parsed = Uri.tryParse(trimmed);
+    if (parsed == null || !parsed.hasScheme) {
+      return trimmed;
+    }
+
+    final base = Uri.parse(baseUrl);
+    if (parsed.host.trim().toLowerCase() == base.host.trim().toLowerCase()) {
+      return _rebuildAgainstBaseUrl(parsed);
+    }
+
+    return trimmed;
+  }
+
   static bool _shouldReplaceWithBaseHost(Uri uri) {
     final host = uri.host.trim().toLowerCase();
-    return host == '127.0.0.1' ||
-        host == 'localhost' ||
-        host == '0.0.0.0';
+    return host == '127.0.0.1' || host == 'localhost' || host == '0.0.0.0';
   }
 
   static String _rebuildAgainstBaseUrl(Uri original) {

@@ -15,7 +15,7 @@ class RequestApi {
     try {
       final response = pageUrl == null
           ? await _dio.get(ApiEndpoints.partRequests)
-          : await _dio.get(pageUrl);
+          : await _dio.get(ApiConstants.resolveBackendUrl(pageUrl));
       return ApiPage<PartRequest>.fromJson(
         _asMap(response.data),
         PartRequest.fromJson,
@@ -46,7 +46,7 @@ class RequestApi {
       try {
         final response = nextPageUrl == null
             ? await _dio.get(ApiEndpoints.partRequestStatuses)
-            : await _dio.get(nextPageUrl);
+            : await _dio.get(ApiConstants.resolveBackendUrl(nextPageUrl));
         final page = ApiPage<PartRequestStatus>.fromJson(
           _asMap(response.data),
           PartRequestStatus.fromJson,
@@ -90,7 +90,7 @@ class RequestApi {
                 ApiEndpoints.partRequestAccesses,
                 queryParameters: queryParameters,
               )
-            : await _dio.get(nextPageUrl);
+            : await _dio.get(ApiConstants.resolveBackendUrl(nextPageUrl));
         final page = ApiPage<PartRequestAccess>.fromJson(
           _asMap(response.data),
           PartRequestAccess.fromJson,
