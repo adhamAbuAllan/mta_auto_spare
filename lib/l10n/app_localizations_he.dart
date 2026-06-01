@@ -1044,6 +1044,21 @@ class AppLocalizationsHe extends AppLocalizations {
   String get carMakeLabel => 'יצרן רכב';
 
   @override
+  String get carModelSearchLabel => 'חפש דגם רכב';
+
+  @override
+  String get carModelSearchHint => 'Audi RS7';
+
+  @override
+  String get clearCarModelSearch => 'נקה חיפוש';
+
+  @override
+  String get carModelSearchFailed => 'החיפוש אחר דגם הרכב נכשל. נסה שוב.';
+
+  @override
+  String get noMatchingCarModelsFound => 'לא נמצאו דגמי רכב מתאימים.';
+
+  @override
   String get newCarMakeLabel => 'יצרן רכב חדש';
 
   @override

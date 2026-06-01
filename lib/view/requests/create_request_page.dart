@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 
 import '../../constants/api_constants.dart';
+import '../../controllers/providers/api_provider.dart';
 import '../../controllers/providers/catalog_provider.dart';
 import '../../controllers/providers/request_provider.dart';
 import '../../controllers/statuses/request_state.dart';
@@ -44,13 +46,19 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
   final _maxPriceController = TextEditingController();
   final _customCarMakeController = TextEditingController();
   final _customCarModelController = TextEditingController();
+  final _carModelSearchController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
 
   List<PartImage> _existingImages = const [];
   List<RequestUploadImage> _selectedImages = const [];
+  List<CarModelOption> _carModelSearchResults = const [];
   int? _selectedCarMakeId;
   int? _selectedCarModelId;
   String? _carSelectionError;
+  String? _carModelSearchError;
+  Timer? _carModelSearchTimer;
+  int _carModelSearchGeneration = 0;
+  bool _isCarModelSearchLoading = false;
   bool _useCustomCarEntry = false;
 
   @override
@@ -84,6 +92,8 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
     _maxPriceController.dispose();
     _customCarMakeController.dispose();
     _customCarModelController.dispose();
+    _carModelSearchTimer?.cancel();
+    _carModelSearchController.dispose();
     super.dispose();
   }
 
@@ -135,25 +145,24 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
         return;
       }
 
-      _showTopBanner(
-        message: errorMessage,
-        isSuccess: false,
-      );
+      _showTopBanner(message: errorMessage, isSuccess: false);
     });
 
     final createState = ref.watch(createRequestNotifierProvider);
     final l10n = context.l10n;
     final carCatalog = ref.watch(carCatalogProvider);
     final availableMakes = carCatalog.valueOrNull ?? const <CarMakeOption>[];
-    final selectedMake =
-        _selectedCarMakeId != null
+    final selectedMake = _selectedCarMakeId != null
         ? _findMakeById(availableMakes, _selectedCarMakeId!)
         : (availableMakes.isEmpty ? null : availableMakes.first);
-    final visibleModels = selectedMake?.models ?? const <CarModelOption>[];
-    final selectedCarModel =
-        _selectedCarModelId == null
+    final selectedCarModel = _selectedCarModelId == null
         ? null
         : _findModelById(availableMakes, _selectedCarModelId!);
+    final carModelSearchQuery = _carModelSearchController.text.trim();
+    final isSearchingCarModels = carModelSearchQuery.length >= 2;
+    final visibleModels = isSearchingCarModels
+        ? _carModelSearchResults
+        : selectedMake?.models ?? const <CarModelOption>[];
     final currentUserId = ref.watch(currentUserIdProvider);
     final carCatalogErrorMessage = asyncErrorMessage(
       carCatalog.error,
@@ -220,12 +229,8 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                               ? l10n.currentStatus
                               : l10n.initialStatus,
                           message: widget.isEditing
-                              ? l10n.currentStatusMessage(
-                                  selectedStatus.label,
-                                )
-                              : l10n.initialStatusMessage(
-                                  selectedStatus.label,
-                                ),
+                              ? l10n.currentStatusMessage(selectedStatus.label)
+                              : l10n.initialStatusMessage(selectedStatus.label),
                           tone: _NoticeTone.info,
                         ),
                         const SizedBox(height: 16),
@@ -274,8 +279,9 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                       const SizedBox(height: 8),
                       Text(
                         l10n.carModelDescription,
-                        style: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(color: const Color(0xFF6F6A63)),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: const Color(0xFF6F6A63),
+                        ),
                       ),
                       const SizedBox(height: 10),
                       SwitchListTile.adaptive(
@@ -290,6 +296,10 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                             if (value) {
                               _selectedCarMakeId = null;
                               _selectedCarModelId = null;
+                              _carModelSearchController.clear();
+                              _carModelSearchResults = const [];
+                              _isCarModelSearchLoading = false;
+                              _carModelSearchError = null;
                             } else {
                               _customCarMakeController.clear();
                               _customCarModelController.clear();
@@ -355,6 +365,34 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                           onRetry: () => ref.invalidate(carCatalogProvider),
                         )
                       else ...[
+                        TextFormField(
+                          controller: _carModelSearchController,
+                          textInputAction: TextInputAction.search,
+                          decoration: InputDecoration(
+                            labelText: l10n.carModelSearchLabel,
+                            hintText: l10n.carModelSearchHint,
+                            prefixIcon: const Icon(Icons.search_rounded),
+                            suffixIcon: carModelSearchQuery.isEmpty
+                                ? null
+                                : IconButton(
+                                    tooltip: l10n.clearCarModelSearch,
+                                    onPressed: _clearCarModelSearch,
+                                    icon: const Icon(Icons.close_rounded),
+                                  ),
+                          ),
+                          onChanged: _scheduleCarModelSearch,
+                          onFieldSubmitted: (value) =>
+                              _runCarModelSearch(value.trim()),
+                        ),
+                        if (_isCarModelSearchLoading) ...[
+                          const SizedBox(height: 8),
+                          const LinearProgressIndicator(),
+                        ],
+                        if (_carModelSearchError != null) ...[
+                          const SizedBox(height: 10),
+                          AppErrorCard(message: _carModelSearchError!),
+                        ],
+                        const SizedBox(height: 14),
                         DropdownButtonFormField<int>(
                           initialValue: selectedMake?.id,
                           decoration: InputDecoration(
@@ -368,8 +406,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                               ),
                           ],
                           onChanged: (value) {
-                            final nextMake =
-                                value == null
+                            final nextMake = value == null
                                 ? null
                                 : _findMakeById(availableMakes, value);
                             setState(() {
@@ -382,34 +419,40 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                                 _selectedCarModelId = null;
                               }
                             });
+                            if (_carModelSearchController.text.trim().length >=
+                                2) {
+                              _scheduleCarModelSearch(
+                                _carModelSearchController.text,
+                              );
+                            }
                           },
                         ),
                         const SizedBox(height: 14),
-                        GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: visibleModels.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                                childAspectRatio: 0.82,
-                              ),
-                          itemBuilder: (context, index) {
-                            final carModel = visibleModels[index];
-                            return CarModelCard(
-                              carModel: carModel,
-                              isSelected: carModel.id == _selectedCarModelId,
-                              onTap: () {
-                                setState(() {
-                                  _selectedCarModelId = carModel.id;
-                                  _carSelectionError = null;
-                                });
-                              },
-                            );
-                          },
-                        ),
+                        if (isSearchingCarModels &&
+                            !_isCarModelSearchLoading &&
+                            visibleModels.isEmpty)
+                          const _CarModelSearchEmptyState()
+                        else
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: visibleModels.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                  childAspectRatio: 0.82,
+                                ),
+                            itemBuilder: (context, index) {
+                              final carModel = visibleModels[index];
+                              return CarModelCard(
+                                carModel: carModel,
+                                isSelected: carModel.id == _selectedCarModelId,
+                                onTap: () => _selectCarModel(carModel),
+                              );
+                            },
+                          ),
                       ],
                       const SizedBox(height: 14),
                       TextFormField(
@@ -591,9 +634,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
         ),
         leading: Icon(
           isSuccess ? Icons.check_circle_outline : Icons.error_outline,
-          color: isSuccess
-              ? const Color(0xFF1E5E33)
-              : const Color(0xFF8A2D1F),
+          color: isSuccess ? const Color(0xFF1E5E33) : const Color(0xFF8A2D1F),
         ),
         actions: [
           if (showMyRequestsAction && widget.onNavigateToMyRequests != null)
@@ -628,9 +669,13 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
       _selectedCarMakeId = null;
       _selectedCarModelId = null;
       _useCustomCarEntry = false;
+      _carModelSearchResults = const [];
+      _isCarModelSearchLoading = false;
+      _carModelSearchError = null;
     });
     _customCarMakeController.clear();
     _customCarModelController.clear();
+    _carModelSearchController.clear();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) {
@@ -745,6 +790,105 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
     });
   }
 
+  void _selectCarModel(CarModelOption carModel) {
+    setState(() {
+      _selectedCarMakeId = carModel.makeId;
+      _selectedCarModelId = carModel.id;
+      _carSelectionError = null;
+    });
+  }
+
+  void _clearCarModelSearch() {
+    _carModelSearchTimer?.cancel();
+    _carModelSearchGeneration++;
+    setState(() {
+      _carModelSearchController.clear();
+      _carModelSearchResults = const [];
+      _isCarModelSearchLoading = false;
+      _carModelSearchError = null;
+    });
+  }
+
+  void _scheduleCarModelSearch(String value) {
+    _carModelSearchTimer?.cancel();
+    final query = value.trim();
+    if (query.length < 2) {
+      _carModelSearchGeneration++;
+      setState(() {
+        _carModelSearchResults = const [];
+        _isCarModelSearchLoading = false;
+        _carModelSearchError = null;
+      });
+      return;
+    }
+
+    _carModelSearchTimer = Timer(
+      const Duration(seconds: 1),
+      () => _runCarModelSearch(query),
+    );
+  }
+
+  Future<void> _runCarModelSearch(String query) async {
+    final normalizedQuery = query.trim();
+    if (normalizedQuery.length < 2) {
+      return;
+    }
+
+    final generation = ++_carModelSearchGeneration;
+    final detectedMakeId = _detectMakeIdFromSearch(normalizedQuery);
+    final makeId = detectedMakeId ?? _selectedCarMakeId;
+    setState(() {
+      _isCarModelSearchLoading = true;
+      _carModelSearchError = null;
+      if (detectedMakeId != null) {
+        _selectedCarMakeId = detectedMakeId;
+      }
+    });
+
+    try {
+      final results = await ref
+          .read(catalogApiProvider)
+          .searchCarModels(query: normalizedQuery, makeId: makeId);
+      if (!mounted || generation != _carModelSearchGeneration) {
+        return;
+      }
+      setState(() {
+        _carModelSearchResults = results;
+        _isCarModelSearchLoading = false;
+      });
+    } catch (_) {
+      if (!mounted || generation != _carModelSearchGeneration) {
+        return;
+      }
+      setState(() {
+        _isCarModelSearchLoading = false;
+        _carModelSearchError = context.l10n.carModelSearchFailed;
+      });
+    }
+  }
+
+  int? _detectMakeIdFromSearch(String query) {
+    final normalizedQuery = _normalizeSearchText(query);
+    final makes = ref.read(carCatalogProvider).valueOrNull ?? const [];
+    for (final make in makes) {
+      final normalizedMakeName = _normalizeSearchText(make.name);
+      final normalizedMakeSlug = _normalizeSearchText(make.slug);
+      if (normalizedMakeName.isNotEmpty &&
+          normalizedQuery.contains(normalizedMakeName)) {
+        return make.id;
+      }
+      if (normalizedMakeSlug.isNotEmpty &&
+          normalizedQuery.contains(normalizedMakeSlug)) {
+        return make.id;
+      }
+    }
+    return null;
+  }
+
+  String _normalizeSearchText(String value) {
+    return value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), ' ').trim();
+  }
+
   CarMakeOption? _findMakeById(List<CarMakeOption> makes, int makeId) {
     for (final make in makes) {
       if (make.id == makeId) {
@@ -763,6 +907,30 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
       }
     }
     return null;
+  }
+}
+
+class _CarModelSearchEmptyState extends StatelessWidget {
+  const _CarModelSearchEmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFBF8F4),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFE7DFD2)),
+      ),
+      child: Text(
+        context.l10n.noMatchingCarModelsFound,
+        style: const TextStyle(
+          color: Color(0xFF6F6A63),
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
   }
 }
 

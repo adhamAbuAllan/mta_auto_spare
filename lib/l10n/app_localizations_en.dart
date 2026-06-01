@@ -1056,6 +1056,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get carMakeLabel => 'Car make';
 
   @override
+  String get carModelSearchLabel => 'Search car model';
+
+  @override
+  String get carModelSearchHint => 'Audi RS7';
+
+  @override
+  String get clearCarModelSearch => 'Clear search';
+
+  @override
+  String get carModelSearchFailed => 'Car model search failed. Try again.';
+
+  @override
+  String get noMatchingCarModelsFound => 'No matching car models found.';
+
+  @override
   String get newCarMakeLabel => 'New car make';
 
   @override

@@ -1042,6 +1042,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get carMakeLabel => 'شركة السيارة';
 
   @override
+  String get carModelSearchLabel => 'ابحث عن موديل سيارة';
+
+  @override
+  String get carModelSearchHint => 'Audi RS7';
+
+  @override
+  String get clearCarModelSearch => 'مسح البحث';
+
+  @override
+  String get carModelSearchFailed =>
+      'فشل البحث عن موديل السيارة. حاول مرة أخرى.';
+
+  @override
+  String get noMatchingCarModelsFound =>
+      'لم يتم العثور على موديلات سيارات مطابقة.';
+
+  @override
   String get newCarMakeLabel => 'شركة سيارة جديدة';
 
   @override

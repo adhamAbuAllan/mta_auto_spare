@@ -36,6 +36,34 @@ class CatalogApi {
     return makes;
   }
 
+  Future<List<CarModelOption>> searchCarModels({
+    required String query,
+    int? makeId,
+  }) async {
+    final normalizedQuery = query.trim();
+    if (normalizedQuery.isEmpty) {
+      return const [];
+    }
+
+    try {
+      final queryParameters = <String, dynamic>{'search': normalizedQuery};
+      if (makeId != null) {
+        queryParameters['make_id'] = makeId;
+      }
+      final response = await _dio.get(
+        ApiEndpoints.carModels,
+        queryParameters: queryParameters,
+      );
+      final page = ApiPage<CarModelOption>.fromJson(
+        _asMap(response.data),
+        CarModelOption.fromJson,
+      );
+      return page.results;
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
   Map<String, dynamic> _asMap(dynamic data) {
     if (data is Map<String, dynamic>) {
       return data;

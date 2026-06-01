@@ -1972,6 +1972,36 @@ abstract class AppLocalizations {
   /// **'Car make'**
   String get carMakeLabel;
 
+  /// No description provided for @carModelSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search car model'**
+  String get carModelSearchLabel;
+
+  /// No description provided for @carModelSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Audi RS7'**
+  String get carModelSearchHint;
+
+  /// No description provided for @clearCarModelSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get clearCarModelSearch;
+
+  /// No description provided for @carModelSearchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Car model search failed. Try again.'**
+  String get carModelSearchFailed;
+
+  /// No description provided for @noMatchingCarModelsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching car models found.'**
+  String get noMatchingCarModelsFound;
+
   /// No description provided for @newCarMakeLabel.
   ///
   /// In en, this message translates to:
