@@ -1,7 +1,7 @@
 abstract final class ApiConstants {
   static const String ngrok = 'https://polishedly-bouncy-jerry.ngrok-free.dev';
   static const String render = 'https://auto-spare-api.onrender.com';
-  static const String baseUrl = ngrok;
+  static const String baseUrl = render;
   static const String acceptHeader = 'application/json';
   static const String ngrokHeaderKey = 'ngrok-skip-browser-warning';
   static const String ngrokHeaderValue = 'true';
