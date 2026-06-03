@@ -2128,6 +2128,30 @@ abstract class AppLocalizations {
   /// **'Dismiss'**
   String get dismiss;
 
+  /// No description provided for @appUpdateAvailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of MTA is available. Update now to get the latest features and improvements.'**
+  String get appUpdateAvailableMessage;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Now'**
+  String get updateNow;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
+
+  /// No description provided for @couldNotOpenAppStore.
+  ///
+  /// In en, this message translates to:
+  /// **'The app store could not be opened right now.'**
+  String get couldNotOpenAppStore;
+
   /// No description provided for @whatsAppGreeting.
   ///
   /// In en, this message translates to:

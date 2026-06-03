@@ -1137,6 +1137,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dismiss => 'Dismiss';
 
   @override
+  String get appUpdateAvailableMessage =>
+      'A new version of MTA is available. Update now to get the latest features and improvements.';
+
+  @override
+  String get updateNow => 'Update Now';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get couldNotOpenAppStore =>
+      'The app store could not be opened right now.';
+
+  @override
   String whatsAppGreeting(String name) {
     return 'Hello $name';
   }

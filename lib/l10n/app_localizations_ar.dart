@@ -1125,6 +1125,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dismiss => 'إغلاق';
 
   @override
+  String get appUpdateAvailableMessage =>
+      'يتوفر إصدار جديد من MTA. حدّث الآن للحصول على أحدث الميزات والتحسينات.';
+
+  @override
+  String get updateNow => 'حدّث الآن';
+
+  @override
+  String get later => 'لاحقًا';
+
+  @override
+  String get couldNotOpenAppStore => 'تعذر فتح متجر التطبيقات الآن.';
+
+  @override
   String whatsAppGreeting(String name) {
     return 'مرحبًا $name';
   }

@@ -22,6 +22,9 @@ class NotificationStrings {
     required this.newSellerRequestTitle,
     required this.supplierFallbackName,
     required this.requestCreatedFallbackBody,
+    required this.appUpdateTitle,
+    required this.appUpdateBody,
+    required this.appUpdatesChannel,
     required this.chatMessagesChannel,
     required this.chatActivityChannel,
   });
@@ -32,6 +35,9 @@ class NotificationStrings {
   final String newSellerRequestTitle;
   final String supplierFallbackName;
   final String requestCreatedFallbackBody;
+  final String appUpdateTitle;
+  final String appUpdateBody;
+  final NotificationChannelStrings appUpdatesChannel;
   final NotificationChannelStrings chatMessagesChannel;
   final NotificationChannelStrings chatActivityChannel;
 }
@@ -65,6 +71,12 @@ NotificationStrings notificationStringsForLanguageCode(String languageCode) {
         newSellerRequestTitle: 'طلب جديد من البائع',
         supplierFallbackName: 'البائع',
         requestCreatedFallbackBody: 'قام بائع بنشر طلب جديد.',
+        appUpdateTitle: 'يتوفر تحديث جديد',
+        appUpdateBody: 'حدّث تطبيق MTA للحصول على أحدث الميزات والتحسينات.',
+        appUpdatesChannel: NotificationChannelStrings(
+          name: 'تحديثات التطبيق',
+          description: 'تنبيهات عند توفر إصدار جديد من التطبيق',
+        ),
         chatMessagesChannel: NotificationChannelStrings(
           name: 'رسائل الدردشة',
           description: 'رسائل جديدة من محادثات التطبيق',
@@ -82,6 +94,12 @@ NotificationStrings notificationStringsForLanguageCode(String languageCode) {
         newSellerRequestTitle: 'בקשת מוכר חדשה',
         supplierFallbackName: 'מוכר',
         requestCreatedFallbackBody: 'מוכר פרסם בקשה חדשה.',
+        appUpdateTitle: 'עדכון חדש זמין',
+        appUpdateBody: 'עדכן את MTA כדי לקבל את התכונות והשיפורים החדשים.',
+        appUpdatesChannel: NotificationChannelStrings(
+          name: 'עדכוני אפליקציה',
+          description: 'התראות כאשר זמינה גרסה חדשה של האפליקציה',
+        ),
         chatMessagesChannel: NotificationChannelStrings(
           name: 'הודעות צ׳אט',
           description: 'הודעות חדשות משיחות הצ׳אט',
@@ -99,6 +117,13 @@ NotificationStrings notificationStringsForLanguageCode(String languageCode) {
         newSellerRequestTitle: 'New seller request',
         supplierFallbackName: 'Supplier',
         requestCreatedFallbackBody: 'A supplier posted a new request.',
+        appUpdateTitle: 'New update available',
+        appUpdateBody:
+            'Update MTA to get the latest features and improvements.',
+        appUpdatesChannel: NotificationChannelStrings(
+          name: 'App Updates',
+          description: 'Alerts when a new app version is available',
+        ),
         chatMessagesChannel: NotificationChannelStrings(
           name: 'Chat Messages',
           description: 'New messages from chat conversations',

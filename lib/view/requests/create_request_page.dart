@@ -395,14 +395,21 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                         const SizedBox(height: 14),
                         DropdownButtonFormField<int>(
                           initialValue: selectedMake?.id,
+                          isExpanded: true,
+                          itemHeight: _dropdownItemHeight(context),
                           decoration: InputDecoration(
                             labelText: l10n.carMakeLabel,
+                            contentPadding: _dropdownContentPadding(context),
                           ),
                           items: [
                             for (final make in availableMakes)
                               DropdownMenuItem<int>(
                                 value: make.id,
-                                child: Text(make.name),
+                                child: Text(
+                                  make.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                           ],
                           onChanged: (value) {
@@ -433,23 +440,39 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                             visibleModels.isEmpty)
                           const _CarModelSearchEmptyState()
                         else
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: visibleModels.length,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 12,
-                                  childAspectRatio: 0.82,
-                                ),
-                            itemBuilder: (context, index) {
-                              final carModel = visibleModels[index];
-                              return CarModelCard(
-                                carModel: carModel,
-                                isSelected: carModel.id == _selectedCarModelId,
-                                onTap: () => _selectCarModel(carModel),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final crossAxisCount = _carGridCrossAxisCount(
+                                constraints.maxWidth,
+                              );
+                              final cardWidth =
+                                  (constraints.maxWidth -
+                                      ((crossAxisCount - 1) * 12)) /
+                                  crossAxisCount;
+
+                              return GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: visibleModels.length,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: crossAxisCount,
+                                      crossAxisSpacing: 12,
+                                      mainAxisSpacing: 12,
+                                      mainAxisExtent: _carCardMainAxisExtent(
+                                        context,
+                                        cardWidth,
+                                      ),
+                                    ),
+                                itemBuilder: (context, index) {
+                                  final carModel = visibleModels[index];
+                                  return CarModelCard(
+                                    carModel: carModel,
+                                    isSelected:
+                                        carModel.id == _selectedCarModelId,
+                                    onTap: () => _selectCarModel(carModel),
+                                  );
+                                },
                               );
                             },
                           ),
@@ -609,6 +632,27 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
     return double.tryParse(trimmed) == null
         ? context.l10n.enterValidNumber
         : null;
+  }
+
+  int _carGridCrossAxisCount(double availableWidth) {
+    return availableWidth < 330 ? 1 : 2;
+  }
+
+  double _carCardMainAxisExtent(BuildContext context, double cardWidth) {
+    final textScaleFactor = MediaQuery.textScalerOf(context).scale(1);
+    final scaledTextAllowance = (textScaleFactor - 1).clamp(0.0, 1.0) * 48;
+    return (cardWidth * 1.22 + scaledTextAllowance).clamp(218.0, 300.0);
+  }
+
+  double _dropdownItemHeight(BuildContext context) {
+    final textScaleFactor = MediaQuery.textScalerOf(context).scale(1);
+    return (56 * textScaleFactor).clamp(56.0, 72.0);
+  }
+
+  EdgeInsets _dropdownContentPadding(BuildContext context) {
+    final textScaleFactor = MediaQuery.textScalerOf(context).scale(1);
+    final verticalPadding = (16 * textScaleFactor).clamp(16.0, 22.0);
+    return EdgeInsets.symmetric(horizontal: 12, vertical: verticalPadding);
   }
 
   void _showTopBanner({

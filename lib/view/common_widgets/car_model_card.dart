@@ -83,61 +83,68 @@ class _FullCarModelCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(21),
-                ),
-                child: _CarModelImage(
-                  imageUrl: carModel.imageUrl,
-                  height: 112,
-                  width: double.infinity,
-                ),
-              ),
-              if (isSelected)
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF116466),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.check_rounded,
-                      size: 18,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              if (onRemove != null)
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  child: Material(
-                    color: Colors.black.withValues(alpha: 0.18),
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      onTap: onRemove,
-                      child: const Padding(
-                        padding: EdgeInsets.all(6),
-                        child: Icon(
-                          Icons.close_rounded,
-                          size: 18,
-                          color: Colors.white,
-                        ),
+          Flexible(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(21),
+                      ),
+                      child: _CarModelImage(
+                        imageUrl: carModel.imageUrl,
+                        height: constraints.maxHeight,
+                        width: double.infinity,
                       ),
                     ),
-                  ),
-                ),
-            ],
+                    if (isSelected)
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: Container(
+                          width: 28,
+                          height: 28,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF116466),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.check_rounded,
+                            size: 18,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    if (onRemove != null)
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        child: Material(
+                          color: Colors.black.withValues(alpha: 0.18),
+                          shape: const CircleBorder(),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: onRemove,
+                            child: const Padding(
+                              padding: EdgeInsets.all(6),
+                              child: Icon(
+                                Icons.close_rounded,
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 0,horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -161,6 +168,7 @@ class _FullCarModelCard extends StatelessWidget {
                     color: const Color(0xFF1C1B18),
                   ),
                 ),
+                const SizedBox(height: 8),
               ],
             ),
           ),
@@ -195,7 +203,9 @@ class _CompactCarModelCard extends StatelessWidget {
       child: Row(
         children: [
           ClipRRect(
-            borderRadius: const BorderRadius.horizontal(left: Radius.circular(17)),
+            borderRadius: const BorderRadius.horizontal(
+              left: Radius.circular(17),
+            ),
             child: _CarModelImage(
               imageUrl: carModel.imageUrl,
               width: 92,
@@ -239,10 +249,7 @@ class _CompactCarModelCard extends StatelessWidget {
           else if (isSelected)
             const Padding(
               padding: EdgeInsets.only(right: 12),
-              child: Icon(
-                Icons.check_circle_rounded,
-                color: Color(0xFF116466),
-              ),
+              child: Icon(Icons.check_circle_rounded, color: Color(0xFF116466)),
             )
           else
             const SizedBox(width: 8),
@@ -286,10 +293,7 @@ class _CarModelImage extends StatelessWidget {
 }
 
 class _CarImagePlaceholder extends StatelessWidget {
-  const _CarImagePlaceholder({
-    required this.height,
-    required this.width,
-  });
+  const _CarImagePlaceholder({required this.height, required this.width});
 
   final double height;
   final double width;

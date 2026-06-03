@@ -14,6 +14,7 @@ abstract final class ApiConstants {
   static const Duration chatReconnectMaxDelay = Duration(seconds: 8);
   static const String chatMessageNotificationChannelId = 'chat_messages';
   static const String chatActivityNotificationChannelId = 'chat_activity';
+  static const String appUpdatesNotificationChannelId = 'app_updates';
 
   static String resolveUrl(String url) {
     final trimmed = url.trim();
@@ -114,6 +115,7 @@ abstract final class ApiConstants {
 
 abstract final class ApiEndpoints {
   static const String health = '/api/health/';
+  static const String appUpdate = '/api/app-update/';
   static const String login = '/api/token/';
   static const String refresh = '/api/token/refresh/';
   static const String me = '/api/me/';

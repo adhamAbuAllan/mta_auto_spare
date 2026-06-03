@@ -535,6 +535,10 @@
   "viewMyRequests": "View My Requests",
   "viewRequest": "View Request",
   "dismiss": "Dismiss",
+  "appUpdateAvailableMessage": "A new version of MTA is available. Update now to get the latest features and improvements.",
+  "updateNow": "Update Now",
+  "later": "Later",
+  "couldNotOpenAppStore": "The app store could not be opened right now.",
   "whatsAppGreeting": "Hello {name}",
   "@whatsAppGreeting": {
     "placeholders": {

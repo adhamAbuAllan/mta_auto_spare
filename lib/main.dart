@@ -17,6 +17,7 @@ import 'notifications/chat_notification_service.dart';
 import 'routing/app_router.dart';
 import 'session/session_notifier.dart';
 import 'session/session_state.dart';
+import 'view/common_widgets/app_update_gate.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -167,7 +168,7 @@ class _AutoSpareAppState extends ConsumerState<AutoSpareApp>
         ),
         useMaterial3: true,
       ),
-      home: const AppRouter(),
+      home: const AppUpdateGate(child: AppRouter()),
     );
   }
 }
