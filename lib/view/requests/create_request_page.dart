@@ -635,15 +635,15 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
     );
   }
 
-  String? _validateOptionalNumber(String? value) {
-    final trimmed = value?.trim() ?? '';
-    if (trimmed.isEmpty) {
-      return null;
-    }
-    return double.tryParse(trimmed) == null
-        ? context.l10n.enterValidNumber
-        : null;
-  }
+  // String? _validateOptionalNumber(String? value) {
+  //   final trimmed = value?.trim() ?? '';
+  //   if (trimmed.isEmpty) {
+  //     return null;
+  //   }
+  //   return double.tryParse(trimmed) == null
+  //       ? context.l10n.enterValidNumber
+  //       : null;
+  // }
 
   int _carGridCrossAxisCount(double availableWidth) {
     return availableWidth < 330 ? 1 : 2;
@@ -989,62 +989,62 @@ class _CarModelSearchEmptyState extends StatelessWidget {
   }
 }
 
-enum _NoticeTone { info, warning }
+// enum _NoticeTone { info, warning }
 
-class _StatusNotice extends StatelessWidget {
-  const _StatusNotice({
-    required this.title,
-    required this.message,
-    required this.tone,
-  });
-
-  final String title;
-  final String message;
-  final _NoticeTone tone;
-
-  @override
-  Widget build(BuildContext context) {
-    final isWarning = tone == _NoticeTone.warning;
-    final background = isWarning
-        ? const Color(0xFFFFF3E7)
-        : const Color(0xFFF2F8F7);
-    final border = isWarning
-        ? const Color(0xFFF1C38B)
-        : const Color(0xFFD5E8E4);
-    final accent = isWarning
-        ? const Color(0xFFB35B00)
-        : const Color(0xFF0C4A63);
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: accent,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            message,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF6F6A63)),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// class _StatusNotice extends StatelessWidget {
+//   const _StatusNotice({
+//     required this.title,
+//     required this.message,
+//     required this.tone,
+//   });
+//
+//   final String title;
+//   final String message;
+//   final _NoticeTone tone;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final isWarning = tone == _NoticeTone.warning;
+//     final background = isWarning
+//         ? const Color(0xFFFFF3E7)
+//         : const Color(0xFFF2F8F7);
+//     final border = isWarning
+//         ? const Color(0xFFF1C38B)
+//         : const Color(0xFFD5E8E4);
+//     final accent = isWarning
+//         ? const Color(0xFFB35B00)
+//         : const Color(0xFF0C4A63);
+//
+//     return Container(
+//       width: double.infinity,
+//       padding: const EdgeInsets.all(16),
+//       decoration: BoxDecoration(
+//         color: background,
+//         borderRadius: BorderRadius.circular(18),
+//         border: Border.all(color: border),
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Text(
+//             title,
+//             style: Theme.of(context).textTheme.titleMedium?.copyWith(
+//               fontWeight: FontWeight.w800,
+//               color: accent,
+//             ),
+//           ),
+//           const SizedBox(height: 6),
+//           Text(
+//             message,
+//             style: Theme.of(
+//               context,
+//             ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF6F6A63)),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class _SelectedRequestImageCard extends StatelessWidget {
   const _SelectedRequestImageCard({
