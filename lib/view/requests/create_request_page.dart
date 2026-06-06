@@ -184,16 +184,17 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+       //   padding: const EdgeInsets.all(20),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 680),
               child: AppPanel(
+                radius: 0,
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         widget.isEditing
                             ? l10n.updateYourRequest
@@ -210,31 +211,31 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                           color: const Color(0xFF6F6A63),
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      if (createState.isLoadingStatuses)
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 16),
-                          child: LinearProgressIndicator(),
-                        ),
-                      if (createState.blockedMessage != null) ...[
-                        _StatusNotice(
-                          title: l10n.requestCreationBlocked,
-                          message: createState.blockedMessage!,
-                          tone: _NoticeTone.warning,
-                        ),
+                     const SizedBox(height: 20),
+                   //    if (createState.isLoadingStatuses)
+                   //      const Padding(
+                   //        padding: EdgeInsets.only(bottom: 16),
+                   //        child: LinearProgressIndicator(),
+                   //      ),
+                   //    if (createState.blockedMessage != null) ...[
+                   //      _StatusNotice(
+                   //        title: l10n.requestCreationBlocked,
+                   //        message: createState.blockedMessage!,
+                   //        tone: _NoticeTone.warning,
+                   //      ),
+                   //      const SizedBox(height: 16),
+                   //    ] else if (selectedStatus != null) ...[
+                   //      _StatusNotice(
+                   //        title: widget.isEditing
+                   //            ? l10n.currentStatus
+                   //            : l10n.initialStatus,
+                   //        message: widget.isEditing
+                   //            ? l10n.currentStatusMessage(selectedStatus.label)
+                   //            : l10n.initialStatusMessage(selectedStatus.label),
+                   //        tone: _NoticeTone.info,
+                   //      ),
                         const SizedBox(height: 16),
-                      ] else if (selectedStatus != null) ...[
-                        _StatusNotice(
-                          title: widget.isEditing
-                              ? l10n.currentStatus
-                              : l10n.initialStatus,
-                          message: widget.isEditing
-                              ? l10n.currentStatusMessage(selectedStatus.label)
-                              : l10n.initialStatusMessage(selectedStatus.label),
-                          tone: _NoticeTone.info,
-                        ),
-                        const SizedBox(height: 16),
-                      ],
+                      //],
                       if (createState.errorMessage != null) ...[
                         AppErrorCard(message: createState.errorMessage!),
                         const SizedBox(height: 16),
@@ -284,28 +285,38 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      SwitchListTile.adaptive(
-                        contentPadding: EdgeInsets.zero,
-                        value: _useCustomCarEntry,
-                        title: Text(l10n.addCarManually),
-                        subtitle: Text(l10n.addCarManuallyDescription),
-                        onChanged: (value) {
-                          setState(() {
-                            _useCustomCarEntry = value;
-                            _carSelectionError = null;
-                            if (value) {
-                              _selectedCarMakeId = null;
-                              _selectedCarModelId = null;
-                              _carModelSearchController.clear();
-                              _carModelSearchResults = const [];
-                              _isCarModelSearchLoading = false;
-                              _carModelSearchError = null;
-                            } else {
-                              _customCarMakeController.clear();
-                              _customCarModelController.clear();
-                            }
-                          });
-                        },
+                      Container(
+
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF3E7),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: const Color(0xFFF1C38B)),
+                        ),
+                        child: SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          value: _useCustomCarEntry,
+                          title: Text(l10n.addCarManually),
+                          subtitle: Text(l10n.addCarManuallyDescription),
+                          onChanged: (value) {
+                            setState(() {
+                              _useCustomCarEntry = value;
+                              _carSelectionError = null;
+                              if (value) {
+                                _selectedCarMakeId = null;
+                                _selectedCarModelId = null;
+                                _carModelSearchController.clear();
+                                _carModelSearchResults = const [];
+                                _isCarModelSearchLoading = false;
+                                _carModelSearchError = null;
+                              } else {
+                                _customCarMakeController.clear();
+                                _customCarModelController.clear();
+                              }
+                            });
+                          },
+                        ),
                       ),
                       const SizedBox(height: 14),
                       if (!_useCustomCarEntry && selectedCarModel != null) ...[

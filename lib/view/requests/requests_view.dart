@@ -67,60 +67,60 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     );
 
     return Padding(
-      padding: EdgeInsets.all(widget.wideMode ? 0 : 16),
+      padding: EdgeInsets.all(widget.wideMode ? 0 : 6),
       child: RefreshIndicator(
         onRefresh: () => ref.read(requestsNotifierProvider.notifier).load(),
         child: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(
-              child: _RequestsHero(
-                userName: currentUser?.name ?? context.l10n.marketplaceUser,
-                browseCount: browseRequests.length,
-                mineCount: myRequests.length,
-                assignedCount: assignedRequests.length,
-              //Unused
-              onCreateRequest: _openCreateRequest,
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 12)),
-            SliverToBoxAdapter(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      context.l10n.requests,
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.w900),
-                    ),
-                  ),
-                  IconButton.filledTonal(
-                    tooltip: context.l10n.refreshRequests,
-                    onPressed: requestState.isLoading
-                        ? null
-                        : () => ref
-                              .read(requestsNotifierProvider.notifier)
-                              .load(),
-                    icon: const Icon(Icons.refresh_rounded),
-                  ),
-                ],
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 8)),
-            SliverToBoxAdapter(
-              child: Text(
-                switch (requestState.segment) {
-                  RequestSegment.browse =>
-                    context.l10n.browseRequestPostsFromOtherSellers,
-                  RequestSegment.mine => context.l10n.seeRequestPostsYouCreated,
-                  RequestSegment.assigned =>
-                    context.l10n.requestsYouCanManageNow,
-                },
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: const Color(0xFF6F6A63),
-                ),
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            // SliverToBoxAdapter(
+            //   child: _RequestsHero(
+            //     userName: currentUser?.name ?? context.l10n.marketplaceUser,
+            //     browseCount: browseRequests.length,
+            //     mineCount: myRequests.length,
+            //     assignedCount: assignedRequests.length,
+            //   //Unused
+            //   onCreateRequest: _openCreateRequest,
+            //   ),
+            // ),
+           // const SliverToBoxAdapter(child: SizedBox(height: 12)),
+            // SliverToBoxAdapter(
+            //   child: Row(
+            //     children: [
+            //       Expanded(
+            //         child: Text(
+            //           context.l10n.requests,
+            //           style: Theme.of(context).textTheme.headlineSmall
+            //               ?.copyWith(fontWeight: FontWeight.w900),
+            //         ),
+            //       ),
+            //       IconButton.filledTonal(
+            //         tooltip: context.l10n.refreshRequests,
+            //         onPressed: requestState.isLoading
+            //             ? null
+            //             : () => ref
+            //                   .read(requestsNotifierProvider.notifier)
+            //                   .load(),
+            //         icon: const Icon(Icons.refresh_rounded),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // const SliverToBoxAdapter(child: SizedBox(height: 8)),
+            // SliverToBoxAdapter(
+            //   child: Text(
+            //     switch (requestState.segment) {
+            //       RequestSegment.browse =>
+            //         context.l10n.browseRequestPostsFromOtherSellers,
+            //       RequestSegment.mine => context.l10n.seeRequestPostsYouCreated,
+            //       RequestSegment.assigned =>
+            //         context.l10n.requestsYouCanManageNow,
+            //     },
+            //     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            //       color: const Color(0xFF6F6A63),
+            //     ),
+            //   ),
+            // ),
+            //const SliverToBoxAdapter(child: SizedBox(height: 16)),
             SliverToBoxAdapter(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
