@@ -54,9 +54,9 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     final currentUser = ref.watch(currentSessionProvider).profile;
     final currentUserId = currentUser?.id;
     final requestStatusesAsync = ref.watch(requestStatusesProvider);
-    final browseRequests = ref.watch(browseRequestsProvider);
-    final myRequests = ref.watch(myRequestsProvider);
-    final assignedRequests = ref.watch(assignedRequestsProvider);
+    // final browseRequests = ref.watch(browseRequestsProvider);
+    // final myRequests = ref.watch(myRequestsProvider);
+    // final assignedRequests = ref.watch(assignedRequestsProvider);
     final activeRequests = ref.watch(activeRequestsProvider);
 
     final listBody = _buildListBody(
