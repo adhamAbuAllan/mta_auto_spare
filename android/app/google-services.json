@@ -9,6 +9,25 @@
       "client_info": {
         "mobilesdk_app_id": "1:8519595296:android:472b458b36d99331985345",
         "android_client_info": {
+          "package_name": "com.mta_auto_spare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCifYudPc1_Xb9DRfNddDCWLZEboKW2AkM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:8519595296:android:8209ed75312eac99985345",
+        "android_client_info": {
           "package_name": "com.mta_spare_auto"
         }
       },
