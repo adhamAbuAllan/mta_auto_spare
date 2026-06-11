@@ -481,7 +481,7 @@ abstract class AppLocalizations {
   /// No description provided for @signInToBrowseSellerRequests.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to browse seller requests and chat.'**
+  /// **'Sign in to browse customer requests and chat.'**
   String get signInToBrowseSellerRequests;
 
   /// No description provided for @somethingWentWrong.
@@ -499,7 +499,7 @@ abstract class AppLocalizations {
   /// No description provided for @suppliersCanPostRequests.
   ///
   /// In en, this message translates to:
-  /// **'Suppliers can post requests and buyers can start chats.'**
+  /// **'Buyers can post requests and suppliers can start chats.'**
   String get suppliersCanPostRequests;
 
   /// No description provided for @theCarCatalogCouldNotBeLoaded.
@@ -1873,7 +1873,7 @@ abstract class AppLocalizations {
   /// No description provided for @createRequestDescription.
   ///
   /// In en, this message translates to:
-  /// **'Create a request that buyers can browse and open chats from.'**
+  /// **'Create a request that suppliers can browse and open chats from.'**
   String get createRequestDescription;
 
   /// No description provided for @requestCreationBlocked.
@@ -1951,7 +1951,7 @@ abstract class AppLocalizations {
   /// No description provided for @carModelDescription.
   ///
   /// In en, this message translates to:
-  /// **'Choose the exact car model this request is for so only matching buyers get notified.'**
+  /// **'Choose the exact car model this request is for so only matching suppliers get notified.'**
   String get carModelDescription;
 
   /// No description provided for @addCarManually.

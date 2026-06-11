@@ -219,7 +219,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get signInToBrowseSellerRequests =>
-      'התחבר כדי לעיין בבקשות ספקים ולשוחח.';
+      'התחבר כדי לעיין בבקשות לקוחות ולשוחח.';
 
   @override
   String get somethingWentWrong => 'משהו השתבש';
@@ -229,7 +229,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get suppliersCanPostRequests =>
-      'ספקים יכולים לפרסם בקשות וקונים יכולים להתחיל שיחות.';
+      'קונים יכולים לפרסם בקשות וספקים יכולים להתחיל שיחות.';
 
   @override
   String get theCarCatalogCouldNotBeLoaded =>
@@ -986,7 +986,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get createRequestDescription =>
-      'צור בקשה שקונים יוכלו לעיין בה ולפתוח ממנה שיחות.';
+      'צור בקשה שספקים יוכלו לעיין בה ולפתוח ממנה שיחות.';
 
   @override
   String get requestCreationBlocked => 'יצירת הבקשה חסומה';
@@ -1031,7 +1031,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get carModelDescription =>
-      'בחר את דגם הרכב המדויק של בקשה זו כדי שרק קונים מתאימים יקבלו התראה.';
+      'בחר את דגם הרכב המדויק של בקשה זו כדי שרק ספקים מתאימים יקבלו התראה.';
 
   @override
   String get addCarManually => 'הוסף רכב ידנית';

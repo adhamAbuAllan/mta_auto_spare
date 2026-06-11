@@ -220,7 +220,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInToBrowseSellerRequests =>
-      'Sign in to browse seller requests and chat.';
+      'Sign in to browse customer requests and chat.';
 
   @override
   String get somethingWentWrong => 'Something went wrong';
@@ -230,7 +230,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get suppliersCanPostRequests =>
-      'Suppliers can post requests and buyers can start chats.';
+      'Buyers can post requests and suppliers can start chats.';
 
   @override
   String get theCarCatalogCouldNotBeLoaded =>
@@ -998,7 +998,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createRequestDescription =>
-      'Create a request that buyers can browse and open chats from.';
+      'Create a request that suppliers can browse and open chats from.';
 
   @override
   String get requestCreationBlocked => 'Request creation is blocked';
@@ -1043,7 +1043,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get carModelDescription =>
-      'Choose the exact car model this request is for so only matching buyers get notified.';
+      'Choose the exact car model this request is for so only matching suppliers get notified.';
 
   @override
   String get addCarManually => 'Add car manually';

@@ -97,7 +97,7 @@ class _AutoSpareAppState extends ConsumerState<AutoSpareApp>
     final materialAppLocale = ref.watch(materialAppLocaleProvider);
     return MaterialApp(
       onGenerateTitle: (context) => context.l10n.appTitle,
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
       locale: materialAppLocale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,

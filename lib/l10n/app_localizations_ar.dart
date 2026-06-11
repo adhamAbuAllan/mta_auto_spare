@@ -218,7 +218,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get signInToBrowseSellerRequests =>
-      'سجّل الدخول لتصفح طلبات البائعين والدردشة.';
+      'سجّل الدخول لتصفح طلبات الزبائن والدردشة.';
 
   @override
   String get somethingWentWrong => 'حدث خطأ ما';
@@ -228,7 +228,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get suppliersCanPostRequests =>
-      'يمكن للمورّدين نشر الطلبات ويمكن للمشترين بدء المحادثات.';
+      'يمكن للمشترين نشر الطلبات ويمكن للمورّدين بدء المحادثات.';
 
   @override
   String get theCarCatalogCouldNotBeLoaded => 'تعذر تحميل دليل السيارات.';
@@ -984,7 +984,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get createRequestDescription =>
-      'أنشئ طلبًا يمكن للمشترين تصفحه وفتح محادثات من خلاله.';
+      'أنشئ طلبًا يمكن للمورّدين تصفحه وفتح محادثات من خلاله.';
 
   @override
   String get requestCreationBlocked => 'إنشاء الطلب محظور';
@@ -1029,7 +1029,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get carModelDescription =>
-      'اختر موديل السيارة الدقيق لهذا الطلب حتى يصل الإشعار فقط للمشترين المناسبين.';
+      'اختر موديل السيارة الدقيق لهذا الطلب حتى يصل الإشعار فقط للمورّدين المناسبين.';
 
   @override
   String get addCarManually => 'إضافة سيارة يدويًا';
