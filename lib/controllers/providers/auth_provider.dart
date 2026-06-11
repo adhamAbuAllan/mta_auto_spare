@@ -15,7 +15,10 @@ import 'notification_provider.dart';
 
 final registerNotifierProvider =
     StateNotifierProvider<RegisterNotifier, AuthState>((ref) {
-      return RegisterNotifier(ref.read(authApiProvider));
+      return RegisterNotifier(
+        authApi: ref.read(authApiProvider),
+        sessionNotifier: ref.read(sessionNotifierProvider.notifier),
+      );
     });
 
 final loginNotifierProvider = StateNotifierProvider<LoginNotifier, AuthState>((
@@ -76,7 +79,7 @@ final sessionBootstrapperProvider = Provider<SessionBootstrapper>((ref) {
   );
 });
 
-final loginUsernameControllerProvider =
+final loginPhoneControllerProvider =
     Provider.autoDispose<TextEditingController>((ref) {
       final controller = TextEditingController();
       ref.onDispose(controller.dispose);
@@ -90,14 +93,7 @@ final loginPasswordControllerProvider =
       return controller;
     });
 
-final registerEmailControllerProvider =
-    Provider.autoDispose<TextEditingController>((ref) {
-      final controller = TextEditingController();
-      ref.onDispose(controller.dispose);
-      return controller;
-    });
-
-final registerUsernameControllerProvider =
+final registerPhoneControllerProvider =
     Provider.autoDispose<TextEditingController>((ref) {
       final controller = TextEditingController();
       ref.onDispose(controller.dispose);

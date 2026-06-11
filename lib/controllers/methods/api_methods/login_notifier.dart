@@ -16,10 +16,7 @@ class LoginNotifier extends StateNotifier<AuthState> {
   final AuthApi _authApi;
   final SessionNotifier _sessionNotifier;
 
-  Future<void> login({
-    required String username,
-    required String password,
-  }) async {
+  Future<void> login({required String phone, required String password}) async {
     state = state.copyWith(
       isLoading: true,
       errorMessage: null,
@@ -27,10 +24,7 @@ class LoginNotifier extends StateNotifier<AuthState> {
     );
 
     try {
-      final tokens = await _authApi.login(
-        username: username,
-        password: password,
-      );
+      final tokens = await _authApi.login(phone: phone, password: password);
       await _sessionNotifier.saveTokens(tokens);
 
       final profile = await _authApi.getProfile();

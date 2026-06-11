@@ -3,13 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/providers/auth_provider.dart';
 import '../../controllers/providers/catalog_provider.dart';
-import '../../controllers/statuses/auth_state.dart';
 import '../../localization/app_localizations_x.dart';
 import '../../localization/language_selector.dart';
 import '../../models/models.dart';
+import '../../utils/phone_number.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/async_error_message.dart';
 import '../common_widgets/privacy_policy_link.dart';
+import 'phone_otp_page.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -34,28 +35,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AuthState>(registerNotifierProvider, (previous, next) {
-      final justRegistered =
-          next.registeredUser != null &&
-          previous?.registeredUser?.id != next.registeredUser?.id;
-      if (!justRegistered) {
-        return;
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            context.l10n.accountCreatedFor(next.registeredUser!.username),
-          ),
-        ),
-      );
-      ref.read(registerNotifierProvider.notifier).reset();
-      Navigator.of(context).pop();
-    });
-
-    final registerState = ref.watch(registerNotifierProvider);
-    final emailController = ref.watch(registerEmailControllerProvider);
-    final usernameController = ref.watch(registerUsernameControllerProvider);
+    final phoneController = ref.watch(registerPhoneControllerProvider);
     final nameController = ref.watch(registerNameControllerProvider);
     final passwordController = ref.watch(registerPasswordControllerProvider);
     final carCatalog = ref.watch(carCatalogProvider);
@@ -220,12 +200,15 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 onPressed: _selectedCarMakeId == null
                                     ? null
                                     : () {
-                                        final selectedMakeId = _selectedCarMakeId;
+                                        final selectedMakeId =
+                                            _selectedCarMakeId;
                                         if (selectedMakeId == null) {
                                           return;
                                         }
                                         setState(() {
-                                          _selectedCarMakeIds.add(selectedMakeId);
+                                          _selectedCarMakeIds.add(
+                                            selectedMakeId,
+                                          );
                                           _selectedCarMakeId = null;
                                         });
                                       },
@@ -235,10 +218,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                             ],
                           ),
                         ),
-                          if (selectableMakes.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 12),
-                              child: Text(
+                        if (selectableMakes.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Text(
                               context.l10n.allAvailableCarNamesAlreadySelected,
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(color: const Color(0xFF6F6A63)),
@@ -263,37 +246,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     ),
                     const SizedBox(height: 14),
                     TextFormField(
-                      controller: emailController,
+                      controller: phoneController,
                       textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.emailAddress,
+                      keyboardType: TextInputType.phone,
+                      autofillHints: const [AutofillHints.telephoneNumber],
                       decoration: InputDecoration(
-                        labelText: context.l10n.email,
-                        hintText: context.l10n.emailHint,
+                        labelText: context.l10n.phone,
+                        hintText: authPhoneHintText,
                       ),
                       validator: (value) {
-                        final email = value?.trim() ?? '';
-                        if (email.isEmpty) {
-                          return context.l10n.enterYourEmail;
-                        }
-                        if (!email.contains('@')) {
-                          return context.l10n.enterAValidEmailAddress;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 14),
-                    TextFormField(
-                      controller: usernameController,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.username,
-                        hintText: context.l10n.registerUsernameHint,
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return context.l10n.chooseAUsername;
-                        }
-                        return null;
+                        return authPhoneInputError(value ?? '');
                       },
                     ),
                     const SizedBox(height: 14),
@@ -314,21 +276,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         return null;
                       },
                     ),
-                    if (registerState.hasError) ...[
-                      const SizedBox(height: 16),
-                      AppErrorCard(message: registerState.errorMessage!),
-                    ],
                     const SizedBox(height: 22),
                     Row(
                       children: [
                         Expanded(
                           child: FilledButton(
-                            onPressed: registerState.isLoading ? null : _submit,
-                            child: Text(
-                              registerState.isLoading
-                                  ? context.l10n.creating
-                                  : context.l10n.createAccount,
-                            ),
+                            onPressed: _submit,
+                            child: Text(context.l10n.createAccount),
                           ),
                         ),
                       ],
@@ -350,22 +304,26 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       return;
     }
 
-    ref
-        .read(registerNotifierProvider.notifier)
-        .register(
-          email: ref.read(registerEmailControllerProvider).text.trim(),
-          username: ref.read(registerUsernameControllerProvider).text.trim(),
-          name: ref.read(registerNameControllerProvider).text.trim(),
-          password: ref.read(registerPasswordControllerProvider).text,
-          role: _selectedRole,
-          supportedCarModelIds: _selectedRole == 'supplier'
-              ? _resolveSelectedCarModelIdsFromMakes(
-                  catalog:
-                      ref.read(carCatalogProvider).valueOrNull ??
-                      const <CarMakeOption>[],
-                )
-              : null,
-        );
+    final phone = normalizePhoneForAuth(
+      ref.read(registerPhoneControllerProvider).text,
+    );
+    final draft = PhoneRegistrationDraft(
+      phone: phone,
+      name: ref.read(registerNameControllerProvider).text.trim(),
+      password: ref.read(registerPasswordControllerProvider).text,
+      role: _selectedRole,
+      supportedCarModelIds: _selectedRole == 'supplier'
+          ? _resolveSelectedCarModelIdsFromMakes(
+              catalog:
+                  ref.read(carCatalogProvider).valueOrNull ??
+                  const <CarMakeOption>[],
+            )
+          : null,
+    );
+
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => PhoneOtpPage(draft: draft)));
   }
 
   CarMakeOption? _findMakeById(List<CarMakeOption> makes, int makeId) {

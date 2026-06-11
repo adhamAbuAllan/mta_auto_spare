@@ -87,9 +87,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
 
             final isSupplier = profile.role.trim().toLowerCase() == 'supplier';
             final supportedCarMakes = _supportedCarMakes(profile);
-            final hasContactDetails =
-                profile.email?.trim().isNotEmpty == true ||
-                profile.phone?.trim().isNotEmpty == true;
+            final hasContactDetails = profile.phone?.trim().isNotEmpty == true;
 
             return RefreshIndicator(
               onRefresh: _refreshProfile,
@@ -268,16 +266,6 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                         ?.copyWith(fontWeight: FontWeight.w900),
                                   ),
                                   const SizedBox(height: 14),
-                                  if (profile.email?.trim().isNotEmpty == true)
-                                    _ProfileInfoRow(
-                                      icon: Icons.email_outlined,
-                                      title: context.l10n.email,
-                                      value: profile.email!.trim(),
-                                    ),
-                                  if (profile.email?.trim().isNotEmpty ==
-                                          true &&
-                                      profile.phone?.trim().isNotEmpty == true)
-                                    const SizedBox(height: 12),
                                   if (profile.phone?.trim().isNotEmpty == true)
                                     _ProfileInfoRow(
                                       icon: Icons.phone_outlined,
@@ -472,7 +460,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
 
     setState(() => _isSubmittingReport = true);
     try {
-      await ref.read(userApiProvider).createUserReport(
+      await ref
+          .read(userApiProvider)
+          .createUserReport(
             reportedUserId: profile.id,
             reason: draft.reason,
             details: draft.details,
@@ -498,9 +488,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     }
   }
 
-  Future<_UserReportDraft?> _showReportDialog(
-    PublicUserProfile profile,
-  ) async {
+  Future<_UserReportDraft?> _showReportDialog(PublicUserProfile profile) async {
     final detailsController = TextEditingController();
     final reasons = _reportReasonOptions(context);
     var selectedReason = reasons.first.value;
@@ -676,9 +664,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
         scheme: 'https',
         host: 'wa.me',
         path: '/$normalizedPhone',
-        queryParameters: {
-          'text': context.l10n.whatsAppGreeting(profile.name),
-        },
+        queryParameters: {'text': context.l10n.whatsAppGreeting(profile.name)},
       );
       final didLaunch = await launchUrl(
         uri,
@@ -740,10 +726,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
 }
 
 class _UserReportDraft {
-  const _UserReportDraft({
-    required this.reason,
-    required this.details,
-  });
+  const _UserReportDraft({required this.reason, required this.details});
 
   final String reason;
   final String details;

@@ -49,9 +49,7 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
         body: SafeArea(
           child: ListView(
             padding: const EdgeInsets.all(20),
-            children: [
-              AppErrorCard(message: context.l10n.adminAccessRequired),
-            ],
+            children: [AppErrorCard(message: context.l10n.adminAccessRequired)],
           ),
         ),
       );
@@ -63,7 +61,7 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
         appBar: AppBar(
           title: Text(context.l10n.adminPanel),
           bottom: TabBar(
-            unselectedLabelColor:Colors.grey,
+            unselectedLabelColor: Colors.grey,
             labelColor: Colors.white,
             tabs: [
               Tab(text: context.l10n.adminUsersTab),
@@ -81,10 +79,7 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
         body: Container(
           color: const Color(0xFFF6F0E8),
           child: TabBarView(
-            children: [
-              _buildUsersTab(context),
-              _buildReportsTab(context),
-            ],
+            children: [_buildUsersTab(context), _buildReportsTab(context)],
           ),
         ),
       ),
@@ -104,10 +99,7 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
           padding: const EdgeInsets.all(20),
           children: [
             const SizedBox(height: 80),
-            AppErrorCard(
-              message: _usersError!,
-              onRetry: _refreshUsers,
-            ),
+            AppErrorCard(message: _usersError!, onRetry: _refreshUsers),
           ],
         ),
       );
@@ -124,7 +116,8 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
               user: user,
               isBusy: _isUpdatingUser,
               isCurrentUser:
-                  (ref.read(currentSessionProvider).profile?.id ?? 0) == user.id,
+                  (ref.read(currentSessionProvider).profile?.id ?? 0) ==
+                  user.id,
               roleLabel: _roleLabel(context, user),
               statusLabel: _userStatusLabel(context, user),
               onBlockToggle: () => _handleUserBlockToggle(user),
@@ -166,10 +159,7 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
           padding: const EdgeInsets.all(20),
           children: [
             const SizedBox(height: 80),
-            AppErrorCard(
-              message: _reportsError!,
-              onRetry: _refreshReports,
-            ),
+            AppErrorCard(message: _reportsError!, onRetry: _refreshReports),
           ],
         ),
       );
@@ -185,9 +175,9 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
             AppPanel(
               child: Text(
                 context.l10n.noUserReportsYet,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: const Color(0xFF6F6A63),
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: const Color(0xFF6F6A63)),
               ),
             )
           else
@@ -257,9 +247,9 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
     });
 
     try {
-      final page = await ref.read(userApiProvider).getUsers(
-            pageUrl: reset ? null : _usersNextPage,
-          );
+      final page = await ref
+          .read(userApiProvider)
+          .getUsers(pageUrl: reset ? null : _usersNextPage);
       if (!mounted) {
         return;
       }
@@ -302,9 +292,9 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
     });
 
     try {
-      final page = await ref.read(userApiProvider).getUserReports(
-            pageUrl: reset ? null : _reportsNextPage,
-          );
+      final page = await ref
+          .read(userApiProvider)
+          .getUserReports(pageUrl: reset ? null : _reportsNextPage);
       if (!mounted) {
         return;
       }
@@ -376,18 +366,15 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
       if (isBlocked) {
         await ref.read(userApiProvider).unblockUser(user.id ?? 0);
       } else {
-        await ref.read(userApiProvider).blockUser(
-              userId: user.id ?? 0,
-              reason: reason,
-            );
+        await ref
+            .read(userApiProvider)
+            .blockUser(userId: user.id ?? 0, reason: reason);
       }
       if (!mounted) {
         return;
       }
       _showSnackBar(
-        isBlocked
-            ? context.l10n.userUnblocked
-            : context.l10n.userBlocked,
+        isBlocked ? context.l10n.userUnblocked : context.l10n.userBlocked,
       );
       await _refreshUsers();
       await _refreshReports();
@@ -459,7 +446,9 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
 
     setState(() => _isUpdatingReport = true);
     try {
-      await ref.read(userApiProvider).reviewUserReport(
+      await ref
+          .read(userApiProvider)
+          .reviewUserReport(
             reportId: report.id,
             status: reviewDraft.status,
             adminNotes: reviewDraft.notes,
@@ -473,9 +462,7 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
       if (!mounted) {
         return;
       }
-      _showSnackBar(
-        _errorMessage(error, context.l10n.couldNotUpdateReport),
-      );
+      _showSnackBar(_errorMessage(error, context.l10n.couldNotUpdateReport));
     } finally {
       if (mounted) {
         setState(() => _isUpdatingReport = false);
@@ -604,9 +591,9 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
@@ -650,7 +637,9 @@ class _AdminUserCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      user.email,
+                      (user.phone ?? '').trim().isNotEmpty
+                          ? user.phone!.trim()
+                          : '#${user.id ?? '-'}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: const Color(0xFF6F6A63),
                       ),
@@ -747,8 +736,7 @@ class _AdminReportCard extends StatelessWidget {
         report.reportedUserDetails?.name.trim().isNotEmpty == true
         ? report.reportedUserDetails!.name.trim()
         : '#${report.reportedUser}';
-    final reporterName =
-        report.reporterDetails?.name.trim().isNotEmpty == true
+    final reporterName = report.reporterDetails?.name.trim().isNotEmpty == true
         ? report.reporterDetails!.name.trim()
         : '#${report.reporter}';
 
@@ -786,9 +774,9 @@ class _AdminReportCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             report.reason,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           if (report.details.trim().isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -802,9 +790,9 @@ class _AdminReportCard extends StatelessWidget {
             context.l10n.reportCreatedAt(
               formatRelativeTime(report.createdAt, context.l10n),
             ),
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: const Color(0xFF6F6A63),
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: const Color(0xFF6F6A63)),
           ),
           if (report.reviewedAt != null) ...[
             const SizedBox(height: 6),
@@ -812,9 +800,9 @@ class _AdminReportCard extends StatelessWidget {
               context.l10n.reportReviewedAt(
                 formatRelativeTime(report.reviewedAt, context.l10n),
               ),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: const Color(0xFF6F6A63),
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: const Color(0xFF6F6A63)),
             ),
           ],
           if (report.adminNotes.trim().isNotEmpty) ...[
@@ -867,10 +855,7 @@ class _AdminChip extends StatelessWidget {
 }
 
 class _ReportReviewDraft {
-  const _ReportReviewDraft({
-    required this.status,
-    required this.notes,
-  });
+  const _ReportReviewDraft({required this.status, required this.notes});
 
   final String status;
   final String notes;

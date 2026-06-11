@@ -79,9 +79,8 @@ void main() {
 
   test('ApiUser toJson omits optional null fields', () {
     const user = ApiUser(
-      email: 'new@example.com',
-      username: 'new_user',
       name: 'New User',
+      phone: '+966555000111',
       role: 'user',
       password: 'secret123',
     );
@@ -89,13 +88,13 @@ void main() {
     final json = user.toJson();
 
     expect(json, {
-      'email': 'new@example.com',
-      'username': 'new_user',
       'name': 'New User',
+      'phone': '+966555000111',
       'role': 'user',
+      'is_active': true,
+      'is_admin': false,
       'password': 'secret123',
     });
-    expect(json.containsKey('phone'), isFalse);
     expect(json.containsKey('city'), isFalse);
     expect(json.containsKey('avatar'), isFalse);
   });

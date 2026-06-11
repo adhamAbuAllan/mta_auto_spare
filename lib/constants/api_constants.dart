@@ -118,6 +118,7 @@ abstract final class ApiEndpoints {
   static const String appUpdate = '/api/app-update/';
   static const String login = '/api/token/';
   static const String refresh = '/api/token/refresh/';
+  static const String register = '/api/register/';
   static const String me = '/api/me/';
   static const String mobileDevices = '/api/mobile-devices/';
   static const String users = '/api/users/';

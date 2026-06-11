@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'controllers/providers/auth_provider.dart';
 import 'controllers/providers/notification_provider.dart';
+import 'firebase/firebase_bootstrap.dart';
 import 'localization/app_locale.dart';
 import 'localization/app_locale_notifier.dart';
 import 'localization/app_localizations_x.dart';
@@ -22,16 +22,14 @@ import 'view/common_widgets/app_update_gate.dart';
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp();
-  }
+  await ensureFirebaseInitialized();
   await showChatNotificationFromFirebaseMessage(message);
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-    await Firebase.initializeApp();
+  final firebaseReady = await ensureFirebaseInitialized();
+  if (firebaseReady && !kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   }
   final preferences = await SharedPreferences.getInstance();

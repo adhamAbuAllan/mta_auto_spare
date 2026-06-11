@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/providers/auth_provider.dart';
 import '../../localization/app_localizations_x.dart';
 import '../../localization/language_selector.dart';
+import '../../utils/phone_number.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/privacy_policy_link.dart';
 import 'register_page.dart';
@@ -21,7 +22,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final loginState = ref.watch(loginNotifierProvider);
-    final usernameController = ref.watch(loginUsernameControllerProvider);
+    final phoneController = ref.watch(loginPhoneControllerProvider);
     final passwordController = ref.watch(loginPasswordControllerProvider);
     final isPasswordObscure = ref.watch(isPasswordObscureProvider);
 
@@ -85,17 +86,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           // ),
                           // const SizedBox(height: 20),
                           TextFormField(
-                            controller: usernameController,
+                            controller: phoneController,
+                            keyboardType: TextInputType.phone,
+                            autofillHints: const [
+                              AutofillHints.telephoneNumber,
+                            ],
                             textInputAction: TextInputAction.next,
                             decoration: InputDecoration(
-                              labelText: context.l10n.username,
-                              hintText: context.l10n.usernameHint,
+                              labelText: context.l10n.phone,
+                              hintText: authPhoneHintText,
                             ),
                             validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return context.l10n.enterUsername;
-                              }
-                              return null;
+                              return authPhoneInputError(value ?? '');
                             },
                           ),
                           const SizedBox(height: 14),
@@ -122,7 +124,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               ),
                             ),
                             onFieldSubmitted: (_) => _submit(
-                              username: usernameController.text,
+                              phone: phoneController.text,
                               password: passwordController.text,
                             ),
                             validator: (value) {
@@ -143,7 +145,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               onPressed: loginState.isLoading
                                   ? null
                                   : () => _submit(
-                                      username: usernameController.text,
+                                      phone: phoneController.text,
                                       password: passwordController.text,
                                     ),
                               child: Text(
@@ -181,51 +183,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     );
   }
 
-  void _submit({required String username, required String password}) {
+  void _submit({required String phone, required String password}) {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
     ref
         .read(loginNotifierProvider.notifier)
-        .login(username: username.trim(), password: password);
-  }
-}
-
-class _InfoBanner extends StatelessWidget {
-  const _InfoBanner({required this.title, required this.message});
-
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF2F8F7),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFD5E8E4)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: Theme.of(
-              context,
-            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            message,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: const Color(0xFF6F6A63)),
-          ),
-        ],
-      ),
-    );
+        .login(phone: normalizePhoneForAuth(phone), password: password);
   }
 }

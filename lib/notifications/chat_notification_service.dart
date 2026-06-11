@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -11,6 +10,7 @@ import 'package:uuid/uuid.dart';
 
 import '../api/user_api.dart';
 import '../constants/api_constants.dart';
+import '../firebase/firebase_bootstrap.dart';
 import '../localization/notification_strings.dart';
 import '../models/models.dart';
 import '../session/session_state.dart';
@@ -211,17 +211,7 @@ class FirebasePushMessagingClient implements PushMessagingClient {
 
   @override
   Future<void> initialize() async {
-    try {
-      if (Firebase.apps.isEmpty) {
-        await Firebase.initializeApp();
-      }
-    } catch (error) {
-      throw StateError(
-        'Firebase is not configured for this app yet. Add a real '
-        'android/app/google-services.json file or configure Firebase with '
-        'FlutterFire before testing notifications. Original error: $error',
-      );
-    }
+    await ensureFirebaseInitialized(throwOnError: true);
 
     await _resolvedMessaging.setAutoInitEnabled(true);
   }

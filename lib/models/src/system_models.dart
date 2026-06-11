@@ -1,4 +1,5 @@
 import 'json_utils.dart';
+import 'user_models.dart';
 
 class HealthStatus {
   const HealthStatus({required this.status});
@@ -128,5 +129,21 @@ class AuthTokenPair {
 
   JsonMap toJson() {
     return {'refresh': refresh, 'access': access};
+  }
+}
+
+class AuthenticatedSession {
+  const AuthenticatedSession({required this.tokens, required this.profile});
+
+  final AuthTokenPair tokens;
+  final MeProfile profile;
+
+  factory AuthenticatedSession.fromJson(JsonMap json) {
+    return AuthenticatedSession(
+      tokens: AuthTokenPair.fromJson(json),
+      profile: MeProfile.fromJson(
+        Map<String, dynamic>.from(json['user'] as Map? ?? const {}),
+      ),
+    );
   }
 }

@@ -12,13 +12,14 @@ class AuthApi {
   final Dio _dio;
 
   Future<AuthTokenPair> login({
-    required String username,
+    required String phone,
     required String password,
   }) async {
     try {
       final response = await _dio.post(
         ApiEndpoints.login,
-        data: {'username': username, 'password': password},
+        data: {'phone': phone, 'password': password},
+        options: Options(extra: {'skipAuth': true, 'skipRefresh': true}),
       );
       return AuthTokenPair.fromJson(_asMap(response.data));
     } on DioException catch (error) {
@@ -45,10 +46,36 @@ class AuthApi {
     }
   }
 
-  Future<ApiUser> register(ApiUser user) async {
+  Future<AuthenticatedSession> registerVerifiedPhone({
+    required String firebaseIdToken,
+    required String phone,
+    required String password,
+    required String name,
+    required String role,
+    String? city,
+    List<int>? supportedCarModelIds,
+  }) async {
     try {
-      final response = await _dio.post(ApiEndpoints.users, data: user.toJson());
-      return ApiUser.fromJson(_asMap(response.data));
+      final payload = <String, dynamic>{
+        'firebase_id_token': firebaseIdToken,
+        'phone': phone.trim(),
+        'password': password,
+        'name': name.trim(),
+        'role': role,
+      };
+      final normalizedCity = city?.trim() ?? '';
+      if (normalizedCity.isNotEmpty) {
+        payload['city'] = normalizedCity;
+      }
+      if (supportedCarModelIds != null) {
+        payload['supported_car_model_ids'] = supportedCarModelIds;
+      }
+      final response = await _dio.post(
+        ApiEndpoints.register,
+        data: payload,
+        options: Options(extra: {'skipAuth': true, 'skipRefresh': true}),
+      );
+      return AuthenticatedSession.fromJson(_asMap(response.data));
     } on DioException catch (error) {
       throw ApiException.fromDioException(error);
     }

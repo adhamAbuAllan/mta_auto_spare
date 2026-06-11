@@ -4,8 +4,8 @@ import 'car_catalog_models.dart';
 class ApiUser {
   const ApiUser({
     this.id,
-    required this.email,
-    required this.username,
+    this.email = '',
+    this.username = '',
     required this.name,
     this.avatar,
     this.phone,
@@ -59,19 +59,14 @@ class ApiUser {
   }
 
   JsonMap toJson() {
-    final json = <String, dynamic>{
-      'email': email,
-      'username': username,
-      'name': name,
-      'role': role,
-    };
+    final json = <String, dynamic>{'name': name, 'role': role};
     if (id != null) {
       json['id'] = id;
     }
     if (avatar != null && avatar!.isNotEmpty) {
       json['avatar'] = avatar;
     }
-    if (phone != null) {
+    if (phone != null && phone!.isNotEmpty) {
       json['phone'] = phone;
     }
     if (city != null) {
@@ -235,8 +230,8 @@ class PublicUserProfile {
 class MeProfile {
   const MeProfile({
     required this.id,
-    required this.email,
-    required this.username,
+    this.email = '',
+    this.username = '',
     required this.name,
     this.avatar,
     this.phone,

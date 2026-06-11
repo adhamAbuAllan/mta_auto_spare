@@ -11,6 +11,7 @@ import '../../controllers/providers/auth_provider.dart';
 import '../../controllers/providers/catalog_provider.dart';
 import '../../localization/app_localizations_x.dart';
 import '../../models/models.dart';
+import '../../utils/phone_number.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/app_panel.dart';
 import '../common_widgets/async_error_message.dart';
@@ -160,8 +161,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
                           labelText: context.l10n.phone,
-                          hintText: '+201000000000',
+                          hintText: authPhoneHintText,
                         ),
+                        validator: (value) {
+                          return authPhoneInputError(value ?? '');
+                        },
                       ),
                       const SizedBox(height: 14),
                       TextFormField(
@@ -354,7 +358,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         .read(updateProfileNotifierProvider.notifier)
         .update(
           name: _nameController.text,
-          phone: _phoneController.text,
+          phone: normalizePhoneForAuth(_phoneController.text),
           city: _cityController.text,
           chatPushEnabled: _chatPushEnabled,
           chatMessagePreviewEnabled: _chatMessagePreviewEnabled,
@@ -542,11 +546,7 @@ class _ReadOnlyProfileMeta extends StatelessWidget {
         spacing: 10,
         runSpacing: 10,
         children: [
-          _MetaPill(icon: Icons.email_outlined, label: profile.email),
-          _MetaPill(
-            icon: Icons.alternate_email_rounded,
-            label: profile.username,
-          ),
+          _MetaPill(icon: Icons.phone_outlined, label: profile.phone ?? ''),
           _MetaPill(icon: Icons.badge_outlined, label: profile.role),
         ],
       ),
