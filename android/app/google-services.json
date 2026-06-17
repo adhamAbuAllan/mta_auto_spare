@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "8519595296",
+    "project_id": "mta-auto-spare",
+    "storage_bucket": "mta-auto-spare.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:8519595296:android:8209ed75312eac99985345",
+        "android_client_info": {
+          "package_name": "com.mta_spare_auto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "8519595296-gof38q8bbcfigthrveq6psfo5cd1cgo2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mta_spare_auto",
+            "certificate_hash": "1a9147363dbf336096507d8934f7a3579718e121"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCifYudPc1_Xb9DRfNddDCWLZEboKW2AkM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
