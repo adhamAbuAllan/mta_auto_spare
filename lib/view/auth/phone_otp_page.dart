@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../controllers/providers/auth_provider.dart';
 import '../../firebase/firebase_bootstrap.dart';
@@ -198,6 +201,7 @@ class _PhoneOtpPageState extends ConsumerState<PhoneOtpPage> {
           if (!mounted) {
             return;
           }
+          unawaited(_logPhoneVerificationError(error));
           setState(() {
             _isSending = false;
             _localError = _phoneVerificationErrorMessage(error);
@@ -229,10 +233,11 @@ class _PhoneOtpPageState extends ConsumerState<PhoneOtpPage> {
           });
         },
       );
-    } catch (error) {
+    } catch (error, stackTrace) {
       if (!mounted) {
         return;
       }
+      unawaited(_logPhoneVerificationError(error, stackTrace: stackTrace));
       setState(() {
         _isSending = false;
         _localError = _phoneVerificationErrorMessage(error);
@@ -333,6 +338,9 @@ class _PhoneOtpPageState extends ConsumerState<PhoneOtpPage> {
       if (code == 'too-many-requests' || code == 'quota-exceeded') {
         return 'Too many SMS attempts. Wait before requesting another code.';
       }
+      if (code == 'unknown' && searchable.contains('error code:39')) {
+        return 'SMS delivery is temporarily unavailable for this carrier. Try again later or contact support.';
+      }
       if (code == 'invalid-verification-code') {
         return 'The SMS code is incorrect.';
       }
@@ -340,12 +348,117 @@ class _PhoneOtpPageState extends ConsumerState<PhoneOtpPage> {
         return 'The SMS code expired. Request a new code.';
       }
       if (message.isNotEmpty) {
-        return message;
+        return 'Firebase phone verification failed ($code): $message';
       }
     }
 
     final fallback = error.toString().trim();
     return fallback.isEmpty ? 'Phone verification failed.' : fallback;
+  }
+
+  Future<void> _logPhoneVerificationError(
+    Object error, {
+    StackTrace? stackTrace,
+  }) async {
+    final buffer = StringBuffer()
+      ..writeln('--- Firebase phone verification diagnostic ---')
+      ..writeln('timestamp: ${DateTime.now().toIso8601String()}')
+      ..writeln('phoneRegion: ${_phoneRegionLabel(widget.draft.phone)}')
+      ..writeln('phoneMasked: ${_maskPhone(widget.draft.phone)}');
+
+    try {
+      final app = Firebase.app();
+      final options = app.options;
+      buffer
+        ..writeln('firebaseAppName: ${app.name}')
+        ..writeln('firebaseProjectId: ${options.projectId}')
+        ..writeln('firebaseAppId: ${options.appId}')
+        ..writeln('firebaseMessagingSenderId: ${options.messagingSenderId}')
+        ..writeln('firebaseApiKeyPrefix: ${_apiKeyPrefix(options.apiKey)}');
+    } catch (firebaseAppError) {
+      buffer.writeln('firebaseAppInfoError: $firebaseAppError');
+    }
+
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      buffer
+        ..writeln('packageName: ${packageInfo.packageName}')
+        ..writeln(
+          'appVersion: ${packageInfo.version}+${packageInfo.buildNumber}',
+        );
+    } catch (packageError) {
+      buffer.writeln('packageInfoError: $packageError');
+    }
+
+    if (error is FirebaseAuthException) {
+      buffer
+        ..writeln('exceptionType: FirebaseAuthException')
+        ..writeln('code: ${error.code}')
+        ..writeln('message: ${error.message}')
+        ..writeln('email: ${error.email}')
+        ..writeln('phoneFromFirebase: ${error.phoneNumber}')
+        ..writeln('credential: ${error.credential}');
+
+      final searchable = '${error.code} ${error.message}'.toLowerCase();
+      if (searchable.contains('error code:39')) {
+        buffer.writeln(
+          'diagnosis: Firebase returned only Error code:39 to the app. '
+          'Firebase Support indicated this can happen when Firebase blocks '
+          'low-success SMS carriers or regions. Check reCAPTCHA SMS Defense, '
+          'SMS region policy, Firebase Auth SMS logs/metrics, App Check, '
+          'API key restrictions, and carrier delivery.',
+        );
+      }
+    } else if (error is FirebaseException) {
+      buffer
+        ..writeln('exceptionType: FirebaseException')
+        ..writeln('plugin: ${error.plugin}')
+        ..writeln('code: ${error.code}')
+        ..writeln('message: ${error.message}');
+    } else if (error is PlatformException) {
+      buffer
+        ..writeln('exceptionType: PlatformException')
+        ..writeln('code: ${error.code}')
+        ..writeln('message: ${error.message}')
+        ..writeln('details: ${error.details}');
+    } else {
+      buffer
+        ..writeln('exceptionType: ${error.runtimeType}')
+        ..writeln('error: $error');
+    }
+
+    if (stackTrace != null) {
+      buffer.writeln('stackTrace: $stackTrace');
+    }
+    buffer.writeln('--- end Firebase phone verification diagnostic ---');
+
+    debugPrint(buffer.toString(), wrapWidth: 1024);
+  }
+
+  String _phoneRegionLabel(String phone) {
+    final normalized = phone.replaceAll(RegExp(r'\s+'), '');
+    if (normalized.startsWith('+970')) {
+      return 'PS (+970)';
+    }
+    if (normalized.startsWith('+972')) {
+      return 'IL (+972)';
+    }
+    return 'unknown';
+  }
+
+  String _maskPhone(String phone) {
+    final normalized = phone.replaceAll(RegExp(r'\s+'), '');
+    if (normalized.length <= 5) {
+      return normalized;
+    }
+    return '${normalized.substring(0, 4)}***${normalized.substring(normalized.length - 2)}';
+  }
+
+  String _apiKeyPrefix(String apiKey) {
+    if (apiKey.length <= 8) {
+      return apiKey;
+    }
+    return '${apiKey.substring(0, 8)}...';
   }
 
   void _startResendCountdown() {
