@@ -538,7 +538,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get openChatWithSellerBehindRequest =>
-      'افتح محادثة مع البائع صاحب هذا الطلب.';
+      'افتح محادثة مع صاحب هذا الطلب.';
 
   @override
   String get requestsYouCanManageNow => 'الطلبات التي يمكنك إدارتها الآن.';

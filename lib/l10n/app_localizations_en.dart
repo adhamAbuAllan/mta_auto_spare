@@ -542,7 +542,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openChatWithSellerBehindRequest =>
-      'Open a chat with the seller behind this request.';
+      'Open a chat with the owner of this request.';
 
   @override
   String get requestsYouCanManageNow => 'Requests you can manage right now.';

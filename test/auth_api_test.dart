@@ -94,6 +94,38 @@ void main() {
   );
 
   test(
+    'resetPasswordWithVerifiedPhone posts Firebase token and new password',
+    () async {
+      final dio = Dio();
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) {
+            expect(options.path, ApiEndpoints.passwordReset);
+            expect(options.data, {
+              'firebase_id_token': 'firebase-token',
+              'phone': '+966555000111',
+              'password': 'NewStrongPass123!',
+            });
+            handler.resolve(
+              Response<Map<String, dynamic>>(
+                requestOptions: options,
+                data: {'detail': 'Password updated successfully.'},
+              ),
+            );
+          },
+        ),
+      );
+
+      final authApi = AuthApi(dio);
+      await authApi.resetPasswordWithVerifiedPhone(
+        firebaseIdToken: 'firebase-token',
+        phone: '+966555000111',
+        password: 'NewStrongPass123!',
+      );
+    },
+  );
+
+  test(
     'refresh keeps the old refresh token when backend only returns access',
     () async {
       final dio = Dio();

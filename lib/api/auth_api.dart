@@ -81,6 +81,26 @@ class AuthApi {
     }
   }
 
+  Future<void> resetPasswordWithVerifiedPhone({
+    required String firebaseIdToken,
+    required String phone,
+    required String password,
+  }) async {
+    try {
+      await _dio.post(
+        ApiEndpoints.passwordReset,
+        data: {
+          'firebase_id_token': firebaseIdToken,
+          'phone': phone.trim(),
+          'password': password,
+        },
+        options: Options(extra: {'skipAuth': true, 'skipRefresh': true}),
+      );
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
   Future<MeProfile> getProfile() async {
     try {
       final response = await _dio.get(ApiEndpoints.me);

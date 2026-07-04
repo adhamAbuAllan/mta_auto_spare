@@ -267,7 +267,7 @@
   "allStatuses": "All Statuses",
   "cityNotSet": "City not set",
   "thisRequestBelongsToYou": "This request belongs to you.",
-  "openChatWithSellerBehindRequest": "Open a chat with the seller behind this request.",
+  "openChatWithSellerBehindRequest": "Open a chat with the owner of this request.",
   "requestsYouCanManageNow": "Requests you can manage right now.",
   "noAssignedRequestsYet": "No assigned requests yet",
   "noAssignedRequestsYetMessage": "Once an owner approves your access, the request will appear here.",

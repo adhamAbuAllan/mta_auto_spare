@@ -7,6 +7,7 @@ import '../../localization/language_selector.dart';
 import '../../utils/phone_number.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/privacy_policy_link.dart';
+import 'password_reset_page.dart';
 import 'register_page.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -156,6 +157,25 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                           ),
                           const SizedBox(height: 12),
+                          Center(
+                            child: TextButton(
+                              onPressed: loginState.isLoading
+                                  ? null
+                                  : () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute<void>(
+                                          builder: (_) => PasswordResetPage(
+                                            initialPhone: normalizePhoneForAuth(
+                                              phoneController.text,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                              child: const Text('Forgot password?'),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
                           Center(
                             child: TextButton(
                               onPressed: () {

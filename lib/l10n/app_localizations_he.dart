@@ -540,8 +540,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get thisRequestBelongsToYou => 'הבקשה הזו שייכת לך.';
 
   @override
-  String get openChatWithSellerBehindRequest =>
-      'פתח שיחה עם המוכר שמאחורי הבקשה הזו.';
+  String get openChatWithSellerBehindRequest => 'פתח שיחה עם בעל הבקשה הזו.';
 
   @override
   String get requestsYouCanManageNow => 'בקשות שאתה יכול לנהל כרגע.';

@@ -466,7 +466,7 @@ class _RequestPostContent extends StatelessWidget {
           const SizedBox(height: 20),
           Text(
             canChat
-                ? 'Open a chat with the seller behind this request.'
+                ? context.l10n.openChatWithSellerBehindRequest
                 : canChangeStatus
                 ? context.l10n.youCanManageThisRequestStatus
                 : context.l10n.thisRequestBelongsToYou,
@@ -505,9 +505,7 @@ class _RequestPostContent extends StatelessWidget {
                       : Icons.chat_bubble_outline_rounded,
                 ),
                 label: Text(
-                  isChatLoading
-                      ? context.l10n.opening
-                      : context.l10n.chat,
+                  isChatLoading ? context.l10n.opening : context.l10n.chat,
                 ),
               ),
             ),

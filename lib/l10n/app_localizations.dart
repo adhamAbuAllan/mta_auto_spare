@@ -1069,7 +1069,7 @@ abstract class AppLocalizations {
   /// No description provided for @openChatWithSellerBehindRequest.
   ///
   /// In en, this message translates to:
-  /// **'Open a chat with the seller behind this request.'**
+  /// **'Open a chat with the owner of this request.'**
   String get openChatWithSellerBehindRequest;
 
   /// No description provided for @requestsYouCanManageNow.

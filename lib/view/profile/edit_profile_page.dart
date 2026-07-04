@@ -10,6 +10,7 @@ import '../../controllers/providers/api_provider.dart';
 import '../../controllers/providers/auth_provider.dart';
 import '../../controllers/providers/catalog_provider.dart';
 import '../../localization/app_localizations_x.dart';
+import '../../localization/language_selector.dart';
 import '../../models/models.dart';
 import '../../utils/phone_number.dart';
 import '../common_widgets/app_error_card.dart';
@@ -62,7 +63,15 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final profile = ref.watch(currentSessionProvider).profile;
     if (profile == null) {
       return Scaffold(
-        appBar: AppBar(title: Text(context.l10n.editProfile)),
+        appBar: AppBar(
+          title: Text(context.l10n.editProfile),
+          actions: const [
+            Padding(
+              padding: EdgeInsetsDirectional.only(end: 12),
+              child: Center(child: AppLanguageMenuButton()),
+            ),
+          ],
+        ),
         body: Center(
           child: AppErrorCard(
             message: context.l10n.profileCouldNotBeLoadedRightNow,
@@ -91,7 +100,15 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.editProfile)),
+      appBar: AppBar(
+        title: Text(context.l10n.editProfile),
+        actions: const [
+          Padding(
+            padding: EdgeInsetsDirectional.only(end: 12),
+            child: Center(child: AppLanguageMenuButton()),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
