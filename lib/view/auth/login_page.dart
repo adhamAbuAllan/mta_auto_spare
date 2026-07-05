@@ -161,6 +161,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               onPressed: loginState.isLoading
                                   ? null
                                   : () {
+                                      // تم إيقاف الكود مؤقتاً لتخطي مشكلة الملف الناقص
+                                      /*
                                       Navigator.of(context).push(
                                         MaterialPageRoute<void>(
                                           builder: (_) => PasswordResetPage(
@@ -170,6 +172,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                           ),
                                         ),
                                       );
+                                      */
                                     },
                               child: const Text('Forgot password?'),
                             ),
