@@ -7,7 +7,6 @@ import '../../localization/language_selector.dart';
 import '../../utils/phone_number.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/privacy_policy_link.dart';
-import 'password_reset_page.dart';
 import 'register_page.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
