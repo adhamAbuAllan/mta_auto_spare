@@ -67,7 +67,7 @@ class _FullCarModelCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: isSelected ? const Color(0xFF116466) : const Color(0xFFE5DED1),
+          color: isSelected ? Theme.of(context).primaryColor : const Color(0xFFE5DED1),
           width: isSelected ? 1.6 : 1,
         ),
         boxShadow: isSelected
@@ -106,8 +106,8 @@ class _FullCarModelCard extends StatelessWidget {
                         child: Container(
                           width: 28,
                           height: 28,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF116466),
+                          decoration:  BoxDecoration(
+                            color: Theme.of(context).primaryColor,
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -193,10 +193,10 @@ class _CompactCarModelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFF0F8F7) : const Color(0xFFFBF8F4),
+        color: isSelected ? const Color(0xFFEAF0FE) : const Color(0xFFFBF8F4),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isSelected ? const Color(0xFF116466) : const Color(0xFFE7DFD2),
+          color: isSelected ? Theme.of(context).primaryColor : const Color(0xFFE7DFD2),
           width: isSelected ? 1.4 : 1,
         ),
       ),
@@ -247,9 +247,9 @@ class _CompactCarModelCard extends StatelessWidget {
               icon: const Icon(Icons.close_rounded),
             )
           else if (isSelected)
-            const Padding(
+             Padding(
               padding: EdgeInsets.only(right: 12),
-              child: Icon(Icons.check_circle_rounded, color: Color(0xFF116466)),
+              child: Icon(Icons.check_circle_rounded, color: Theme.of(context).primaryColor),
             )
           else
             const SizedBox(width: 8),

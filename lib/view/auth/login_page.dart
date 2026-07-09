@@ -32,8 +32,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF0C4A63), Color(0xFF116466), Color(0xFFF6F0E8)],
-            stops: [0, 0.34, 0.34],
+            colors: [Color(0xFF111827), Color(0xFF1F2937), Color(0xFFF4F6F8)],
+            stops: [0, 0.32, 0.32],
           ),
         ),
         child: SafeArea(
@@ -45,12 +45,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(18),
                     boxShadow: const [
                       BoxShadow(
-                        color: Color(0x180C2533),
-                        blurRadius: 28,
-                        offset: Offset(0, 14),
+                        color: Color(0x1A101828),
+                        blurRadius: 24,
+                        offset: Offset(0, 10),
                       ),
                     ],
                   ),
@@ -64,20 +64,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           Align(
                             alignment: AlignmentDirectional.centerEnd,
                             child: AppLanguageMenuButton(
-                              foregroundColor: const Color(0xFF0C4A63),
+                              foregroundColor: const Color(0xFF1F2937),
                             ),
                           ),
                           const SizedBox(height: 20),
                           Text(
                             context.l10n.appTitle,
                             style: Theme.of(context).textTheme.headlineMedium
-                                ?.copyWith(fontWeight: FontWeight.w900),
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  color: const Color(0xFF111827),
+                                ),
                           ),
                           const SizedBox(height: 10),
                           Text(
                             context.l10n.signInToBrowseSellerRequests,
                             style: Theme.of(context).textTheme.bodyLarge
-                                ?.copyWith(color: const Color(0xFF6F6A63)),
+                                ?.copyWith(
+                                  color: const Color(0xFF667085),
+                                  height: 1.35,
+                                ),
                           ),
                           const SizedBox(height: 24),
                           // _InfoBanner(
@@ -174,7 +180,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                       );
                                       */
                                     },
-                              child: const Text('Forgot password?'),
+                              child: Text(context.l10n.forgotPassword),
                             ),
                           ),
                           const SizedBox(height: 4),

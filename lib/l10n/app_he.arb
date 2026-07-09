@@ -4,11 +4,11 @@
   "accountRole": "סוג החשבון",
   "add": "הוסף",
   "allAvailableCarNamesAlreadySelected": "כל שמות הרכבים הזמינים כבר נבחרו.",
-  "appTitle": "MTA",
+  "appTitle": "MTA Auto Spare",
   "backend": "שרת",
   "carCatalogCouldNotBeLoadedRightNow": "לא ניתן לטעון את קטלוג הרכבים כעת.",
   "carName": "שם הרכב",
-  "carsIHavePartsFor": "הרכבים שיש לי עבורם חלקים",
+  "carsIHavePartsFor": "רכבים שאני מספק עבורם חלקים",
   "changeLanguage": "שינוי שפה",
   "chats": "שיחות",
   "chooseAUsername": "בחר שם משתמש",
@@ -21,8 +21,8 @@
   "editProfile": "עריכת פרופיל",
   "profileCouldNotBeLoadedRightNow": "לא ניתן לטעון את הפרופיל שלך כרגע.",
   "keepYourProfileUpToDate": "שמור על הפרופיל שלך מעודכן",
-  "supplierProfileIntro": "עדכן את הפרטים שהקונים רואים, כוון את התראות הצ'אט ובחר את דגמי הרכב שיש לך עבורם כבר חלקים במלאי.",
-  "buyerProfileIntro": "עדכן את הפרטים שהספקים רואים והגדר כיצד התראות הצ'אט יגיעו אליך.",
+  "supplierProfileIntro": "עדכן את הפרטים שלקוחות רואים, נהל התראות צ׳אט, ובחר את הרכבים שאתה יכול לספק להם חלקים.",
+  "buyerProfileIntro": "עדכן את הפרטים שספקים רואים כשאתה יוצר בקשות או משוחח איתם.",
   "email": "אימייל",
   "emailHint": "name@example.com",
   "enterAValidEmailAddress": "הזן כתובת אימייל תקינה",
@@ -55,7 +55,7 @@
   "password": "סיסמה",
   "passwordHint": "הזן סיסמה",
   "passwordMinHint": "לפחות 6 תווים",
-  "pickTheCarNamesYouSupplyPartsFor": "בחר את שמות הרכבים שעבורם אתה מספק חלקים.",
+  "pickTheCarNamesYouSupplyPartsFor": "בחר את הרכבים שאתה תומך בהם. נשתמש בזה כדי לשלוח לך בקשות חלקים מתאימות.",
   "registerUsernameHint": "בחר שם משתמש",
   "remove": "הסר",
   "requests": "בקשות",
@@ -63,31 +63,30 @@
   "setUpMarketplaceProfile": "הגדר את פרופיל השוק שלך",
   "signIn": "התחברות",
   "signingIn": "מתחבר...",
-  "signInToBrowseSellerRequests": "התחבר כדי לעיין בבקשות לקוחות ולשוחח.",
+  "signInToBrowseSellerRequests": "התחבר כדי לבקש חלקי חילוף, לשוחח עם ספקים ולנהל הצעות.",
   "somethingWentWrong": "משהו השתבש",
   "supplierRole": "ספק",
-  "suppliersCanPostRequests": "קונים יכולים לפרסם בקשות וספקים יכולים להתחיל שיחות.",
+  "suppliersCanPostRequests": "לקוחות מבקשים חלקי חילוף. ספקים בוחרים רכבים נתמכים ומקבלים הזדמנויות מתאימות.",
   "theCarCatalogCouldNotBeLoaded": "לא ניתן היה לטעון את קטלוג הרכבים.",
   "thisMessageWasDeleted": "הודעה זו נמחקה",
   "tryAgain": "נסה שוב",
   "useAtLeastSixCharacters": "השתמש בלפחות 6 תווים",
   "username": "שם משתמש",
   "usernameHint": "הזן שם משתמש",
-  "userRole": "משתמש"
-,
-  "attachment": "\u05e7\u05d5\u05d1\u05e5 \u05de\u05e6\u05d5\u05e8\u05e3",
-  "attachedRequest": "\u05d1\u05e7\u05e9\u05d4 \u05de\u05e6\u05d5\u05e8\u05e4\u05ea",
-  "cancel": "\u05d1\u05d9\u05d8\u05d5\u05dc",
-  "copyMessage": "\u05d4\u05e2\u05ea\u05e7 \u05d4\u05d5\u05d3\u05e2\u05d4",
-  "deleteForAll": "\u05de\u05d7\u05e7 \u05dc\u05db\u05d5\u05dc\u05dd",
-  "deleteMessage": "\u05de\u05d7\u05e7 \u05d4\u05d5\u05d3\u05e2\u05d4",
-  "deleteOnlyMe": "\u05de\u05d7\u05e7 \u05e8\u05e7 \u05d0\u05e6\u05dc\u05d9",
-  "deletedMessage": "\u05d4\u05d5\u05d3\u05e2\u05d4 \u05e9\u05e0\u05de\u05d7\u05e7\u05d4",
-  "discardVoiceMessage": "\u05d1\u05d8\u05dc \u05d4\u05d5\u05d3\u05e2\u05d4 \u05e7\u05d5\u05dc\u05d9\u05ea",
-  "editMessage": "\u05e2\u05e8\u05d5\u05da \u05d4\u05d5\u05d3\u05e2\u05d4",
-  "editMessageTitle": "\u05e2\u05e8\u05d9\u05db\u05ea \u05d4\u05d5\u05d3\u05e2\u05d4",
-  "edited": "\u05e0\u05e2\u05e8\u05da",
-  "fromPrice": "\u05d4\u05d7\u05dc \u05de-{value}",
+  "userRole": "לקוח",
+  "attachment": "קובץ מצורף",
+  "attachedRequest": "בקשה מצורפת",
+  "cancel": "ביטול",
+  "copyMessage": "העתק הודעה",
+  "deleteForAll": "מחק לכולם",
+  "deleteMessage": "מחק הודעה",
+  "deleteOnlyMe": "מחק רק אצלי",
+  "deletedMessage": "הודעה שנמחקה",
+  "discardVoiceMessage": "בטל הודעה קולית",
+  "editMessage": "ערוך הודעה",
+  "editMessageTitle": "עריכת הודעה",
+  "edited": "נערך",
+  "fromPrice": "החל מ-{value}",
   "@fromPrice": {
     "placeholders": {
       "value": {
@@ -95,20 +94,20 @@
       }
     }
   },
-  "messageCopied": "\u05d4\u05d4\u05d5\u05d3\u05e2\u05d4 \u05d4\u05d5\u05e2\u05ea\u05e7\u05d4.",
-  "messageCouldNotBeDeleted": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05de\u05d7\u05d5\u05e7 \u05d0\u05ea \u05d4\u05d4\u05d5\u05d3\u05e2\u05d4.",
-  "messageCouldNotBeUpdated": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05e2\u05d3\u05db\u05df \u05d0\u05ea \u05d4\u05d4\u05d5\u05d3\u05e2\u05d4.",
-  "messageDeletedForEveryone": "\u05d4\u05d4\u05d5\u05d3\u05e2\u05d4 \u05e0\u05de\u05d7\u05e7\u05d4 \u05e2\u05d1\u05d5\u05e8 \u05db\u05d5\u05dc\u05dd.",
-  "messageDeletedForYou": "\u05d4\u05d4\u05d5\u05d3\u05e2\u05d4 \u05e0\u05de\u05d7\u05e7\u05d4 \u05e2\u05d1\u05d5\u05e8\u05da.",
-  "messageLabel": "\u05d4\u05d5\u05d3\u05e2\u05d4",
-  "messageUpdated": "\u05d4\u05d4\u05d5\u05d3\u05e2\u05d4 \u05e2\u05d5\u05d3\u05db\u05e0\u05d4.",
-  "microphonePermissionRequiredForVoiceMessage": "\u05e0\u05d3\u05e8\u05e9\u05ea \u05d4\u05e8\u05e9\u05d0\u05ea \u05de\u05d9\u05e7\u05e8\u05d5\u05e4\u05d5\u05df \u05db\u05d3\u05d9 \u05dc\u05d4\u05e7\u05dc\u05d9\u05d8 \u05d4\u05d5\u05d3\u05e2\u05d4 \u05e7\u05d5\u05dc\u05d9\u05ea.",
-  "noMessagesYetMessage": "\u05d4\u05ea\u05d7\u05dc \u05d1\u05d1\u05e8\u05db\u05d4 \u05d5\u05e4\u05ea\u05d7 \u05d0\u05ea \u05d4\u05e9\u05d9\u05d7\u05d4.",
-  "noPriceRange": "\u05d0\u05d9\u05df \u05d8\u05d5\u05d5\u05d7 \u05de\u05d7\u05d9\u05e8\u05d9\u05dd",
-  "noVoiceMessageCaptured": "\u05dc\u05d0 \u05e0\u05e7\u05dc\u05d8\u05d4 \u05d4\u05d5\u05d3\u05e2\u05d4 \u05e7\u05d5\u05dc\u05d9\u05ea.",
-  "pauseVoiceMessage": "\u05d4\u05e9\u05d4\u05d4 \u05d4\u05d5\u05d3\u05e2\u05d4 \u05e7\u05d5\u05dc\u05d9\u05ea",
-  "photo": "\u05ea\u05de\u05d5\u05e0\u05d4",
-  "photosCount": "{count} \u05ea\u05de\u05d5\u05e0\u05d5\u05ea",
+  "messageCopied": "ההודעה הועתקה.",
+  "messageCouldNotBeDeleted": "לא ניתן למחוק את ההודעה.",
+  "messageCouldNotBeUpdated": "לא ניתן לעדכן את ההודעה.",
+  "messageDeletedForEveryone": "ההודעה נמחקה עבור כולם.",
+  "messageDeletedForYou": "ההודעה נמחקה עבורך.",
+  "messageLabel": "הודעה",
+  "messageUpdated": "ההודעה עודכנה.",
+  "microphonePermissionRequiredForVoiceMessage": "נדרשת הרשאת מיקרופון כדי להקליט הודעה קולית.",
+  "noMessagesYetMessage": "התחל בברכה ופתח את השיחה.",
+  "noPriceRange": "אין טווח מחירים",
+  "noVoiceMessageCaptured": "לא נקלטה הודעה קולית.",
+  "pauseVoiceMessage": "השהה הודעה קולית",
+  "photo": "תמונה",
+  "photosCount": "{count} תמונות",
   "@photosCount": {
     "placeholders": {
       "count": {
@@ -116,10 +115,10 @@
       }
     }
   },
-  "playVoiceMessage": "\u05e0\u05d2\u05df \u05d4\u05d5\u05d3\u05e2\u05d4 \u05e7\u05d5\u05dc\u05d9\u05ea",
-  "preparingRecorder": "\u05de\u05db\u05d9\u05df \u05d0\u05ea \u05d4\u05de\u05e7\u05dc\u05d9\u05d8...",
-  "recordVoiceMessage": "\u05d4\u05e7\u05dc\u05d8 \u05d4\u05d5\u05d3\u05e2\u05d4 \u05e7\u05d5\u05dc\u05d9\u05ea",
-  "replyingTo": "\u05de\u05e9\u05d9\u05d1 \u05dc-{name}",
+  "playVoiceMessage": "נגן הודעה קולית",
+  "preparingRecorder": "מכין את המקליט...",
+  "recordVoiceMessage": "הקלט הודעה קולית",
+  "replyingTo": "משיב ל-{name}",
   "@replyingTo": {
     "placeholders": {
       "name": {
@@ -127,7 +126,7 @@
       }
     }
   },
-  "requestWithTitle": "\u05d1\u05e7\u05e9\u05d4: {title}",
+  "requestWithTitle": "בקשה: {title}",
   "@requestWithTitle": {
     "placeholders": {
       "title": {
@@ -135,12 +134,12 @@
       }
     }
   },
-  "save": "\u05e9\u05de\u05d5\u05e8",
-  "sendMessage": "\u05e9\u05dc\u05d7 \u05d4\u05d5\u05d3\u05e2\u05d4",
-  "sendOrClearDraftBeforeVoiceMessage": "\u05e9\u05dc\u05d7 \u05d0\u05d5 \u05e0\u05e7\u05d4 \u05d0\u05ea \u05d4\u05d8\u05d9\u05d5\u05d8\u05d4 \u05d4\u05e0\u05d5\u05db\u05d7\u05d9\u05ea \u05dc\u05e4\u05e0\u05d9 \u05d4\u05e7\u05dc\u05d8\u05ea \u05d4\u05d5\u05d3\u05e2\u05d4 \u05e7\u05d5\u05dc\u05d9\u05ea.",
-  "sending": "\u05e9\u05d5\u05dc\u05d7...",
-  "sendVoiceMessage": "\u05e9\u05dc\u05d7 \u05d4\u05d5\u05d3\u05e2\u05d4 \u05e7\u05d5\u05dc\u05d9\u05ea",
-  "sentAttachmentsCount": "\u05e0\u05e9\u05dc\u05d7\u05d5 {count} \u05e7\u05d1\u05e6\u05d9\u05dd \u05de\u05e6\u05d5\u05e8\u05e4\u05d9\u05dd",
+  "save": "שמור",
+  "sendMessage": "שלח הודעה",
+  "sendOrClearDraftBeforeVoiceMessage": "שלח או נקה את הטיוטה הנוכחית לפני הקלטת הודעה קולית.",
+  "sending": "שולח...",
+  "sendVoiceMessage": "שלח הודעה קולית",
+  "sentAttachmentsCount": "נשלחו {count} קבצים מצורפים",
   "@sentAttachmentsCount": {
     "placeholders": {
       "count": {
@@ -148,14 +147,14 @@
       }
     }
   },
-  "sharedRequest": "\u05e9\u05d9\u05ea\u05e3 \u05d1\u05e7\u05e9\u05d4",
-  "showOriginal": "\u05d4\u05e6\u05d2 \u05de\u05e7\u05d5\u05e8",
-  "showTranslation": "\u05d4\u05e6\u05d2 \u05ea\u05e8\u05d2\u05d5\u05dd",
-  "typing": "\u05de\u05e7\u05dc\u05d9\u05d3...",
-  "unableToPlayVoiceMessage": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05e0\u05d2\u05df \u05d0\u05ea \u05d4\u05d4\u05d5\u05d3\u05e2\u05d4 \u05d4\u05e7\u05d5\u05dc\u05d9\u05ea",
-  "unableToSeekVoiceMessage": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05d3\u05dc\u05d2 \u05d1\u05ea\u05d5\u05da \u05d4\u05d4\u05d5\u05d3\u05e2\u05d4 \u05d4\u05e7\u05d5\u05dc\u05d9\u05ea",
-  "updateYourMessage": "\u05e2\u05d3\u05db\u05df \u05d0\u05ea \u05d4\u05d4\u05d5\u05d3\u05e2\u05d4 \u05e9\u05dc\u05da",
-  "upToPrice": "\u05e2\u05d3 {value}",
+  "sharedRequest": "שיתף בקשה",
+  "showOriginal": "הצג מקור",
+  "showTranslation": "הצג תרגום",
+  "typing": "מקליד...",
+  "unableToPlayVoiceMessage": "לא ניתן לנגן את ההודעה הקולית",
+  "unableToSeekVoiceMessage": "לא ניתן לדלג בתוך ההודעה הקולית",
+  "updateYourMessage": "עדכן את ההודעה שלך",
+  "upToPrice": "עד {value}",
   "@upToPrice": {
     "placeholders": {
       "value": {
@@ -163,30 +162,29 @@
       }
     }
   },
-  "uploadImages": "\u05d4\u05e2\u05dc\u05d4 \u05ea\u05de\u05d5\u05e0\u05d5\u05ea",
-  "voiceMessage": "\u05d4\u05d5\u05d3\u05e2\u05d4 \u05e7\u05d5\u05dc\u05d9\u05ea",
-  "voiceMessageCouldNotBeSent": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05e9\u05dc\u05d5\u05d7 \u05d0\u05ea \u05d4\u05d4\u05d5\u05d3\u05e2\u05d4 \u05d4\u05e7\u05d5\u05dc\u05d9\u05ea.",
-  "voiceMessageDiscarded": "\u05d4\u05d4\u05d5\u05d3\u05e2\u05d4 \u05d4\u05e7\u05d5\u05dc\u05d9\u05ea \u05d1\u05d5\u05d8\u05dc\u05d4.",
-  "voiceMessageDiscardFailed": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05d4\u05d9\u05d4 \u05dc\u05d1\u05d8\u05dc \u05d0\u05ea \u05d4\u05d4\u05d5\u05d3\u05e2\u05d4 \u05d4\u05e7\u05d5\u05dc\u05d9\u05ea \u05d1\u05e6\u05d5\u05e8\u05d4 \u05ea\u05e7\u05d9\u05e0\u05d4.",
-  "voiceRecordingCouldNotStart": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05d4\u05ea\u05d7\u05d9\u05dc \u05d4\u05e7\u05dc\u05d8\u05d4 \u05e7\u05d5\u05dc\u05d9\u05ea \u05d1\u05de\u05db\u05e9\u05d9\u05e8 \u05d4\u05d6\u05d4.",
-  "writeAMessage": "\u05db\u05ea\u05d5\u05d1 \u05d4\u05d5\u05d3\u05e2\u05d4..."
-,
-  "connecting": "\u05de\u05ea\u05d7\u05d1\u05e8...",
-  "liveUpdatesUnavailable": "\u05e2\u05d3\u05db\u05d5\u05e0\u05d9\u05dd \u05d7\u05d9\u05d9\u05dd \u05dc\u05d0 \u05d6\u05de\u05d9\u05e0\u05d9\u05dd",
-  "reconnecting": "\u05de\u05ea\u05d7\u05d1\u05e8 \u05de\u05d7\u05d3\u05e9...",
-  "marketplaceUser": "\u05de\u05e9\u05ea\u05de\u05e9 \u05e9\u05d5\u05e7",
-  "refreshRequests": "\u05e8\u05e2\u05e0\u05df \u05d1\u05e7\u05e9\u05d5\u05ea",
-  "browseRequestPostsFromOtherSellers": "\u05e2\u05d9\u05d9\u05df \u05d1\u05e4\u05d5\u05e1\u05d8\u05d9\u05dd \u05e9\u05dc \u05d1\u05e7\u05e9\u05d5\u05ea \u05de\u05de\u05d5\u05db\u05e8\u05d9\u05dd \u05d0\u05d7\u05e8\u05d9\u05dd.",
-  "seeRequestPostsYouCreated": "\u05e6\u05e4\u05d4 \u05d1\u05e4\u05d5\u05e1\u05d8\u05d9\u05dd \u05e9\u05dc \u05d4\u05d1\u05e7\u05e9\u05d5\u05ea \u05e9\u05d9\u05e6\u05e8\u05ea.",
-  "browseRequests": "\u05e2\u05d9\u05d5\u05df \u05d1\u05d1\u05e7\u05e9\u05d5\u05ea",
-  "myRequests": "\u05d4\u05d1\u05e7\u05e9\u05d5\u05ea \u05e9\u05dc\u05d9",
-  "noRequestsYet": "\u05d0\u05d9\u05df \u05d1\u05e7\u05e9\u05d5\u05ea \u05e2\u05d3\u05d9\u05d9\u05df",
-  "createFirstRequestPostMessage": "\u05e6\u05d5\u05e8 \u05d0\u05ea \u05e4\u05d5\u05e1\u05d8 \u05d4\u05d1\u05e7\u05e9\u05d4 \u05d4\u05e8\u05d0\u05e9\u05d5\u05df \u05e9\u05dc\u05da \u05d5\u05d4\u05d5\u05d0 \u05d9\u05d5\u05e4\u05d9\u05e2 \u05db\u05d0\u05df.",
-  "noSellerRequestsYet": "\u05d0\u05d9\u05df \u05e2\u05d3\u05d9\u05d9\u05df \u05d1\u05e7\u05e9\u05d5\u05ea \u05de\u05de\u05d5\u05db\u05e8\u05d9\u05dd",
-  "noSellerRequestsYetMessage": "\u05e2\u05d3\u05d9\u05d9\u05df \u05d0\u05d9\u05df \u05e4\u05d5\u05e1\u05d8\u05d9\u05dd \u05e9\u05dc \u05d1\u05e7\u05e9\u05d5\u05ea \u05de\u05de\u05d5\u05db\u05e8\u05d9\u05dd \u05d0\u05d7\u05e8\u05d9\u05dd. \u05de\u05e9\u05d5\u05da \u05db\u05d3\u05d9 \u05dc\u05e8\u05e2\u05e0\u05df \u05de\u05d0\u05d5\u05d7\u05e8 \u05d9\u05d5\u05ea\u05e8.",
-  "createRequest": "\u05e6\u05d5\u05e8 \u05d1\u05e7\u05e9\u05d4",
-  "deleteRequest": "\u05de\u05d7\u05d9\u05e7\u05ea \u05d1\u05e7\u05e9\u05d4",
-  "deleteRequestConfirmation": "\u05dc\u05de\u05d7\u05d5\u05e7 \u05d0\u05ea \"{title}\"\u003f \u05e4\u05d5\u05e1\u05d8 \u05d4\u05d1\u05e7\u05e9\u05d4 \u05d4\u05d6\u05d4 \u05d9\u05d5\u05e1\u05e8 \u05de\u05d4\u05e8\u05e9\u05d9\u05de\u05d4 \u05e9\u05dc\u05da.",
+  "uploadImages": "העלה תמונות",
+  "voiceMessage": "הודעה קולית",
+  "voiceMessageCouldNotBeSent": "לא ניתן לשלוח את ההודעה הקולית.",
+  "voiceMessageDiscarded": "ההודעה הקולית בוטלה.",
+  "voiceMessageDiscardFailed": "לא ניתן היה לבטל את ההודעה הקולית בצורה תקינה.",
+  "voiceRecordingCouldNotStart": "לא ניתן להתחיל הקלטה קולית במכשיר הזה.",
+  "writeAMessage": "כתוב הודעה...",
+  "connecting": "מתחבר...",
+  "liveUpdatesUnavailable": "עדכונים חיים לא זמינים",
+  "reconnecting": "מתחבר מחדש...",
+  "marketplaceUser": "משתמש שוק",
+  "refreshRequests": "רענן בקשות",
+  "browseRequestPostsFromOtherSellers": "עיין בבקשות פתוחות לחלקי חילוף מלקוחות.",
+  "seeRequestPostsYouCreated": "ראה את בקשות חלקי החילוף שיצרת.",
+  "browseRequests": "בקשות פתוחות",
+  "myRequests": "הבקשות שלי",
+  "noRequestsYet": "אין בקשות עדיין",
+  "createFirstRequestPostMessage": "צור את בקשת החלק הראשונה שלך וספקים יוכלו ליצור איתך קשר.",
+  "noSellerRequestsYet": "אין בקשות פתוחות עדיין",
+  "noSellerRequestsYetMessage": "אין כרגע בקשות פתוחות לחלקי חילוף. משוך לרענון מאוחר יותר.",
+  "createRequest": "צור בקשה",
+  "deleteRequest": "מחיקת בקשה",
+  "deleteRequestConfirmation": "למחוק את \"{title}\"? פוסט הבקשה הזה יוסר מהרשימה שלך.",
   "@deleteRequestConfirmation": {
     "placeholders": {
       "title": {
@@ -194,17 +192,17 @@
       }
     }
   },
-  "delete": "\u05de\u05d7\u05e7",
-  "edit": "\u05e2\u05e8\u05d5\u05da",
-  "deleting": "\u05de\u05d5\u05d7\u05e7...",
-  "chat": "שוחח",
-  "opening": "\u05e4\u05d5\u05ea\u05d7...",
-  "requestDeletedSuccessfully": "\u05d4\u05d1\u05e7\u05e9\u05d4 \u05e0\u05de\u05d7\u05e7\u05d4 \u05d1\u05d4\u05e6\u05dc\u05d7\u05d4.",
-  "couldNotDeleteRequest": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05de\u05d7\u05d5\u05e7 \u05d0\u05ea \u05d4\u05d1\u05e7\u05e9\u05d4.",
-  "couldNotOpenConversation": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05e4\u05ea\u05d5\u05d7 \u05d0\u05ea \u05d4\u05e9\u05d9\u05d7\u05d4.",
-  "requestAttachedResendHint": "\u05d4\u05d1\u05e7\u05e9\u05d4 \u05e6\u05d5\u05e8\u05e4\u05d4 \u05dc\u05e2\u05d5\u05e8\u05da \u05d4\u05e6'\u05d0\u05d8 \u05db\u05d3\u05d9 \u05e9\u05ea\u05d5\u05db\u05dc \u05dc\u05e9\u05dc\u05d5\u05d7 \u05d0\u05d5\u05ea\u05d4 \u05e9\u05d5\u05d1.",
-  "initialRequestCouldNotBeSentAutomatically": "\u05d4\u05e6'\u05d0\u05d8 \u05e0\u05e4\u05ea\u05d7, \u05d0\u05da \u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05d4\u05d9\u05d4 \u05dc\u05e9\u05dc\u05d5\u05d7 \u05d0\u05ea \u05d4\u05d1\u05e7\u05e9\u05d4 \u05d4\u05e8\u05d0\u05e9\u05d5\u05e0\u05d9\u05ea \u05d1\u05d0\u05d5\u05e4\u05df \u05d0\u05d5\u05d8\u05d5\u05de\u05d8\u05d9.",
-  "welcomeBackUser": "\u05d1\u05e8\u05d5\u05da \u05e9\u05d5\u05d1\u05da, {name}",
+  "delete": "מחק",
+  "edit": "ערוך",
+  "deleting": "מוחק...",
+  "chat": "צ׳אט עם הלקוח",
+  "opening": "פותח...",
+  "requestDeletedSuccessfully": "הבקשה נמחקה בהצלחה.",
+  "couldNotDeleteRequest": "לא ניתן למחוק את הבקשה.",
+  "couldNotOpenConversation": "לא ניתן לפתוח את השיחה.",
+  "requestAttachedResendHint": "הבקשה צורפה לעורך הצ'אט כדי שתוכל לשלוח אותה שוב.",
+  "initialRequestCouldNotBeSentAutomatically": "הצ'אט נפתח, אך לא ניתן היה לשלוח את הבקשה הראשונית באופן אוטומטי.",
+  "welcomeBackUser": "ברוך שובך, {name}",
   "@welcomeBackUser": {
     "placeholders": {
       "name": {
@@ -212,31 +210,31 @@
       }
     }
   },
-  "browse": "\u05e2\u05d9\u05d5\u05df",
-  "mine": "\u05e9\u05dc\u05d9",
-  "assigned": "\u05de\u05d5\u05e7\u05e6\u05d4",
-  "assignedRequests": "\u05d1\u05e7\u05e9\u05d5\u05ea \u05de\u05d5\u05e7\u05e6\u05d5\u05ea",
-  "allStatuses": "\u05db\u05dc \u05d4\u05de\u05e6\u05d1\u05d9\u05dd",
-  "cityNotSet": "\u05d4\u05e2\u05d9\u05e8 \u05dc\u05d0 \u05d4\u05d5\u05d2\u05d3\u05e8\u05d4",
-  "thisRequestBelongsToYou": "\u05d4\u05d1\u05e7\u05e9\u05d4 \u05d4\u05d6\u05d5 \u05e9\u05d9\u05d9\u05db\u05ea \u05dc\u05da.",
-  "openChatWithSellerBehindRequest": "\u05e4\u05ea\u05d7 \u05e9\u05d9\u05d7\u05d4 \u05e2\u05dd \u05d1\u05e2\u05dc \u05d4\u05d1\u05e7\u05e9\u05d4 \u05d4\u05d6\u05d5.",
-  "requestsYouCanManageNow": "\u05d1\u05e7\u05e9\u05d5\u05ea \u05e9\u05d0\u05ea\u05d4 \u05d9\u05db\u05d5\u05dc \u05dc\u05e0\u05d4\u05dc \u05db\u05e8\u05d2\u05e2.",
-  "noAssignedRequestsYet": "\u05e2\u05d3\u05d9\u05d9\u05df \u05d0\u05d9\u05df \u05d1\u05e7\u05e9\u05d5\u05ea \u05de\u05d5\u05e7\u05e6\u05d5\u05ea",
-  "noAssignedRequestsYetMessage": "\u05db\u05e9\u05d4\u05d1\u05e2\u05dc\u05d9\u05dd \u05d9\u05d0\u05e9\u05e8 \u05d0\u05ea \u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d9\u05e9\u05d4 \u05e9\u05dc\u05da, \u05d4\u05d1\u05e7\u05e9\u05d4 \u05ea\u05d5\u05e4\u05d9\u05e2 \u05db\u05d0\u05df.",
-  "youCanManageThisRequestStatus": "\u05d0\u05ea\u05d4 \u05d9\u05db\u05d5\u05dc \u05dc\u05e0\u05d4\u05dc \u05d0\u05ea \u05de\u05e6\u05d1 \u05d4\u05d1\u05e7\u05e9\u05d4 \u05d4\u05d6\u05d5.",
-  "changeStatus": "\u05e9\u05e0\u05d4 \u05de\u05e6\u05d1",
-  "requestStatusUpdated": "\u05de\u05e6\u05d1 \u05d4\u05d1\u05e7\u05e9\u05d4 \u05e2\u05d5\u05d3\u05db\u05df.",
-  "couldNotUpdateRequestStatus": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05e2\u05d3\u05db\u05df \u05d0\u05ea \u05de\u05e6\u05d1 \u05d4\u05d1\u05e7\u05e9\u05d4.",
-  "updatingStatus": "\u05de\u05e2\u05d3\u05db\u05df...",
-  "requestControl": "\u05d1\u05e7\u05e8\u05ea \u05d1\u05e7\u05e9\u05d4",
-  "thisChatCanManageRequestStatus": "\u05d4\u05e1\u05e4\u05e7 \u05d1\u05e9\u05d9\u05d7\u05d4 \u05d6\u05d5 \u05d9\u05db\u05d5\u05dc \u05db\u05e2\u05ea \u05dc\u05e0\u05d4\u05dc \u05d0\u05ea \u05de\u05e6\u05d1 \u05d4\u05d1\u05e7\u05e9\u05d4.",
-  "thisRequestIsAssignedToAnotherSupplier": "\u05d4\u05d1\u05e7\u05e9\u05d4 \u05d4\u05d6\u05d5 \u05de\u05d5\u05e7\u05e6\u05d4 \u05db\u05e8\u05d2\u05e2 \u05dc\u05e1\u05e4\u05e7 \u05d0\u05d7\u05e8.",
-  "noAccessRequestForThisRequestYet": "\u05e2\u05d3\u05d9\u05d9\u05df \u05dc\u05d0 \u05e0\u05e9\u05dc\u05d7\u05d4 \u05d1\u05e7\u05e9\u05ea \u05d2\u05d9\u05e9\u05d4 \u05dc\u05d1\u05e7\u05e9\u05d4 \u05d6\u05d5.",
-  "youCanChangeThisRequestStatusNow": "\u05d0\u05ea\u05d4 \u05d9\u05db\u05d5\u05dc \u05dc\u05e9\u05e0\u05d5\u05ea \u05d0\u05ea \u05de\u05e6\u05d1 \u05d4\u05d1\u05e7\u05e9\u05d4 \u05db\u05e2\u05ea.",
-  "waitingForOwnerApproval": "\u05de\u05de\u05ea\u05d9\u05df \u05dc\u05d0\u05d9\u05e9\u05d5\u05e8 \u05d4\u05d1\u05e2\u05dc\u05d9\u05dd \u05dc\u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d9\u05e9\u05d4 \u05e9\u05dc\u05da.",
-  "ownerRejectedYourAccessRequest": "\u05d4\u05d1\u05e2\u05dc\u05d9\u05dd \u05d3\u05d7\u05d4 \u05d0\u05ea \u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d9\u05e9\u05d4 \u05e9\u05dc\u05da.",
-  "askOwnerForStatusAccess": "\u05d1\u05e7\u05e9 \u05de\u05d4\u05d1\u05e2\u05dc\u05d9\u05dd \u05d4\u05e8\u05e9\u05d0\u05d4 \u05dc\u05e0\u05d4\u05dc \u05d0\u05ea \u05de\u05e6\u05d1 \u05d4\u05d1\u05e7\u05e9\u05d4.",
-  "currentManager": "\u05d4\u05de\u05e0\u05d4\u05dc \u05d4\u05e0\u05d5\u05db\u05d7\u05d9: {name}",
+  "browse": "עיון",
+  "mine": "שלי",
+  "assigned": "מוקצה",
+  "assignedRequests": "בקשות בטיפול",
+  "allStatuses": "כל המצבים",
+  "cityNotSet": "העיר לא הוגדרה",
+  "thisRequestBelongsToYou": "הבקשה שלך פתוחה להצעות מספקים.",
+  "openChatWithSellerBehindRequest": "שוחח עם הלקוח והצע את חלק החילוף הזה.",
+  "requestsYouCanManageNow": "בקשות שלקוחות אישרו לך לטפל בהן.",
+  "noAssignedRequestsYet": "אין בקשות שאושרו עדיין",
+  "noAssignedRequestsYetMessage": "כאשר לקוח יאשר לך לטפל בבקשה, היא תופיע כאן.",
+  "youCanManageThisRequestStatus": "הלקוח אישר לך לטפל בבקשה זו.",
+  "changeStatus": "שנה מצב",
+  "requestStatusUpdated": "מצב הבקשה עודכן.",
+  "couldNotUpdateRequestStatus": "לא ניתן לעדכן את מצב הבקשה.",
+  "updatingStatus": "מעדכן...",
+  "requestControl": "אישור ספק",
+  "thisChatCanManageRequestStatus": "אישרת ספק זה. הבקשה כבר אינה ציבורית.",
+  "thisRequestIsAssignedToAnotherSupplier": "בקשה זו כבר בטיפול של ספק אחר.",
+  "noAccessRequestForThisRequestYet": "אף ספק עדיין לא ביקש לטפל בבקשה זו.",
+  "youCanChangeThisRequestStatusNow": "הלקוח אישר אותך. כעת אפשר לנהל בקשה זו.",
+  "waitingForOwnerApproval": "ממתין לאישור הלקוח.",
+  "ownerRejectedYourAccessRequest": "הלקוח דחה בקשה זו.",
+  "askOwnerForStatusAccess": "רוצה לטפל בבקשה זו? בקש מהלקוח לאשר אותך.",
+  "currentManager": "ספק שאושר: {name}",
   "@currentManager": {
     "placeholders": {
       "name": {
@@ -244,29 +242,29 @@
       }
     }
   },
-  "approving": "\u05de\u05d0\u05e9\u05e8...",
-  "approveAccess": "\u05d0\u05e9\u05e8 \u05d2\u05d9\u05e9\u05d4",
-  "rejectAccess": "\u05d3\u05d7\u05d4 \u05d2\u05d9\u05e9\u05d4",
-  "sendingRequest": "\u05e9\u05d5\u05dc\u05d7...",
-  "requestAccess": "\u05d1\u05e7\u05e9 \u05d2\u05d9\u05e9\u05d4",
-  "accessRequestPending": "\u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d9\u05e9\u05d4 \u05e9\u05dc\u05da \u05de\u05de\u05ea\u05d9\u05e0\u05d4.",
-  "openAssignedRequestsToUpdateStatus": "\u05e4\u05ea\u05d7 \u05d1\u05e7\u05e9\u05d5\u05ea \u05de\u05d5\u05e7\u05e6\u05d5\u05ea \u05db\u05d3\u05d9 \u05dc\u05e2\u05d3\u05db\u05df \u05d0\u05ea \u05d4\u05de\u05e6\u05d1 \u05d1\u05db\u05dc \u05e2\u05ea.",
-  "accessRequestSent": "\u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d9\u05e9\u05d4 \u05e0\u05e9\u05dc\u05d7\u05d4.",
-  "couldNotSendAccessRequest": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05e9\u05dc\u05d5\u05d7 \u05d0\u05ea \u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d9\u05e9\u05d4.",
-  "accessRequestApproved": "\u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d9\u05e9\u05d4 \u05d0\u05d5\u05e9\u05e8\u05d4.",
-  "couldNotApproveAccessRequest": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05d0\u05e9\u05e8 \u05d0\u05ea \u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d9\u05e9\u05d4.",
-  "accessRequestRejected": "\u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d9\u05e9\u05d4 \u05e0\u05d3\u05d7\u05ea\u05d4.",
-  "couldNotRejectAccessRequest": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05d3\u05d7\u05d5\u05ea \u05d0\u05ea \u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d9\u05e9\u05d4.",
-  "expandRequestControl": "\u05d4\u05e6\u05d2 \u05d0\u05ea \u05d1\u05e7\u05e8\u05d5\u05ea \u05d4\u05d1\u05e7\u05e9\u05d4",
-  "collapseRequestControl": "\u05d4\u05e1\u05ea\u05e8 \u05d0\u05ea \u05d1\u05e7\u05e8\u05d5\u05ea \u05d4\u05d1\u05e7\u05e9\u05d4",
-  "adminPanel": "\u05dc\u05d5\u05d7 \u05d1\u05e7\u05e8\u05d4",
-  "adminAccessRequired": "\u05e8\u05e7 \u05d7\u05e9\u05d1\u05d5\u05e0\u05d5\u05ea \u05de\u05e0\u05d4\u05dc \u05d9\u05db\u05d5\u05dc\u05d9\u05dd \u05dc\u05e4\u05ea\u05d5\u05d7 \u05d0\u05ea \u05d4\u05de\u05e1\u05da \u05d4\u05d6\u05d4.",
-  "adminUsersTab": "\u05de\u05e9\u05ea\u05de\u05e9\u05d9\u05dd",
-  "adminReportsTab": "\u05d3\u05d9\u05d5\u05d5\u05d7\u05d9\u05dd",
-  "adminUsersCouldNotBeLoaded": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05d8\u05e2\u05d5\u05df \u05db\u05e2\u05ea \u05d0\u05ea \u05e8\u05e9\u05d9\u05de\u05ea \u05d4\u05de\u05e9\u05ea\u05de\u05e9\u05d9\u05dd.",
-  "adminReportsCouldNotBeLoaded": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05d8\u05e2\u05d5\u05df \u05db\u05e2\u05ea \u05d0\u05ea \u05d4\u05d3\u05d9\u05d5\u05d5\u05d7\u05d9\u05dd.",
-  "noUserReportsYet": "\u05d0\u05d9\u05df \u05e2\u05d3\u05d9\u05d9\u05df \u05d3\u05d9\u05d5\u05d5\u05d7\u05d9 \u05de\u05e9\u05ea\u05de\u05e9\u05d9\u05dd.",
-  "blockUserTitle": "\u05d7\u05e1\u05d5\u05dd \u05d0\u05ea {name}",
+  "approving": "מאשר...",
+  "approveAccess": "אשר ספק",
+  "rejectAccess": "דחה",
+  "sendingRequest": "שולח...",
+  "requestAccess": "בקש מהלקוח לאשר אותך",
+  "accessRequestPending": "ממתין לאישור הלקוח.",
+  "openAssignedRequestsToUpdateStatus": "פתח בקשות בטיפול כדי לעדכן סטטוס בכל זמן.",
+  "accessRequestSent": "הבקשה נשלחה ללקוח.",
+  "couldNotSendAccessRequest": "לא ניתן לבקש אישור מהלקוח כרגע.",
+  "accessRequestApproved": "הספק אושר.",
+  "couldNotApproveAccessRequest": "לא ניתן לאשר את הספק.",
+  "accessRequestRejected": "הספק נדחה.",
+  "couldNotRejectAccessRequest": "לא ניתן לדחות את הספק.",
+  "expandRequestControl": "הצג אישור ספק",
+  "collapseRequestControl": "הסתר אישור ספק",
+  "adminPanel": "לוח בקרה",
+  "adminAccessRequired": "רק חשבונות מנהל יכולים לפתוח את המסך הזה.",
+  "adminUsersTab": "משתמשים",
+  "adminReportsTab": "דיווחים",
+  "adminUsersCouldNotBeLoaded": "לא ניתן לטעון כעת את רשימת המשתמשים.",
+  "adminReportsCouldNotBeLoaded": "לא ניתן לטעון כעת את הדיווחים.",
+  "noUserReportsYet": "אין עדיין דיווחי משתמשים.",
+  "blockUserTitle": "חסום את {name}",
   "@blockUserTitle": {
     "placeholders": {
       "name": {
@@ -274,10 +272,10 @@
       }
     }
   },
-  "blockUserAction": "\u05d7\u05e1\u05d5\u05dd \u05de\u05e9\u05ea\u05de\u05e9",
-  "blockReasonLabel": "\u05e1\u05d9\u05d1\u05ea \u05d4\u05d7\u05e1\u05d9\u05de\u05d4",
-  "blockReasonHint": "\u05d4\u05d5\u05e1\u05e3 \u05e1\u05d9\u05d1\u05d4 \u05d0\u05d5\u05e4\u05e6\u05d9\u05d5\u05e0\u05dc\u05d9\u05ea \u05dc\u05e4\u05e2\u05d5\u05dc\u05d4 \u05d6\u05d5.",
-  "unblockUserTitle": "\u05d1\u05d8\u05dc \u05d7\u05e1\u05d9\u05de\u05d4 \u05e9\u05dc {name}",
+  "blockUserAction": "חסום משתמש",
+  "blockReasonLabel": "סיבת החסימה",
+  "blockReasonHint": "הוסף סיבה אופציונלית לפעולה זו.",
+  "unblockUserTitle": "בטל חסימה של {name}",
   "@unblockUserTitle": {
     "placeholders": {
       "name": {
@@ -285,7 +283,7 @@
       }
     }
   },
-  "unblockUserMessage": "\u05dc\u05d0\u05e4\u05e9\u05e8 \u05dc-{name} \u05dc\u05d2\u05e9\u05ea \u05e9\u05d5\u05d1 \u05dc\u05d0\u05e4\u05dc\u05d9\u05e7\u05e6\u05d9\u05d4?",
+  "unblockUserMessage": "לאפשר ל-{name} לגשת שוב לאפליקציה?",
   "@unblockUserMessage": {
     "placeholders": {
       "name": {
@@ -293,27 +291,27 @@
       }
     }
   },
-  "unblockUserAction": "\u05d1\u05d8\u05dc \u05d7\u05e1\u05d9\u05de\u05d4",
-  "userBlocked": "\u05d4\u05de\u05e9\u05ea\u05de\u05e9 \u05e0\u05d7\u05e1\u05dd.",
-  "userUnblocked": "\u05d7\u05e1\u05d9\u05de\u05ea \u05d4\u05de\u05e9\u05ea\u05de\u05e9 \u05d1\u05d5\u05d8\u05dc\u05d4.",
-  "couldNotBlockUser": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05d7\u05e1\u05d5\u05dd \u05d0\u05ea \u05d4\u05de\u05e9\u05ea\u05de\u05e9.",
-  "couldNotUnblockUser": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05d1\u05d8\u05dc \u05d0\u05ea \u05d7\u05e1\u05d9\u05de\u05ea \u05d4\u05de\u05e9\u05ea\u05de\u05e9.",
-  "reviewReportTitle": "\u05e1\u05e7\u05d9\u05e8\u05ea \u05d3\u05d9\u05d5\u05d5\u05d7",
-  "reviewReportAction": "\u05e1\u05e7\u05d9\u05e8\u05d4",
-  "reportStatusLabel": "\u05e1\u05d8\u05d8\u05d5\u05e1 \u05d4\u05d3\u05d9\u05d5\u05d5\u05d7",
-  "reportStatusOpen": "\u05e4\u05ea\u05d5\u05d7",
-  "reportStatusReviewed": "\u05e0\u05d1\u05d3\u05e7",
-  "reportStatusDismissed": "\u05e0\u05d3\u05d7\u05d4",
-  "reportStatusActioned": "\u05d8\u05d5\u05e4\u05dc",
-  "reportUpdated": "\u05d4\u05d3\u05d9\u05d5\u05d5\u05d7 \u05e2\u05d5\u05d3\u05db\u05df.",
-  "couldNotUpdateReport": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05e2\u05d3\u05db\u05df \u05d0\u05ea \u05d4\u05d3\u05d9\u05d5\u05d5\u05d7.",
-  "adminNotesLabel": "\u05d4\u05e2\u05e8\u05d5\u05ea \u05de\u05e0\u05d4\u05dc",
-  "adminNotesHint": "\u05d4\u05d5\u05e1\u05e3 \u05d4\u05e2\u05e8\u05d5\u05ea \u05dc\u05e6\u05d5\u05d5\u05ea \u05d4\u05e0\u05d9\u05d4\u05d5\u05dc.",
-  "userBlockedStatus": "\u05d7\u05e1\u05d5\u05dd",
-  "userActiveStatus": "\u05e4\u05e2\u05d9\u05dc",
-  "adminCurrentAccount": "\u05d6\u05d4 \u05d4\u05d7\u05e9\u05d1\u05d5\u05df \u05d4\u05e0\u05d5\u05db\u05d7\u05d9 \u05e9\u05dc\u05da.",
-  "adminRole": "\u05de\u05e0\u05d4\u05dc",
-  "reportCardTitle": "\u05d3\u05d9\u05d5\u05d5\u05d7 \u05e2\u05dc {name}",
+  "unblockUserAction": "בטל חסימה",
+  "userBlocked": "המשתמש נחסם.",
+  "userUnblocked": "חסימת המשתמש בוטלה.",
+  "couldNotBlockUser": "לא ניתן לחסום את המשתמש.",
+  "couldNotUnblockUser": "לא ניתן לבטל את חסימת המשתמש.",
+  "reviewReportTitle": "סקירת דיווח",
+  "reviewReportAction": "סקירה",
+  "reportStatusLabel": "סטטוס הדיווח",
+  "reportStatusOpen": "פתוח",
+  "reportStatusReviewed": "נבדק",
+  "reportStatusDismissed": "נדחה",
+  "reportStatusActioned": "טופל",
+  "reportUpdated": "הדיווח עודכן.",
+  "couldNotUpdateReport": "לא ניתן לעדכן את הדיווח.",
+  "adminNotesLabel": "הערות מנהל",
+  "adminNotesHint": "הוסף הערות לצוות הניהול.",
+  "userBlockedStatus": "חסום",
+  "userActiveStatus": "פעיל",
+  "adminCurrentAccount": "זה החשבון הנוכחי שלך.",
+  "adminRole": "מנהל",
+  "reportCardTitle": "דיווח על {name}",
   "@reportCardTitle": {
     "placeholders": {
       "name": {
@@ -321,7 +319,7 @@
       }
     }
   },
-  "reportedByLabel": "\u05d3\u05d5\u05d5\u05d7 \u05e2\u05dc \u05d9\u05d3\u05d9 {name}",
+  "reportedByLabel": "דווח על ידי {name}",
   "@reportedByLabel": {
     "placeholders": {
       "name": {
@@ -329,7 +327,7 @@
       }
     }
   },
-  "reportCreatedAt": "\u05e0\u05d5\u05e6\u05e8 {time}",
+  "reportCreatedAt": "נוצר {time}",
   "@reportCreatedAt": {
     "placeholders": {
       "time": {
@@ -337,7 +335,7 @@
       }
     }
   },
-  "reportReviewedAt": "\u05e0\u05d1\u05d3\u05e7 {time}",
+  "reportReviewedAt": "נבדק {time}",
   "@reportReviewedAt": {
     "placeholders": {
       "time": {
@@ -345,39 +343,39 @@
       }
     }
   },
-  "profileTitle": "\u05e4\u05e8\u05d5\u05e4\u05d9\u05dc",
-  "profileLoadError": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05d8\u05e2\u05d5\u05df \u05db\u05e2\u05ea \u05d0\u05ea \u05d4\u05e4\u05e8\u05d5\u05e4\u05d9\u05dc.",
-  "contactDetails": "\u05e4\u05e8\u05d8\u05d9 \u05e7\u05e9\u05e8",
-  "phone": "\u05d8\u05dc\u05e4\u05d5\u05df",
-  "cityLabel": "\u05e2\u05d9\u05e8",
-  "filterByCarMake": "\u05e1\u05e0\u05df \u05dc\u05e4\u05d9 \u05d9\u05e6\u05e8\u05df",
-  "chatPushNotifications": "\u05d4\u05ea\u05e8\u05d0\u05d5\u05ea \u05e6'\u05d0\u05d8",
-  "chatPushNotificationsDescription": "\u05e7\u05d1\u05dc \u05d4\u05ea\u05e8\u05d0\u05d4 \u05db\u05e9\u05de\u05d9\u05e9\u05d4\u05d5 \u05e9\u05d5\u05dc\u05d7 \u05d4\u05d5\u05d3\u05e2\u05ea \u05e6'\u05d0\u05d8.",
-  "showMessagePreview": "\u05d4\u05e6\u05d2 \u05ea\u05e6\u05d5\u05d2\u05ea \u05de\u05e1\u05e8",
-  "showMessagePreviewDescription": "\u05db\u05d5\u05dc\u05dc \u05d7\u05dc\u05e7 \u05de\u05d4\u05d5\u05d3\u05e2\u05ea \u05d4\u05e6'\u05d0\u05d8 \u05d1\u05ea\u05d5\u05da \u05d4\u05d4\u05ea\u05e8\u05d0\u05d4.",
-  "profileUpdatedSuccessfully": "\u05d4\u05e4\u05e8\u05d5\u05e4\u05d9\u05dc \u05e2\u05d5\u05d3\u05db\u05df \u05d1\u05d4\u05e6\u05dc\u05d7\u05d4.",
-  "profilePhoto": "\u05ea\u05de\u05d5\u05e0\u05ea \u05e4\u05e8\u05d5\u05e4\u05d9\u05dc",
-  "newPhotoReadyMessage": "\u05ea\u05de\u05d5\u05e0\u05d4 \u05d7\u05d3\u05e9\u05d4 \u05de\u05d5\u05db\u05e0\u05d4. \u05e9\u05de\u05d5\u05e8 \u05d0\u05ea \u05d4\u05e4\u05e8\u05d5\u05e4\u05d9\u05dc \u05db\u05d3\u05d9 \u05dc\u05d4\u05d7\u05d9\u05dc \u05d0\u05d5\u05ea\u05d4.",
-  "choosePhotoForRequestsAndChats": "\u05d1\u05d7\u05e8 \u05ea\u05de\u05d5\u05e0\u05d4 \u05db\u05d3\u05d9 \u05e9\u05d9\u05d4\u05d9\u05d4 \u05e7\u05dc \u05d9\u05d5\u05ea\u05e8 \u05dc\u05d6\u05d4\u05d5\u05ea \u05d0\u05d5\u05ea\u05da \u05d1\u05d1\u05e7\u05e9\u05d5\u05ea \u05d5\u05d1\u05e6'\u05d0\u05d8.",
-  "chooseAnotherPhoto": "\u05d1\u05d7\u05e8 \u05ea\u05de\u05d5\u05e0\u05d4 \u05d0\u05d7\u05e8\u05ea",
-  "changePhoto": "\u05e9\u05e0\u05d4 \u05ea\u05de\u05d5\u05e0\u05d4",
-  "undoPhotoChange": "\u05d1\u05d8\u05dc \u05d0\u05ea \u05e9\u05d9\u05e0\u05d5\u05d9 \u05d4\u05ea\u05de\u05d5\u05e0\u05d4",
-  "noCarModelsSelectedYetMessage": "\u05e2\u05d3\u05d9\u05d9\u05df \u05dc\u05d0 \u05e0\u05d1\u05d7\u05e8\u05d5 \u05d3\u05d2\u05de\u05d9\u05dd. \u05d1\u05d7\u05e8 \u05d0\u05ea \u05d4\u05d3\u05d2\u05de\u05d9\u05dd \u05e9\u05d0\u05ea\u05d4 \u05ea\u05d5\u05de\u05da \u05d1\u05d4\u05dd \u05de\u05d4\u05e7\u05d8\u05dc\u05d5\u05d2 \u05e9\u05dc\u05de\u05d8\u05d4.",
-  "deleteAccountTitle": "\u05de\u05d7\u05e7 \u05d7\u05e9\u05d1\u05d5\u05df",
-  "deleteAccountPermanentMessage": "\u05e4\u05e2\u05d5\u05dc\u05d4 \u05d6\u05d5 \u05ea\u05de\u05d7\u05e7 \u05dc\u05e6\u05de\u05d9\u05ea\u05d5\u05ea \u05d0\u05ea \u05d4\u05d7\u05e9\u05d1\u05d5\u05df \u05e9\u05dc\u05da, \u05d4\u05d1\u05e7\u05e9\u05d5\u05ea, \u05d4\u05d9\u05e1\u05d8\u05d5\u05e8\u05d9\u05d9\u05ea \u05d4\u05e6'\u05d0\u05d8 \u05d5\u05d4\u05de\u05db\u05e9\u05d9\u05e8\u05d9\u05dd \u05d4\u05e8\u05e9\u05d5\u05de\u05d9\u05dd. \u05d0\u05d9 \u05d0\u05e4\u05e9\u05e8 \u05dc\u05d1\u05d8\u05dc \u05d0\u05ea \u05d4\u05e4\u05e2\u05d5\u05dc\u05d4.",
-  "accountDeletedSuccessfully": "\u05d4\u05d7\u05e9\u05d1\u05d5\u05df \u05e9\u05dc\u05da \u05e0\u05de\u05d7\u05e7.",
-  "accountCouldNotBeDeletedRightNow": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05de\u05d7\u05d5\u05e7 \u05d0\u05ea \u05d4\u05d7\u05e9\u05d1\u05d5\u05df \u05e9\u05dc\u05da \u05db\u05e8\u05d2\u05e2.",
-  "deleteAccountDangerDescription": "\u05d4\u05e1\u05e8 \u05d0\u05ea \u05d4\u05e4\u05e8\u05d5\u05e4\u05d9\u05dc \u05e9\u05dc\u05da \u05d5\u05de\u05d7\u05e7 \u05dc\u05e6\u05de\u05d9\u05ea\u05d5\u05ea \u05d0\u05ea \u05d4\u05de\u05d9\u05d3\u05e2 \u05d4\u05e9\u05d9\u05d9\u05da \u05dc\u05d7\u05e9\u05d1\u05d5\u05df \u05d0\u05dd \u05d0\u05d9\u05e0\u05da \u05e8\u05d5\u05e6\u05d4 \u05dc\u05d4\u05e9\u05ea\u05de\u05e9 \u05d1\u05d0\u05e4\u05dc\u05d9\u05e7\u05e6\u05d9\u05d4.",
-  "pleaseWait": "\u05d0\u05e0\u05d0 \u05d4\u05de\u05ea\u05df...",
-  "quickActions": "\u05e4\u05e2\u05d5\u05dc\u05d5\u05ea \u05de\u05d4\u05d9\u05e8\u05d5\u05ea",
-  "quickActionsDescription": "\u05d4\u05ea\u05d7\u05dc \u05e9\u05d9\u05d7\u05d4 \u05d9\u05e9\u05d9\u05e8\u05d4 \u05d0\u05d5 \u05e4\u05ea\u05d7 WhatsApp \u05e2\u05dd \u05de\u05e1\u05e4\u05e8 \u05d4\u05d8\u05dc\u05e4\u05d5\u05df \u05e9\u05dc \u05d4\u05e1\u05e4\u05e7.",
-  "openingChat": "\u05e4\u05d5\u05ea\u05d7 \u05e6'\u05d0\u05d8...",
-  "chatAction": "\u05e6'\u05d0\u05d8",
-  "openingWhatsApp": "\u05e4\u05d5\u05ea\u05d7 WhatsApp...",
+  "profileTitle": "פרופיל",
+  "profileLoadError": "לא ניתן לטעון כעת את הפרופיל.",
+  "contactDetails": "פרטי קשר",
+  "phone": "טלפון",
+  "cityLabel": "עיר",
+  "filterByCarMake": "סנן לפי יצרן",
+  "chatPushNotifications": "התראות צ'אט",
+  "chatPushNotificationsDescription": "קבל התראה כשמישהו שולח הודעת צ'אט.",
+  "showMessagePreview": "הצג תצוגת מסר",
+  "showMessagePreviewDescription": "כולל חלק מהודעת הצ'אט בתוך ההתראה.",
+  "profileUpdatedSuccessfully": "הפרופיל עודכן בהצלחה.",
+  "profilePhoto": "תמונת פרופיל",
+  "newPhotoReadyMessage": "תמונה חדשה מוכנה. שמור את הפרופיל כדי להחיל אותה.",
+  "choosePhotoForRequestsAndChats": "בחר תמונה כדי שיהיה קל יותר לזהות אותך בבקשות ובצ'אט.",
+  "chooseAnotherPhoto": "בחר תמונה אחרת",
+  "changePhoto": "שנה תמונה",
+  "undoPhotoChange": "בטל את שינוי התמונה",
+  "noCarModelsSelectedYetMessage": "עדיין לא נבחרו דגמים. בחר את הדגמים שאתה תומך בהם מהקטלוג שלמטה.",
+  "deleteAccountTitle": "מחק חשבון",
+  "deleteAccountPermanentMessage": "פעולה זו תמחק לצמיתות את החשבון שלך, הבקשות, היסטוריית הצ'אט והמכשירים הרשומים. אי אפשר לבטל את הפעולה.",
+  "accountDeletedSuccessfully": "החשבון שלך נמחק.",
+  "accountCouldNotBeDeletedRightNow": "לא ניתן למחוק את החשבון שלך כרגע.",
+  "deleteAccountDangerDescription": "הסר את הפרופיל שלך ומחק לצמיתות את המידע השייך לחשבון אם אינך רוצה להשתמש באפליקציה.",
+  "pleaseWait": "אנא המתן...",
+  "quickActions": "פעולות מהירות",
+  "quickActionsDescription": "התחל שיחה ישירה או פתח WhatsApp עם מספר הטלפון של הספק.",
+  "openingChat": "פותח צ'אט...",
+  "chatAction": "צ'אט",
+  "openingWhatsApp": "פותח WhatsApp...",
   "whatsAppAction": "WhatsApp",
-  "supplierCarsTitle": "\u05d4\u05e8\u05db\u05d1\u05d9\u05dd \u05e9\u05d4\u05e1\u05e4\u05e7 \u05d4\u05d6\u05d4 \u05e2\u05d5\u05d1\u05d3 \u05d0\u05d9\u05ea\u05dd",
-  "supplierCarsDescription": "\u05d0\u05dc\u05d5 \u05de\u05d5\u05ea\u05d2\u05d9 \u05d4\u05e8\u05db\u05d1 \u05e9\u05e0\u05d1\u05d7\u05e8\u05d5 \u05d1\u05e4\u05e8\u05d5\u05e4\u05d9\u05dc \u05d4\u05e1\u05e4\u05e7.",
-  "ratingLabel": "\u05d3\u05d9\u05e8\u05d5\u05d2 {value}",
+  "supplierCarsTitle": "רכבים שהספק תומך בהם",
+  "supplierCarsDescription": "הספק מקבל בקשות מתאימות עבור רכבים אלה.",
+  "ratingLabel": "דירוג {value}",
   "@ratingLabel": {
     "placeholders": {
       "value": {
@@ -385,7 +383,7 @@
       }
     }
   },
-  "joinedLabel": "\u05d4\u05e6\u05d8\u05e8\u05e3 {time}",
+  "joinedLabel": "הצטרף {time}",
   "@joinedLabel": {
     "placeholders": {
       "time": {
@@ -393,11 +391,11 @@
       }
     }
   },
-  "reportUserSectionTitle": "\u05d3\u05d5\u05d5\u05d7 \u05e2\u05dc \u05de\u05e9\u05ea\u05de\u05e9",
-  "reportUserSectionBody": "\u05e9\u05dc\u05d7 \u05d3\u05d9\u05d5\u05d5\u05d7 \u05d1\u05d8\u05d9\u05d7\u05d5\u05ea \u05d0\u05dd \u05d4\u05de\u05e9\u05ea\u05de\u05e9 \u05d4\u05d6\u05d4 \u05de\u05e0\u05e6\u05dc \u05dc\u05e8\u05e2\u05d4 \u05d0\u05ea \u05d4\u05e6'\u05d0\u05d8 \u05d0\u05d5 \u05d0\u05ea \u05d1\u05e7\u05e9\u05d5\u05ea \u05d4\u05d2\u05d9\u05e9\u05d4.",
-  "reportUserAction": "\u05d3\u05d5\u05d5\u05d7",
-  "sendingReport": "\u05e9\u05d5\u05dc\u05d7 \u05d3\u05d9\u05d5\u05d5\u05d7...",
-  "reportUserDialogTitle": "\u05d3\u05d5\u05d5\u05d7 \u05e2\u05dc {name}",
+  "reportUserSectionTitle": "דווח על חשבון",
+  "reportUserSectionBody": "שלח דיווח בטיחות אם חשבון זה מנצל לרעה צ׳אט או אישור ספקים.",
+  "reportUserAction": "דווח על חשבון",
+  "sendingReport": "שולח דיווח...",
+  "reportUserDialogTitle": "דווח על {name}",
   "@reportUserDialogTitle": {
     "placeholders": {
       "name": {
@@ -405,36 +403,36 @@
       }
     }
   },
-  "reportReasonLabel": "\u05e1\u05d9\u05d1\u05d4",
-  "reportDetailsLabel": "\u05e4\u05e8\u05d8\u05d9\u05dd",
-  "reportDetailsHint": "\u05d4\u05d5\u05e1\u05e3 \u05db\u05dc \u05de\u05d9\u05d3\u05e2 \u05e9\u05d9\u05e2\u05d6\u05d5\u05e8 \u05dc\u05de\u05e0\u05d4\u05dc \u05dc\u05d1\u05d3\u05d5\u05e7 \u05d0\u05ea \u05d4\u05d3\u05d9\u05d5\u05d5\u05d7.",
-  "sendReport": "\u05e9\u05dc\u05d7 \u05d3\u05d9\u05d5\u05d5\u05d7",
-  "userReportSubmitted": "\u05d4\u05d3\u05d9\u05d5\u05d5\u05d7 \u05e0\u05e9\u05dc\u05d7.",
-  "couldNotSendUserReport": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05e9\u05dc\u05d5\u05d7 \u05d0\u05ea \u05d4\u05d3\u05d9\u05d5\u05d5\u05d7.",
-  "reportReasonSpam": "\u05e1\u05e4\u05d0\u05dd",
-  "reportReasonFraud": "\u05d4\u05d5\u05e0\u05d0\u05d4",
-  "reportReasonHarassment": "\u05d4\u05d8\u05e8\u05d3\u05d4",
-  "reportReasonImpersonation": "\u05d4\u05ea\u05d7\u05d6\u05d5\u05ea",
-  "reportReasonOther": "\u05d0\u05d7\u05e8",
-  "couldNotOpenChatRightNow": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05e4\u05ea\u05d5\u05d7 \u05db\u05e2\u05ea \u05d0\u05ea \u05d4\u05e6'\u05d0\u05d8.",
-  "whatsAppPhoneNotReady": "\u05de\u05e1\u05e4\u05e8 \u05d4\u05d8\u05dc\u05e4\u05d5\u05df \u05d4\u05d6\u05d4 \u05d0\u05d9\u05e0\u05d5 \u05de\u05ea\u05d0\u05d9\u05dd \u05dc-WhatsApp.",
-  "couldNotOpenWhatsApp": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05e4\u05ea\u05d5\u05d7 \u05db\u05e2\u05ea \u05d0\u05ea WhatsApp.",
-  "privacyPolicy": "\u05de\u05d3\u05d9\u05e0\u05d9\u05d5\u05ea \u05e4\u05e8\u05d8\u05d9\u05d5\u05ea",
-  "privacyPolicyDescription": "\u05e7\u05e8\u05d0 \u05db\u05d9\u05e6\u05d3 \u05d4\u05d0\u05e4\u05dc\u05d9\u05e7\u05e6\u05d9\u05d4 \u05d0\u05d5\u05e1\u05e4\u05ea, \u05de\u05e9\u05ea\u05de\u05e9\u05ea \u05d5\u05de\u05d2\u05e0\u05d4 \u05e2\u05dc \u05d4\u05e0\u05ea\u05d5\u05e0\u05d9\u05dd \u05e9\u05dc\u05da.",
-  "openPrivacyPolicy": "\u05e4\u05ea\u05d7 \u05d0\u05ea \u05de\u05d3\u05d9\u05e0\u05d9\u05d5\u05ea \u05d4\u05e4\u05e8\u05d8\u05d9\u05d5\u05ea",
-  "couldNotOpenPrivacyPolicy": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05e4\u05ea\u05d5\u05d7 \u05db\u05e2\u05ea \u05d0\u05ea \u05de\u05d3\u05d9\u05e0\u05d9\u05d5\u05ea \u05d4\u05e4\u05e8\u05d8\u05d9\u05d5\u05ea.",
-  "requestUpdatedSuccessfully": "\u05d4\u05d1\u05e7\u05e9\u05d4 \u05e2\u05d5\u05d3\u05db\u05e0\u05d4 \u05d1\u05d4\u05e6\u05dc\u05d7\u05d4.",
-  "requestCreatedSuccessfully": "\u05d4\u05d1\u05e7\u05e9\u05d4 \u05e0\u05d5\u05e6\u05e8\u05d4 \u05d1\u05d4\u05e6\u05dc\u05d7\u05d4.",
-  "editRequestTitle": "\u05e2\u05e8\u05d9\u05db\u05ea \u05d1\u05e7\u05e9\u05d4",
-  "createRequestTitle": "\u05e6\u05d5\u05e8 \u05d1\u05e7\u05e9\u05d4",
-  "updateYourRequest": "\u05e2\u05d3\u05db\u05df \u05d0\u05ea \u05d4\u05d1\u05e7\u05e9\u05d4 \u05e9\u05dc\u05da",
-  "postNewRequest": "\u05e4\u05e8\u05e1\u05dd \u05d1\u05e7\u05e9\u05d4 \u05d7\u05d3\u05e9\u05d4",
-  "editRequestDescription": "\u05e8\u05e2\u05e0\u05df \u05d0\u05ea \u05e4\u05e8\u05d8\u05d9 \u05d4\u05d1\u05e7\u05e9\u05d4 \u05d5\u05d0\u05ea \u05d4\u05ea\u05de\u05d5\u05e0\u05d5\u05ea \u05e9\u05d0\u05ea\u05d4 \u05e8\u05d5\u05e6\u05d4 \u05e9\u05e7\u05d5\u05e0\u05d9\u05dd \u05d9\u05e8\u05d0\u05d5.",
-  "createRequestDescription": "\u05e6\u05d5\u05e8 \u05d1\u05e7\u05e9\u05d4 \u05e9\u05e1\u05e4\u05e7\u05d9\u05dd \u05d9\u05d5\u05db\u05dc\u05d5 \u05dc\u05e2\u05d9\u05d9\u05df \u05d1\u05d4 \u05d5\u05dc\u05e4\u05ea\u05d5\u05d7 \u05de\u05de\u05e0\u05d4 \u05e9\u05d9\u05d7\u05d5\u05ea.",
-  "requestCreationBlocked": "\u05d9\u05e6\u05d9\u05e8\u05ea \u05d4\u05d1\u05e7\u05e9\u05d4 \u05d7\u05e1\u05d5\u05de\u05d4",
-  "currentStatus": "\u05de\u05e6\u05d1 \u05e0\u05d5\u05db\u05d7\u05d9",
-  "initialStatus": "\u05de\u05e6\u05d1 \u05e8\u05d0\u05e9\u05d5\u05e0\u05d9",
-  "currentStatusMessage": "\u05d4\u05d1\u05e7\u05e9\u05d4 \u05d4\u05d6\u05d5 \u05de\u05e1\u05d5\u05de\u05e0\u05ea \u05db\u05e2\u05ea \u05db-\"{status}\".",
+  "reportReasonLabel": "סיבה",
+  "reportDetailsLabel": "פרטים",
+  "reportDetailsHint": "הוסף כל מידע שיעזור למנהל לבדוק את הדיווח.",
+  "sendReport": "שלח דיווח",
+  "userReportSubmitted": "הדיווח נשלח.",
+  "couldNotSendUserReport": "לא ניתן לשלוח את הדיווח.",
+  "reportReasonSpam": "ספאם",
+  "reportReasonFraud": "הונאה",
+  "reportReasonHarassment": "הטרדה",
+  "reportReasonImpersonation": "התחזות",
+  "reportReasonOther": "אחר",
+  "couldNotOpenChatRightNow": "לא ניתן לפתוח כעת את הצ'אט.",
+  "whatsAppPhoneNotReady": "מספר הטלפון הזה אינו מתאים ל-WhatsApp.",
+  "couldNotOpenWhatsApp": "לא ניתן לפתוח כעת את WhatsApp.",
+  "privacyPolicy": "מדיניות פרטיות",
+  "privacyPolicyDescription": "קרא כיצד האפליקציה אוספת, משתמשת ומגנה על הנתונים שלך.",
+  "openPrivacyPolicy": "פתח את מדיניות הפרטיות",
+  "couldNotOpenPrivacyPolicy": "לא ניתן לפתוח כעת את מדיניות הפרטיות.",
+  "requestUpdatedSuccessfully": "הבקשה עודכנה בהצלחה.",
+  "requestCreatedSuccessfully": "הבקשה נוצרה בהצלחה.",
+  "editRequestTitle": "עריכת בקשה",
+  "createRequestTitle": "צור בקשה",
+  "updateYourRequest": "עדכן את הבקשה שלך",
+  "postNewRequest": "בקש חלק חילוף",
+  "editRequestDescription": "עדכן את פרטי הבקשה והתמונות שברצונך שספקים יראו.",
+  "createRequestDescription": "ספר לספקים איזה חלק חילוף אתה צריך. ספקים מתאימים יקבלו התראה ויוכלו לשוחח איתך.",
+  "requestCreationBlocked": "יצירת הבקשה חסומה",
+  "currentStatus": "מצב נוכחי",
+  "initialStatus": "מצב ראשוני",
+  "currentStatusMessage": "הבקשה הזו מסומנת כעת כ-\"{status}\".",
   "@currentStatusMessage": {
     "placeholders": {
       "status": {
@@ -442,7 +440,7 @@
       }
     }
   },
-  "initialStatusMessage": "\u05d1\u05e7\u05e9\u05d5\u05ea \u05d7\u05d3\u05e9\u05d5\u05ea \u05d9\u05ea\u05d7\u05d9\u05dc\u05d5 \u05d1\u05de\u05e6\u05d1 \"{status}\".",
+  "initialStatusMessage": "בקשות חדשות יתחילו במצב \"{status}\".",
   "@initialStatusMessage": {
     "placeholders": {
       "status": {
@@ -450,53 +448,117 @@
       }
     }
   },
-  "requestTitleLabel": "\u05db\u05d5\u05ea\u05e8\u05ea \u05d4\u05d1\u05e7\u05e9\u05d4",
-  "requestTitleHint": "\u05e4\u05d2\u05d5\u05e9 \u05e7\u05d3\u05de\u05d9 \u05dc-Toyota Camry 2022",
-  "enterRequestTitle": "\u05d4\u05d6\u05df \u05db\u05d5\u05ea\u05e8\u05ea \u05dc\u05d1\u05e7\u05e9\u05d4.",
-  "requestDescriptionLabel": "\u05ea\u05d9\u05d0\u05d5\u05e8",
-  "requestDescriptionHint": "\u05ea\u05d0\u05e8 \u05d0\u05ea \u05d4\u05de\u05e6\u05d1, \u05d4\u05de\u05d5\u05ea\u05d2 \u05d4\u05de\u05d5\u05e2\u05d3\u05e3 \u05d0\u05d5 \u05e4\u05e8\u05d8\u05d9 \u05d4\u05d3\u05d2\u05dd \u05e9\u05e7\u05d5\u05e0\u05d9\u05dd \u05e6\u05e8\u05d9\u05db\u05d9\u05dd \u05dc\u05d3\u05e2\u05ea.",
-  "addShortDescription": "\u05d4\u05d5\u05e1\u05e3 \u05ea\u05d9\u05d0\u05d5\u05e8 \u05e7\u05e6\u05e8.",
-  "carModelLabel": "\u05d3\u05d2\u05dd \u05e8\u05db\u05d1",
-  "carModelDescription": "\u05d1\u05d7\u05e8 \u05d0\u05ea \u05d3\u05d2\u05dd \u05d4\u05e8\u05db\u05d1 \u05d4\u05de\u05d3\u05d5\u05d9\u05e7 \u05e9\u05dc \u05d1\u05e7\u05e9\u05d4 \u05d6\u05d5 \u05db\u05d3\u05d9 \u05e9\u05e8\u05e7 \u05e1\u05e4\u05e7\u05d9\u05dd \u05de\u05ea\u05d0\u05d9\u05de\u05d9\u05dd \u05d9\u05e7\u05d1\u05dc\u05d5 \u05d4\u05ea\u05e8\u05d0\u05d4.",
-  "addCarManually": "\u05d4\u05d5\u05e1\u05e3 \u05e8\u05db\u05d1 \u05d9\u05d3\u05e0\u05d9\u05ea",
-  "addCarManuallyDescription": "\u05d4\u05e9\u05ea\u05de\u05e9 \u05d1\u05d6\u05d4 \u05d0\u05dd \u05d0\u05d9\u05df \u05d0\u05ea \u05d4\u05d9\u05e6\u05e8\u05df \u05d0\u05d5 \u05d4\u05d3\u05d2\u05dd \u05d1\u05e7\u05d8\u05dc\u05d5\u05d2.",
-  "carMakeLabel": "\u05d9\u05e6\u05e8\u05df \u05e8\u05db\u05d1",
-  "carModelSearchLabel": "\u05d7\u05e4\u05e9 \u05d3\u05d2\u05dd \u05e8\u05db\u05d1",
+  "requestTitleLabel": "איזה חלק חילוף אתה צריך?",
+  "requestTitleHint": "פגוש קדמי ל-Toyota Camry 2022",
+  "enterRequestTitle": "הזן כותרת לבקשה.",
+  "requestDescriptionLabel": "תיאור",
+  "requestDescriptionHint": "תאר מצב, העדפת מותג או פרטי דגם שספקים צריכים לדעת.",
+  "addShortDescription": "הוסף תיאור קצר.",
+  "carModelLabel": "דגם רכב",
+  "carModelDescription": "בחר את דגם הרכב המדויק של בקשה זו כדי שרק ספקים מתאימים יקבלו התראה.",
+  "addCarManually": "הוסף רכב ידנית",
+  "addCarManuallyDescription": "השתמש בזה אם אין את היצרן או הדגם בקטלוג.",
+  "carMakeLabel": "יצרן רכב",
+  "carModelSearchLabel": "חפש דגם רכב",
   "carModelSearchHint": "Audi RS7",
-  "clearCarModelSearch": "\u05e0\u05e7\u05d4 \u05d7\u05d9\u05e4\u05d5\u05e9",
-  "carModelSearchFailed": "\u05d4\u05d7\u05d9\u05e4\u05d5\u05e9 \u05d0\u05d7\u05e8 \u05d3\u05d2\u05dd \u05d4\u05e8\u05db\u05d1 \u05e0\u05db\u05e9\u05dc. \u05e0\u05e1\u05d4 \u05e9\u05d5\u05d1.",
-  "noMatchingCarModelsFound": "\u05dc\u05d0 \u05e0\u05de\u05e6\u05d0\u05d5 \u05d3\u05d2\u05de\u05d9 \u05e8\u05db\u05d1 \u05de\u05ea\u05d0\u05d9\u05de\u05d9\u05dd.",
-  "newCarMakeLabel": "\u05d9\u05e6\u05e8\u05df \u05e8\u05db\u05d1 \u05d7\u05d3\u05e9",
+  "clearCarModelSearch": "נקה חיפוש",
+  "carModelSearchFailed": "החיפוש אחר דגם הרכב נכשל. נסה שוב.",
+  "noMatchingCarModelsFound": "לא נמצאו דגמי רכב מתאימים.",
+  "newCarMakeLabel": "יצרן רכב חדש",
   "newCarMakeHint": "Toyota",
-  "newCarModelLabel": "\u05d3\u05d2\u05dd \u05e8\u05db\u05d1 \u05d7\u05d3\u05e9",
+  "newCarModelLabel": "דגם רכב חדש",
   "newCarModelHint": "Camry 2024",
-  "cityOptionalLabel": "\u05e2\u05d9\u05e8 (\u05d0\u05d5\u05e4\u05e6\u05d9\u05d5\u05e0\u05dc\u05d9)",
-  "cityOptionalHint": "\u05e8\u05d9\u05d0\u05d3",
-  "addPhotos": "\u05d4\u05d5\u05e1\u05e3 \u05ea\u05de\u05d5\u05e0\u05d5\u05ea",
-  "addMorePhotos": "\u05d4\u05d5\u05e1\u05e3 \u05e2\u05d5\u05d3 \u05ea\u05de\u05d5\u05e0\u05d5\u05ea",
-  "minPriceLabel": "\u05de\u05d7\u05d9\u05e8 \u05de\u05d9\u05e0\u05d9\u05de\u05dc\u05d9",
-  "maxPriceLabel": "\u05de\u05d7\u05d9\u05e8 \u05de\u05e7\u05e1\u05d9\u05de\u05dc\u05d9",
-  "maxPriceMustBeGreaterThanMinPrice": "\u05d4\u05de\u05d7\u05d9\u05e8 \u05d4\u05de\u05e7\u05e1\u05d9\u05de\u05dc\u05d9 \u05d7\u05d9\u05d9\u05d1 \u05dc\u05d4\u05d9\u05d5\u05ea \u05d2\u05d1\u05d5\u05d4 \u05d9\u05d5\u05ea\u05e8 \u05de\u05d4\u05de\u05d7\u05d9\u05e8 \u05d4\u05de\u05d9\u05e0\u05d9\u05de\u05dc\u05d9.",
-  "saving": "\u05e9\u05d5\u05de\u05e8...",
-  "saveChanges": "\u05e9\u05de\u05d5\u05e8 \u05e9\u05d9\u05e0\u05d5\u05d9\u05d9\u05dd",
-  "enterValidNumber": "\u05d4\u05d6\u05df \u05de\u05e1\u05e4\u05e8 \u05ea\u05e7\u05d9\u05df.",
-  "enterCarMake": "\u05d4\u05d6\u05df \u05d0\u05ea \u05d9\u05e6\u05e8\u05df \u05d4\u05e8\u05db\u05d1.",
-  "enterCarModel": "\u05d4\u05d6\u05df \u05d0\u05ea \u05d3\u05d2\u05dd \u05d4\u05e8\u05db\u05d1.",
-  "enterCarMakeAndModelBeforeSaving": "\u05d4\u05d6\u05df \u05d2\u05dd \u05d0\u05ea \u05d9\u05e6\u05e8\u05df \u05d4\u05e8\u05db\u05d1 \u05d5\u05d2\u05dd \u05d0\u05ea \u05d4\u05d3\u05d2\u05dd \u05dc\u05e4\u05e0\u05d9 \u05e9\u05de\u05d9\u05e8\u05ea \u05d4\u05d1\u05e7\u05e9\u05d4.",
-  "chooseCarModelBeforeSaving": "\u05d1\u05d7\u05e8 \u05d3\u05d2\u05dd \u05e8\u05db\u05d1 \u05dc\u05e4\u05e0\u05d9 \u05e9\u05de\u05d9\u05e8\u05ea \u05d4\u05d1\u05e7\u05e9\u05d4.",
-  "viewMyRequests": "\u05e6\u05e4\u05d4 \u05d1\u05d1\u05e7\u05e9\u05d5\u05ea \u05e9\u05dc\u05d9",
-  "viewRequest": "\u05e6\u05e4\u05d4 \u05d1\u05d1\u05e7\u05e9\u05d4",
-  "dismiss": "\u05e1\u05d2\u05d5\u05e8",
-  "appUpdateAvailableMessage": "\u05d2\u05e8\u05e1\u05d4 \u05d7\u05d3\u05e9\u05d4 \u05e9\u05dc MTA \u05d6\u05de\u05d9\u05e0\u05d4. \u05e2\u05d3\u05db\u05df \u05db\u05e2\u05ea \u05db\u05d3\u05d9 \u05dc\u05e7\u05d1\u05dc \u05d0\u05ea \u05d4\u05ea\u05db\u05d5\u05e0\u05d5\u05ea \u05d5\u05d4\u05e9\u05d9\u05e4\u05d5\u05e8\u05d9\u05dd \u05d4\u05d7\u05d3\u05e9\u05d9\u05dd.",
-  "updateNow": "\u05e2\u05d3\u05db\u05df \u05db\u05e2\u05ea",
-  "later": "\u05de\u05d0\u05d5\u05d7\u05e8 \u05d9\u05d5\u05ea\u05e8",
-  "couldNotOpenAppStore": "\u05dc\u05d0 \u05e0\u05d9\u05ea\u05df \u05dc\u05e4\u05ea\u05d5\u05d7 \u05db\u05e2\u05ea \u05d0\u05ea \u05d7\u05e0\u05d5\u05ea \u05d4\u05d0\u05e4\u05dc\u05d9\u05e7\u05e6\u05d9\u05d5\u05ea.",
-  "whatsAppGreeting": "\u05e9\u05dc\u05d5\u05dd {name}",
+  "cityOptionalLabel": "עיר (אופציונלי)",
+  "cityOptionalHint": "ריאד",
+  "addPhotos": "הוסף תמונות",
+  "addMorePhotos": "הוסף עוד תמונות",
+  "minPriceLabel": "מחיר מינימלי",
+  "maxPriceLabel": "מחיר מקסימלי",
+  "maxPriceMustBeGreaterThanMinPrice": "המחיר המקסימלי חייב להיות גבוה יותר מהמחיר המינימלי.",
+  "saving": "שומר...",
+  "saveChanges": "שמור שינויים",
+  "enterValidNumber": "הזן מספר תקין.",
+  "enterCarMake": "הזן את יצרן הרכב.",
+  "enterCarModel": "הזן את דגם הרכב.",
+  "enterCarMakeAndModelBeforeSaving": "הזן גם את יצרן הרכב וגם את הדגם לפני שמירת הבקשה.",
+  "chooseCarModelBeforeSaving": "בחר דגם רכב לפני שמירת הבקשה.",
+  "viewMyRequests": "צפה בבקשות שלי",
+  "viewRequest": "צפה בבקשה",
+  "dismiss": "סגור",
+  "appUpdateAvailableMessage": "גרסה חדשה של MTA זמינה. עדכן כעת כדי לקבל את התכונות והשיפורים החדשים.",
+  "updateNow": "עדכן כעת",
+  "later": "מאוחר יותר",
+  "couldNotOpenAppStore": "לא ניתן לפתוח כעת את חנות האפליקציות.",
+  "whatsAppGreeting": "שלום {name}",
   "@whatsAppGreeting": {
     "placeholders": {
       "name": {
         "type": "String"
       }
     }
-  }
+  },
+  "accountActions": "פעולות חשבון",
+  "logoutDescription": "התנתק ממכשיר זה. אפשר להתחבר שוב עם הטלפון והסיסמה.",
+  "forgotPassword": "שכחת סיסמה?",
+  "resetPasswordTitle": "איפוס סיסמה",
+  "passwordResetIntro": "הזן את מספר הטלפון שלך כדי לקבל קוד SMS.",
+  "newPassword": "סיסמה חדשה",
+  "confirmNewPassword": "אישור סיסמה חדשה",
+  "passwordsDoNotMatch": "הסיסמאות אינן תואמות.",
+  "sendingSms": "שולח SMS...",
+  "sendSmsCode": "שלח קוד SMS",
+  "smsCode": "קוד SMS",
+  "changingPassword": "מחליף סיסמה...",
+  "verifyAndChangePassword": "אמת והחלף סיסמה",
+  "resendInSeconds": "שליחה חוזרת בעוד {count} שנ׳",
+  "@resendInSeconds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resendCode": "שלח קוד שוב",
+  "sendingNewVerificationCode": "שולח קוד אימות חדש...",
+  "sendingVerificationCodeToPhone": "שולח קוד אימות אל {phone}...",
+  "@sendingVerificationCodeToPhone": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "phoneVerifiedAutomaticallyChangingPassword": "הטלפון אומת אוטומטית. מחליף סיסמה...",
+  "checkPhoneNumberAndTryAgain": "בדוק את מספר הטלפון ונסה שוב.",
+  "enterSmsCodeSentToPhone": "הזן את קוד ה-SMS שנשלח אל {phone}.",
+  "@enterSmsCodeSentToPhone": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "automaticVerificationTimedOutEnterSmsCode": "האימות האוטומטי הסתיים. הזן את קוד ה-SMS.",
+  "phoneVerificationCouldNotStart": "לא ניתן להתחיל אימות טלפון.",
+  "waitForSmsCodeFirst": "המתן קודם לקוד ה-SMS.",
+  "enterSixDigitSmsCode": "הזן קוד SMS בן 6 ספרות.",
+  "passwordChangedSignInAgain": "הסיסמה שונתה. התחבר שוב.",
+  "passwordResetFailedTryCodeAgain": "איפוס הסיסמה נכשל. נסה שוב עם הקוד.",
+  "firebaseSmsBlocked": "Firebase חוסם את בקשת ה-SMS הזו. ודא שכניסה בטלפון מופעלת לאזור זה.",
+  "validPhoneNumberError": "הזן מספר טלפון תקין שמתחיל ב-+970 או +972.",
+  "tooManySmsAttempts": "יותר מדי ניסיונות SMS. המתן לפני בקשת קוד נוסף.",
+  "smsCodeIncorrect": "קוד ה-SMS שגוי.",
+  "smsCodeExpired": "פג תוקף קוד ה-SMS. בקש קוד חדש.",
+  "firebasePhoneVerificationFailed": "אימות הטלפון של Firebase נכשל ({code}): {message}",
+  "@firebasePhoneVerificationFailed": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "phoneVerificationFailed": "אימות הטלפון נכשל."
 }

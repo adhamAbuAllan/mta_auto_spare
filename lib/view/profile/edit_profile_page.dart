@@ -342,6 +342,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                         ],
                       ),
                       const SizedBox(height: 24),
+                      _AccountActionsCard(isBusy: isBusy, onLogout: _logout),
+                      const SizedBox(height: 16),
                       _DangerZoneCard(
                         isBusy: isBusy,
                         onDeleteAccount: _confirmDeleteAccount,
@@ -415,6 +417,16 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         contentType: lookupMimeType(pickedFile.path) ?? 'image/jpeg',
       );
     });
+  }
+
+  Future<void> _logout() async {
+    if (_isDeletingAccount) {
+      return;
+    }
+    await ref.read(logoutNotifierProvider.notifier).logout();
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   Future<void> _confirmDeleteAccount() async {
@@ -541,6 +553,56 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       }
     }
     return null;
+  }
+}
+
+class _AccountActionsCard extends StatelessWidget {
+  const _AccountActionsCard({required this.isBusy, required this.onLogout});
+
+  final bool isBusy;
+  final Future<void> Function() onLogout;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE4E7EC)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.accountActions,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF111827),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            context.l10n.logoutDescription,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: const Color(0xFF667085),
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 14),
+          OutlinedButton.icon(
+            onPressed: isBusy
+                ? null
+                : () {
+                    onLogout();
+                  },
+            icon: const Icon(Icons.logout_rounded),
+            label: Text(context.l10n.logout),
+          ),
+        ],
+      ),
+    );
   }
 }
 

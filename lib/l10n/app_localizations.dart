@@ -127,7 +127,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'MTA'**
+  /// **'MTA Auto Spare'**
   String get appTitle;
 
   /// No description provided for @backend.
@@ -151,7 +151,7 @@ abstract class AppLocalizations {
   /// No description provided for @carsIHavePartsFor.
   ///
   /// In en, this message translates to:
-  /// **'Cars I have parts for'**
+  /// **'Cars I supply parts for'**
   String get carsIHavePartsFor;
 
   /// No description provided for @changeLanguage.
@@ -229,13 +229,13 @@ abstract class AppLocalizations {
   /// No description provided for @supplierProfileIntro.
   ///
   /// In en, this message translates to:
-  /// **'Update the details buyers see, tune chat notifications, and choose the car models you already stock parts for.'**
+  /// **'Update the details customers see, manage chat notifications, and choose the cars you can supply parts for.'**
   String get supplierProfileIntro;
 
   /// No description provided for @buyerProfileIntro.
   ///
   /// In en, this message translates to:
-  /// **'Update the details suppliers see and tune how chat notifications reach you.'**
+  /// **'Update the details suppliers see when you create requests or chat with them.'**
   String get buyerProfileIntro;
 
   /// No description provided for @email.
@@ -433,7 +433,7 @@ abstract class AppLocalizations {
   /// No description provided for @pickTheCarNamesYouSupplyPartsFor.
   ///
   /// In en, this message translates to:
-  /// **'Pick the car names you supply parts for.'**
+  /// **'Choose the cars you support. We use this to notify you about matching spare-part requests.'**
   String get pickTheCarNamesYouSupplyPartsFor;
 
   /// No description provided for @registerUsernameHint.
@@ -481,7 +481,7 @@ abstract class AppLocalizations {
   /// No description provided for @signInToBrowseSellerRequests.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to browse customer requests and chat.'**
+  /// **'Sign in to request spare parts, chat with suppliers, and manage your offers.'**
   String get signInToBrowseSellerRequests;
 
   /// No description provided for @somethingWentWrong.
@@ -499,7 +499,7 @@ abstract class AppLocalizations {
   /// No description provided for @suppliersCanPostRequests.
   ///
   /// In en, this message translates to:
-  /// **'Buyers can post requests and suppliers can start chats.'**
+  /// **'Customers request spare parts. Suppliers choose supported cars and receive matching opportunities.'**
   String get suppliersCanPostRequests;
 
   /// No description provided for @theCarCatalogCouldNotBeLoaded.
@@ -541,7 +541,7 @@ abstract class AppLocalizations {
   /// No description provided for @userRole.
   ///
   /// In en, this message translates to:
-  /// **'User'**
+  /// **'Customer'**
   String get userRole;
 
   /// No description provided for @attachment.
@@ -895,19 +895,19 @@ abstract class AppLocalizations {
   /// No description provided for @browseRequestPostsFromOtherSellers.
   ///
   /// In en, this message translates to:
-  /// **'Browse request posts from other sellers.'**
+  /// **'Browse open spare-part requests from customers.'**
   String get browseRequestPostsFromOtherSellers;
 
   /// No description provided for @seeRequestPostsYouCreated.
   ///
   /// In en, this message translates to:
-  /// **'See the request posts you created.'**
+  /// **'See the spare-part requests you created.'**
   String get seeRequestPostsYouCreated;
 
   /// No description provided for @browseRequests.
   ///
   /// In en, this message translates to:
-  /// **'Browse Requests'**
+  /// **'Open Requests'**
   String get browseRequests;
 
   /// No description provided for @myRequests.
@@ -925,19 +925,19 @@ abstract class AppLocalizations {
   /// No description provided for @createFirstRequestPostMessage.
   ///
   /// In en, this message translates to:
-  /// **'Create your first request post and it will show up here.'**
+  /// **'Create your first spare-part request and suppliers can contact you.'**
   String get createFirstRequestPostMessage;
 
   /// No description provided for @noSellerRequestsYet.
   ///
   /// In en, this message translates to:
-  /// **'No seller requests yet'**
+  /// **'No open requests yet'**
   String get noSellerRequestsYet;
 
   /// No description provided for @noSellerRequestsYetMessage.
   ///
   /// In en, this message translates to:
-  /// **'There are no request posts from other sellers yet. Pull to refresh later.'**
+  /// **'There are no open spare-part requests right now. Pull to refresh later.'**
   String get noSellerRequestsYetMessage;
 
   /// No description provided for @createRequest.
@@ -979,7 +979,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat.
   ///
   /// In en, this message translates to:
-  /// **'Chat'**
+  /// **'Chat with customer'**
   String get chat;
 
   /// No description provided for @opening.
@@ -1045,7 +1045,7 @@ abstract class AppLocalizations {
   /// No description provided for @assignedRequests.
   ///
   /// In en, this message translates to:
-  /// **'Assigned Requests'**
+  /// **'Handling Requests'**
   String get assignedRequests;
 
   /// No description provided for @allStatuses.
@@ -1063,37 +1063,37 @@ abstract class AppLocalizations {
   /// No description provided for @thisRequestBelongsToYou.
   ///
   /// In en, this message translates to:
-  /// **'This request belongs to you.'**
+  /// **'Your request is open for supplier offers.'**
   String get thisRequestBelongsToYou;
 
   /// No description provided for @openChatWithSellerBehindRequest.
   ///
   /// In en, this message translates to:
-  /// **'Open a chat with the owner of this request.'**
+  /// **'Chat with the customer and offer this spare part.'**
   String get openChatWithSellerBehindRequest;
 
   /// No description provided for @requestsYouCanManageNow.
   ///
   /// In en, this message translates to:
-  /// **'Requests you can manage right now.'**
+  /// **'Requests customers accepted you to handle.'**
   String get requestsYouCanManageNow;
 
   /// No description provided for @noAssignedRequestsYet.
   ///
   /// In en, this message translates to:
-  /// **'No assigned requests yet'**
+  /// **'No accepted requests yet'**
   String get noAssignedRequestsYet;
 
   /// No description provided for @noAssignedRequestsYetMessage.
   ///
   /// In en, this message translates to:
-  /// **'Once an owner approves your access, the request will appear here.'**
+  /// **'When a customer accepts you to handle a request, it will appear here.'**
   String get noAssignedRequestsYetMessage;
 
   /// No description provided for @youCanManageThisRequestStatus.
   ///
   /// In en, this message translates to:
-  /// **'You can manage this request status.'**
+  /// **'The customer accepted you to handle this request.'**
   String get youCanManageThisRequestStatus;
 
   /// No description provided for @changeStatus.
@@ -1123,55 +1123,55 @@ abstract class AppLocalizations {
   /// No description provided for @requestControl.
   ///
   /// In en, this message translates to:
-  /// **'Request Control'**
+  /// **'Supplier acceptance'**
   String get requestControl;
 
   /// No description provided for @thisChatCanManageRequestStatus.
   ///
   /// In en, this message translates to:
-  /// **'The supplier in this chat can manage this request status now.'**
+  /// **'You accepted this supplier. The request is no longer public.'**
   String get thisChatCanManageRequestStatus;
 
   /// No description provided for @thisRequestIsAssignedToAnotherSupplier.
   ///
   /// In en, this message translates to:
-  /// **'This request is currently assigned to another supplier.'**
+  /// **'This request is already being handled by another supplier.'**
   String get thisRequestIsAssignedToAnotherSupplier;
 
   /// No description provided for @noAccessRequestForThisRequestYet.
   ///
   /// In en, this message translates to:
-  /// **'No access request has been sent for this request yet.'**
+  /// **'No supplier has asked to handle this request yet.'**
   String get noAccessRequestForThisRequestYet;
 
   /// No description provided for @youCanChangeThisRequestStatusNow.
   ///
   /// In en, this message translates to:
-  /// **'You can change this request status now.'**
+  /// **'Customer accepted you. You can now manage this request.'**
   String get youCanChangeThisRequestStatusNow;
 
   /// No description provided for @waitingForOwnerApproval.
   ///
   /// In en, this message translates to:
-  /// **'Waiting for the owner to approve your access request.'**
+  /// **'Waiting for the customer to accept you.'**
   String get waitingForOwnerApproval;
 
   /// No description provided for @ownerRejectedYourAccessRequest.
   ///
   /// In en, this message translates to:
-  /// **'The owner rejected your access request.'**
+  /// **'Customer declined this request.'**
   String get ownerRejectedYourAccessRequest;
 
   /// No description provided for @askOwnerForStatusAccess.
   ///
   /// In en, this message translates to:
-  /// **'Ask the owner for permission to manage this request status.'**
+  /// **'Want to handle this request? Ask the customer to accept you.'**
   String get askOwnerForStatusAccess;
 
   /// No description provided for @currentManager.
   ///
   /// In en, this message translates to:
-  /// **'Current manager: {name}'**
+  /// **'Accepted supplier: {name}'**
   String currentManager(String name);
 
   /// No description provided for @approving.
@@ -1183,13 +1183,13 @@ abstract class AppLocalizations {
   /// No description provided for @approveAccess.
   ///
   /// In en, this message translates to:
-  /// **'Approve Access'**
+  /// **'Accept supplier'**
   String get approveAccess;
 
   /// No description provided for @rejectAccess.
   ///
   /// In en, this message translates to:
-  /// **'Reject Access'**
+  /// **'Decline'**
   String get rejectAccess;
 
   /// No description provided for @sendingRequest.
@@ -1201,67 +1201,67 @@ abstract class AppLocalizations {
   /// No description provided for @requestAccess.
   ///
   /// In en, this message translates to:
-  /// **'Request Access'**
+  /// **'Ask customer to accept you'**
   String get requestAccess;
 
   /// No description provided for @accessRequestPending.
   ///
   /// In en, this message translates to:
-  /// **'Your access request is pending.'**
+  /// **'Waiting for customer approval.'**
   String get accessRequestPending;
 
   /// No description provided for @openAssignedRequestsToUpdateStatus.
   ///
   /// In en, this message translates to:
-  /// **'Open Assigned Requests to update the status anytime.'**
+  /// **'Open Handling Requests to update the status anytime.'**
   String get openAssignedRequestsToUpdateStatus;
 
   /// No description provided for @accessRequestSent.
   ///
   /// In en, this message translates to:
-  /// **'Access request sent.'**
+  /// **'Request sent to the customer.'**
   String get accessRequestSent;
 
   /// No description provided for @couldNotSendAccessRequest.
   ///
   /// In en, this message translates to:
-  /// **'Could not send the access request.'**
+  /// **'Could not ask the customer right now.'**
   String get couldNotSendAccessRequest;
 
   /// No description provided for @accessRequestApproved.
   ///
   /// In en, this message translates to:
-  /// **'Access request approved.'**
+  /// **'Supplier accepted.'**
   String get accessRequestApproved;
 
   /// No description provided for @couldNotApproveAccessRequest.
   ///
   /// In en, this message translates to:
-  /// **'Could not approve the access request.'**
+  /// **'Could not accept the supplier.'**
   String get couldNotApproveAccessRequest;
 
   /// No description provided for @accessRequestRejected.
   ///
   /// In en, this message translates to:
-  /// **'Access request rejected.'**
+  /// **'Supplier declined.'**
   String get accessRequestRejected;
 
   /// No description provided for @couldNotRejectAccessRequest.
   ///
   /// In en, this message translates to:
-  /// **'Could not reject the access request.'**
+  /// **'Could not decline the supplier.'**
   String get couldNotRejectAccessRequest;
 
   /// No description provided for @expandRequestControl.
   ///
   /// In en, this message translates to:
-  /// **'Expand request controls'**
+  /// **'Show supplier acceptance'**
   String get expandRequestControl;
 
   /// No description provided for @collapseRequestControl.
   ///
   /// In en, this message translates to:
-  /// **'Collapse request controls'**
+  /// **'Hide supplier acceptance'**
   String get collapseRequestControl;
 
   /// No description provided for @adminPanel.
@@ -1504,6 +1504,18 @@ abstract class AppLocalizations {
   /// **'Contact Details'**
   String get contactDetails;
 
+  /// No description provided for @accountActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Account actions'**
+  String get accountActions;
+
+  /// No description provided for @logoutDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of this device. You can sign in again with your phone and password.'**
+  String get logoutDescription;
+
   /// No description provided for @phone.
   ///
   /// In en, this message translates to:
@@ -1669,13 +1681,13 @@ abstract class AppLocalizations {
   /// No description provided for @supplierCarsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Cars This Supplier Works With'**
+  /// **'Cars This Supplier Supports'**
   String get supplierCarsTitle;
 
   /// No description provided for @supplierCarsDescription.
   ///
   /// In en, this message translates to:
-  /// **'These are the car brands selected on the supplier profile.'**
+  /// **'This supplier receives matching requests for these car brands.'**
   String get supplierCarsDescription;
 
   /// No description provided for @ratingLabel.
@@ -1693,19 +1705,19 @@ abstract class AppLocalizations {
   /// No description provided for @reportUserSectionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Report User'**
+  /// **'Report account'**
   String get reportUserSectionTitle;
 
   /// No description provided for @reportUserSectionBody.
   ///
   /// In en, this message translates to:
-  /// **'Send a safety report if this user is abusing chat or request access.'**
+  /// **'Send a safety report if this account is abusing chat or supplier acceptance.'**
   String get reportUserSectionBody;
 
   /// No description provided for @reportUserAction.
   ///
   /// In en, this message translates to:
-  /// **'Report User'**
+  /// **'Report account'**
   String get reportUserAction;
 
   /// No description provided for @sendingReport.
@@ -1861,19 +1873,19 @@ abstract class AppLocalizations {
   /// No description provided for @postNewRequest.
   ///
   /// In en, this message translates to:
-  /// **'Post a new request'**
+  /// **'Request a spare part'**
   String get postNewRequest;
 
   /// No description provided for @editRequestDescription.
   ///
   /// In en, this message translates to:
-  /// **'Refresh the request details and the photos you want buyers to see.'**
+  /// **'Refresh the request details and photos you want suppliers to see.'**
   String get editRequestDescription;
 
   /// No description provided for @createRequestDescription.
   ///
   /// In en, this message translates to:
-  /// **'Create a request that suppliers can browse and open chats from.'**
+  /// **'Tell suppliers what spare part you need. Matching suppliers will be notified and can chat with you.'**
   String get createRequestDescription;
 
   /// No description provided for @requestCreationBlocked.
@@ -1909,7 +1921,7 @@ abstract class AppLocalizations {
   /// No description provided for @requestTitleLabel.
   ///
   /// In en, this message translates to:
-  /// **'Request title'**
+  /// **'What spare part do you need?'**
   String get requestTitleLabel;
 
   /// No description provided for @requestTitleHint.
@@ -1933,7 +1945,7 @@ abstract class AppLocalizations {
   /// No description provided for @requestDescriptionHint.
   ///
   /// In en, this message translates to:
-  /// **'Describe the condition, brand preference, or model details buyers should know.'**
+  /// **'Describe the condition, brand preference, or model details suppliers should know.'**
   String get requestDescriptionHint;
 
   /// No description provided for @addShortDescription.
@@ -2157,6 +2169,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hello {name}'**
   String whatsAppGreeting(String name);
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @passwordResetIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number to receive an SMS code.'**
+  String get passwordResetIntro;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get newPassword;
+
+  /// No description provided for @confirmNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get confirmNewPassword;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @sendingSms.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending SMS...'**
+  String get sendingSms;
+
+  /// No description provided for @sendSmsCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send SMS code'**
+  String get sendSmsCode;
+
+  /// No description provided for @smsCode.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS code'**
+  String get smsCode;
+
+  /// No description provided for @changingPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing password...'**
+  String get changingPassword;
+
+  /// No description provided for @verifyAndChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify and change password'**
+  String get verifyAndChangePassword;
+
+  /// No description provided for @resendInSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend in {count} s'**
+  String resendInSeconds(int count);
+
+  /// No description provided for @resendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code'**
+  String get resendCode;
+
+  /// No description provided for @sendingNewVerificationCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending a new verification code...'**
+  String get sendingNewVerificationCode;
+
+  /// No description provided for @sendingVerificationCodeToPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending verification code to {phone}...'**
+  String sendingVerificationCodeToPhone(String phone);
+
+  /// No description provided for @phoneVerifiedAutomaticallyChangingPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone verified automatically. Changing password...'**
+  String get phoneVerifiedAutomaticallyChangingPassword;
+
+  /// No description provided for @checkPhoneNumberAndTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the phone number and try again.'**
+  String get checkPhoneNumberAndTryAgain;
+
+  /// No description provided for @enterSmsCodeSentToPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the SMS code sent to {phone}.'**
+  String enterSmsCodeSentToPhone(String phone);
+
+  /// No description provided for @automaticVerificationTimedOutEnterSmsCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic verification timed out. Enter the SMS code.'**
+  String get automaticVerificationTimedOutEnterSmsCode;
+
+  /// No description provided for @phoneVerificationCouldNotStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone verification could not start.'**
+  String get phoneVerificationCouldNotStart;
+
+  /// No description provided for @waitForSmsCodeFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait for the SMS code first.'**
+  String get waitForSmsCodeFirst;
+
+  /// No description provided for @enterSixDigitSmsCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit SMS code.'**
+  String get enterSixDigitSmsCode;
+
+  /// No description provided for @passwordChangedSignInAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed. Sign in again.'**
+  String get passwordChangedSignInAgain;
+
+  /// No description provided for @passwordResetFailedTryCodeAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset failed. Try the code again.'**
+  String get passwordResetFailedTryCodeAgain;
+
+  /// No description provided for @firebaseSmsBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Firebase is blocking this SMS request. Confirm Phone sign-in is enabled for this region.'**
+  String get firebaseSmsBlocked;
+
+  /// No description provided for @validPhoneNumberError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid +970 or +972 phone number.'**
+  String get validPhoneNumberError;
+
+  /// No description provided for @tooManySmsAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many SMS attempts. Wait before requesting another code.'**
+  String get tooManySmsAttempts;
+
+  /// No description provided for @smsCodeIncorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'The SMS code is incorrect.'**
+  String get smsCodeIncorrect;
+
+  /// No description provided for @smsCodeExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'The SMS code expired. Request a new code.'**
+  String get smsCodeExpired;
+
+  /// No description provided for @firebasePhoneVerificationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Firebase phone verification failed ({code}): {message}'**
+  String firebasePhoneVerificationFailed(String code, String message);
+
+  /// No description provided for @phoneVerificationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone verification failed.'**
+  String get phoneVerificationFailed;
 }
 
 class _AppLocalizationsDelegate

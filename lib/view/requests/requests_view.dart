@@ -10,7 +10,6 @@ import '../../controllers/statuses/request_state.dart';
 import '../../localization/app_localizations_x.dart';
 import '../../models/models.dart';
 import '../common_widgets/app_error_card.dart';
-import '../common_widgets/app_panel.dart';
 import '../common_widgets/empty_state_card.dart';
 import '../profile/user_profile_page.dart';
 import 'create_request_page.dart';
@@ -82,7 +81,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
             //   onCreateRequest: _openCreateRequest,
             //   ),
             // ),
-           // const SliverToBoxAdapter(child: SizedBox(height: 12)),
+            // const SliverToBoxAdapter(child: SizedBox(height: 12)),
             // SliverToBoxAdapter(
             //   child: Row(
             //     children: [
@@ -516,28 +515,14 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
               ),
             );
         shouldStageSharedRequest = false;
-      } on ApiException catch (error) {
+      } on ApiException {
         if (!mounted) {
           return;
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${error.message} ${context.l10n.requestAttachedResendHint}',
-            ),
-          ),
-        );
       } catch (_) {
         if (!mounted) {
           return;
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              context.l10n.initialRequestCouldNotBeSentAutomatically,
-            ),
-          ),
-        );
       }
     }
 
@@ -550,114 +535,5 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     ref.read(pendingSharedProductProvider.notifier).state =
         shouldStageSharedRequest ? requestBrief : null;
     widget.onOpenConversation(conversationId);
-  }
-}
-
-class _RequestsHero extends StatelessWidget {
-  const _RequestsHero({
-    required this.userName,
-    required this.browseCount,
-    required this.mineCount,
-    required this.assignedCount,
-    required this.onCreateRequest,
-  });
-
-  final String userName;
-  final int browseCount;
-  final int mineCount;
-  final int assignedCount;
-  final VoidCallback onCreateRequest;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppPanel(
-      padding: EdgeInsets.zero,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0C4A63), Color(0xFF116466)],
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              context.l10n.welcomeBackUser(userName),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                _HeroStat(label: context.l10n.browse, value: '$browseCount'),
-                _HeroStat(label: context.l10n.mine, value: '$mineCount'),
-                _HeroStat(
-                  label: context.l10n.assigned,
-                  value: '$assignedCount',
-                ),
-              ],
-            ),
-            // const SizedBox(height: 18),
-            // FilledButton.tonalIcon(
-            //   onPressed: onCreateRequest,
-            //   style: FilledButton.styleFrom(
-            //     backgroundColor: Colors.white,
-            //     foregroundColor: const Color(0xFF0C4A63),
-            //   ),
-            //   icon: const Icon(Icons.add_circle_outline_rounded),
-            //   label: Text(context.l10n.createRequest),
-            // ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HeroStat extends StatelessWidget {
-  const _HeroStat({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 126,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            value,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.8),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

@@ -74,13 +74,17 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     Text(
                       context.l10n.setUpMarketplaceProfile,
                       style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.w900),
+                          ?.copyWith(
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF111827),
+                          ),
                     ),
                     const SizedBox(height: 10),
                     Text(
                       context.l10n.suppliersCanPostRequests,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: const Color(0xFF6F6A63),
+                        color: const Color(0xFF667085),
+                        height: 1.35,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -96,12 +100,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         ButtonSegment<String>(
                           value: 'user',
                           label: Text(context.l10n.userRole),
-                          icon: Icon(Icons.shopping_bag_outlined),
+                          icon: Icon(Icons.person_search_outlined),
                         ),
                         ButtonSegment<String>(
                           value: 'supplier',
                           label: Text(context.l10n.supplierRole),
-                          icon: Icon(Icons.storefront_outlined),
+                          icon: Icon(Icons.handyman_outlined),
                         ),
                       ],
                       selected: {_selectedRole},
@@ -120,7 +124,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       Text(
                         context.l10n.pickTheCarNamesYouSupplyPartsFor,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF6F6A63),
+                          color: const Color(0xFF667085),
+                          height: 1.35,
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -130,8 +135,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: const Color(0xFFF8F3EC),
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(color: const Color(0xFFE7DCCE)),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFE4E7EC)),
                           ),
                           child: Text(
                             context.l10n.noCarNamesSelectedYet,
@@ -382,7 +387,7 @@ class _SelectedMakeChip extends StatelessWidget {
           const Icon(
             Icons.directions_car_filled_rounded,
             size: 18,
-            color: Color(0xFF0C4A63),
+            color: Color(0xFF1F6FEB),
           ),
           const SizedBox(width: 8),
           Column(

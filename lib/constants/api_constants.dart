@@ -1,5 +1,5 @@
 abstract final class ApiConstants {
-  static const String ngrok = 'https://polishedly-bouncy-jerry.ngrok-free.dev';
+  static const String ngrok = 'https://five-sterile-wildlife.ngrok-free.dev';
   static const String render = 'https://auto-spare-api.onrender.com';
   static const String baseUrl = render;
   static const String acceptHeader = 'application/json';

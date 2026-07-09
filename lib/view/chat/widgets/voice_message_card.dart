@@ -98,7 +98,7 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
     final foreground = widget.isMine ? Colors.white : const Color(0xFF1C1B18);
     final activeColor = widget.isMine
         ? const Color(0xFF93E8FF)
-        : const Color(0xFF116466);
+        : Theme.of(context).primaryColor;
     final inactiveColor = foreground.withValues(alpha: 0.24);
     final containerColor = widget.isMine
         ? Colors.white.withValues(alpha: 0.12)
@@ -125,7 +125,7 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
             style: IconButton.styleFrom(
               backgroundColor: widget.isMine
                   ? Colors.white.withValues(alpha: 0.2)
-                  : const Color(0xFF116466),
+                  : Theme.of(context).primaryColor,
               foregroundColor: widget.isMine ? Colors.white : Colors.white,
             ),
             icon: _isPreparing

@@ -168,14 +168,6 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
       carCatalog.error,
       fallback: l10n.carCatalogCouldNotBeLoadedRightNow,
     );
-    PartRequestStatus? selectedStatus;
-    for (final status in createState.statuses) {
-      if (status.id == createState.selectedStatusId) {
-        selectedStatus = status;
-        break;
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -184,12 +176,11 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-       //   padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 680),
               child: AppPanel(
-                radius: 0,
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -199,8 +190,12 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                         widget.isEditing
                             ? l10n.updateYourRequest
                             : l10n.postNewRequest,
+
                         style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.w900),
+                            ?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xFF111827),
+                            ),
                       ),
                       const SizedBox(height: 10),
                       Text(
@@ -208,34 +203,17 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                             ? l10n.editRequestDescription
                             : l10n.createRequestDescription,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: const Color(0xFF6F6A63),
+                          color: const Color(0xFF667085),
+                          height: 1.35,
                         ),
                       ),
-                     const SizedBox(height: 20),
-                   //    if (createState.isLoadingStatuses)
-                   //      const Padding(
-                   //        padding: EdgeInsets.only(bottom: 16),
-                   //        child: LinearProgressIndicator(),
-                   //      ),
-                   //    if (createState.blockedMessage != null) ...[
-                   //      _StatusNotice(
-                   //        title: l10n.requestCreationBlocked,
-                   //        message: createState.blockedMessage!,
-                   //        tone: _NoticeTone.warning,
-                   //      ),
-                   //      const SizedBox(height: 16),
-                   //    ] else if (selectedStatus != null) ...[
-                   //      _StatusNotice(
-                   //        title: widget.isEditing
-                   //            ? l10n.currentStatus
-                   //            : l10n.initialStatus,
-                   //        message: widget.isEditing
-                   //            ? l10n.currentStatusMessage(selectedStatus.label)
-                   //            : l10n.initialStatusMessage(selectedStatus.label),
-                   //        tone: _NoticeTone.info,
-                   //      ),
-                        const SizedBox(height: 16),
-                      //],
+                      const SizedBox(height: 16),
+                      _RequestStepHeader(
+                        icon: Icons.build_circle_outlined,
+                        title: l10n.requestTitleLabel,
+                        message: l10n.createRequestDescription,
+                      ),
+                      const SizedBox(height: 16),
                       if (createState.errorMessage != null) ...[
                         AppErrorCard(message: createState.errorMessage!),
                         const SizedBox(height: 16),
@@ -281,17 +259,17 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                       Text(
                         l10n.carModelDescription,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF6F6A63),
+                          color: const Color(0xFF667085),
+                          height: 1.35,
                         ),
                       ),
                       const SizedBox(height: 10),
                       Container(
-
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFFF3E7),
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: const Color(0xFFF1C38B)),
                         ),
                         child: SwitchListTile.adaptive(
@@ -984,6 +962,60 @@ class _CarModelSearchEmptyState extends StatelessWidget {
           color: Color(0xFF6F6A63),
           fontWeight: FontWeight.w700,
         ),
+      ),
+    );
+  }
+}
+
+class _RequestStepHeader extends StatelessWidget {
+  const _RequestStepHeader({
+    required this.icon,
+    required this.title,
+    required this.message,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8F1FF),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFC7D7FE)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: const Color(0xFF1F6FEB)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: const Color(0xFF1F2937),
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  message,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: const Color(0xFF475467),
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -46,13 +46,13 @@ class RequestCard extends StatelessWidget {
         .toList(growable: false);
 
     return AppPanel(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (request.images.isNotEmpty) ...[
             SizedBox(
-              height: 228,
+              height: 176,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: request.images.length,
@@ -70,7 +70,7 @@ class RequestCard extends StatelessWidget {
                       initialIndex: index,
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(12),
                       child: AspectRatio(
                         aspectRatio: 1.1,
                         child: Hero(
@@ -100,6 +100,21 @@ class RequestCard extends StatelessWidget {
             onTap: onRequesterTap,
           ),
           const SizedBox(height: 14),
+          if (isMine || canChangeStatus) ...[
+            _RequestOwnershipBanner(
+              icon: isMine
+                  ? Icons.person_pin_circle_outlined
+                  : Icons.assignment_turned_in_outlined,
+              label: isMine
+                  ? context.l10n.thisRequestBelongsToYou
+                  : context.l10n.youCanManageThisRequestStatus,
+              tone: isMine ? const Color(0xFFE8F1FF) : const Color(0xFFEAF7EE),
+              foreground: isMine
+                  ? const Color(0xFF1F6FEB)
+                  : const Color(0xFF027A48),
+            ),
+            const SizedBox(height: 12),
+          ],
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -144,17 +159,16 @@ class RequestCard extends StatelessWidget {
               height: 1.35,
             ),
           ),
-          const SizedBox(height: 18),
-          Text(
-            isMine
-                ? context.l10n.thisRequestBelongsToYou
-                : canChangeStatus
-                ? context.l10n.youCanManageThisRequestStatus
-                : context.l10n.openChatWithSellerBehindRequest,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: const Color(0xFF7A746C)),
-          ),
+          if (!isMine && !canChangeStatus) ...[
+            const SizedBox(height: 14),
+            Text(
+              context.l10n.openChatWithSellerBehindRequest,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: const Color(0xFF667085),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
           const SizedBox(height: 12),
           if (isMine)
             Wrap(
@@ -218,9 +232,7 @@ class RequestCard extends StatelessWidget {
                         : Icons.chat_bubble_outline_rounded,
                   ),
                   label: Text(
-                    isChatLoading
-                        ? context.l10n.opening
-                        : context.l10n.chat,
+                    isChatLoading ? context.l10n.opening : context.l10n.chat,
                   ),
                 ),
               ],
@@ -246,9 +258,7 @@ class RequestCard extends StatelessWidget {
                           : Icons.chat_bubble_outline_rounded,
                     ),
                     label: Text(
-                      isChatLoading
-                          ? context.l10n.opening
-                          : context.l10n.chat,
+                      isChatLoading ? context.l10n.opening : context.l10n.chat,
                     ),
                   ),
                 ],
@@ -297,6 +307,47 @@ class RequestCard extends StatelessWidget {
           },
           heroTagBuilder: _heroTagForIndex,
         ),
+      ),
+    );
+  }
+}
+
+class _RequestOwnershipBanner extends StatelessWidget {
+  const _RequestOwnershipBanner({
+    required this.icon,
+    required this.label,
+    required this.tone,
+    required this.foreground,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color tone;
+  final Color foreground;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: tone,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: foreground),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: foreground,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

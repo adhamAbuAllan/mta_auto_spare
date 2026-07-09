@@ -24,7 +24,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'All available car names are already selected.';
 
   @override
-  String get appTitle => 'MTA';
+  String get appTitle => 'MTA Auto Spare';
 
   @override
   String get backend => 'Backend';
@@ -37,7 +37,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get carName => 'Car name';
 
   @override
-  String get carsIHavePartsFor => 'Cars I have parts for';
+  String get carsIHavePartsFor => 'Cars I supply parts for';
 
   @override
   String get changeLanguage => 'Change language';
@@ -82,11 +82,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supplierProfileIntro =>
-      'Update the details buyers see, tune chat notifications, and choose the car models you already stock parts for.';
+      'Update the details customers see, manage chat notifications, and choose the cars you can supply parts for.';
 
   @override
   String get buyerProfileIntro =>
-      'Update the details suppliers see and tune how chat notifications reach you.';
+      'Update the details suppliers see when you create requests or chat with them.';
 
   @override
   String get email => 'Email';
@@ -195,7 +195,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pickTheCarNamesYouSupplyPartsFor =>
-      'Pick the car names you supply parts for.';
+      'Choose the cars you support. We use this to notify you about matching spare-part requests.';
 
   @override
   String get registerUsernameHint => 'Choose a username';
@@ -220,7 +220,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInToBrowseSellerRequests =>
-      'Sign in to browse customer requests and chat.';
+      'Sign in to request spare parts, chat with suppliers, and manage your offers.';
 
   @override
   String get somethingWentWrong => 'Something went wrong';
@@ -230,7 +230,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get suppliersCanPostRequests =>
-      'Buyers can post requests and suppliers can start chats.';
+      'Customers request spare parts. Suppliers choose supported cars and receive matching opportunities.';
 
   @override
   String get theCarCatalogCouldNotBeLoaded =>
@@ -252,7 +252,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get usernameHint => 'Enter username';
 
   @override
-  String get userRole => 'User';
+  String get userRole => 'Customer';
 
   @override
   String get attachment => 'Attachment';
@@ -446,13 +446,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get browseRequestPostsFromOtherSellers =>
-      'Browse request posts from other sellers.';
+      'Browse open spare-part requests from customers.';
 
   @override
-  String get seeRequestPostsYouCreated => 'See the request posts you created.';
+  String get seeRequestPostsYouCreated =>
+      'See the spare-part requests you created.';
 
   @override
-  String get browseRequests => 'Browse Requests';
+  String get browseRequests => 'Open Requests';
 
   @override
   String get myRequests => 'My Requests';
@@ -462,14 +463,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createFirstRequestPostMessage =>
-      'Create your first request post and it will show up here.';
+      'Create your first spare-part request and suppliers can contact you.';
 
   @override
-  String get noSellerRequestsYet => 'No seller requests yet';
+  String get noSellerRequestsYet => 'No open requests yet';
 
   @override
   String get noSellerRequestsYetMessage =>
-      'There are no request posts from other sellers yet. Pull to refresh later.';
+      'There are no open spare-part requests right now. Pull to refresh later.';
 
   @override
   String get createRequest => 'Create Request';
@@ -492,7 +493,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleting => 'Deleting...';
 
   @override
-  String get chat => 'Chat';
+  String get chat => 'Chat with customer';
 
   @override
   String get opening => 'Opening...';
@@ -529,7 +530,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get assigned => 'Assigned';
 
   @override
-  String get assignedRequests => 'Assigned Requests';
+  String get assignedRequests => 'Handling Requests';
 
   @override
   String get allStatuses => 'All Statuses';
@@ -538,25 +539,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cityNotSet => 'City not set';
 
   @override
-  String get thisRequestBelongsToYou => 'This request belongs to you.';
+  String get thisRequestBelongsToYou =>
+      'Your request is open for supplier offers.';
 
   @override
   String get openChatWithSellerBehindRequest =>
-      'Open a chat with the owner of this request.';
+      'Chat with the customer and offer this spare part.';
 
   @override
-  String get requestsYouCanManageNow => 'Requests you can manage right now.';
+  String get requestsYouCanManageNow =>
+      'Requests customers accepted you to handle.';
 
   @override
-  String get noAssignedRequestsYet => 'No assigned requests yet';
+  String get noAssignedRequestsYet => 'No accepted requests yet';
 
   @override
   String get noAssignedRequestsYetMessage =>
-      'Once an owner approves your access, the request will appear here.';
+      'When a customer accepts you to handle a request, it will appear here.';
 
   @override
   String get youCanManageThisRequestStatus =>
-      'You can manage this request status.';
+      'The customer accepted you to handle this request.';
 
   @override
   String get changeStatus => 'Change Status';
@@ -572,88 +575,87 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updatingStatus => 'Updating...';
 
   @override
-  String get requestControl => 'Request Control';
+  String get requestControl => 'Supplier acceptance';
 
   @override
   String get thisChatCanManageRequestStatus =>
-      'The supplier in this chat can manage this request status now.';
+      'You accepted this supplier. The request is no longer public.';
 
   @override
   String get thisRequestIsAssignedToAnotherSupplier =>
-      'This request is currently assigned to another supplier.';
+      'This request is already being handled by another supplier.';
 
   @override
   String get noAccessRequestForThisRequestYet =>
-      'No access request has been sent for this request yet.';
+      'No supplier has asked to handle this request yet.';
 
   @override
   String get youCanChangeThisRequestStatusNow =>
-      'You can change this request status now.';
+      'Customer accepted you. You can now manage this request.';
 
   @override
   String get waitingForOwnerApproval =>
-      'Waiting for the owner to approve your access request.';
+      'Waiting for the customer to accept you.';
 
   @override
   String get ownerRejectedYourAccessRequest =>
-      'The owner rejected your access request.';
+      'Customer declined this request.';
 
   @override
   String get askOwnerForStatusAccess =>
-      'Ask the owner for permission to manage this request status.';
+      'Want to handle this request? Ask the customer to accept you.';
 
   @override
   String currentManager(String name) {
-    return 'Current manager: $name';
+    return 'Accepted supplier: $name';
   }
 
   @override
   String get approving => 'Approving...';
 
   @override
-  String get approveAccess => 'Approve Access';
+  String get approveAccess => 'Accept supplier';
 
   @override
-  String get rejectAccess => 'Reject Access';
+  String get rejectAccess => 'Decline';
 
   @override
   String get sendingRequest => 'Sending...';
 
   @override
-  String get requestAccess => 'Request Access';
+  String get requestAccess => 'Ask customer to accept you';
 
   @override
-  String get accessRequestPending => 'Your access request is pending.';
+  String get accessRequestPending => 'Waiting for customer approval.';
 
   @override
   String get openAssignedRequestsToUpdateStatus =>
-      'Open Assigned Requests to update the status anytime.';
+      'Open Handling Requests to update the status anytime.';
 
   @override
-  String get accessRequestSent => 'Access request sent.';
+  String get accessRequestSent => 'Request sent to the customer.';
 
   @override
-  String get couldNotSendAccessRequest => 'Could not send the access request.';
+  String get couldNotSendAccessRequest =>
+      'Could not ask the customer right now.';
 
   @override
-  String get accessRequestApproved => 'Access request approved.';
+  String get accessRequestApproved => 'Supplier accepted.';
 
   @override
-  String get couldNotApproveAccessRequest =>
-      'Could not approve the access request.';
+  String get couldNotApproveAccessRequest => 'Could not accept the supplier.';
 
   @override
-  String get accessRequestRejected => 'Access request rejected.';
+  String get accessRequestRejected => 'Supplier declined.';
 
   @override
-  String get couldNotRejectAccessRequest =>
-      'Could not reject the access request.';
+  String get couldNotRejectAccessRequest => 'Could not decline the supplier.';
 
   @override
-  String get expandRequestControl => 'Expand request controls';
+  String get expandRequestControl => 'Show supplier acceptance';
 
   @override
-  String get collapseRequestControl => 'Collapse request controls';
+  String get collapseRequestControl => 'Hide supplier acceptance';
 
   @override
   String get adminPanel => 'Admin Panel';
@@ -792,6 +794,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactDetails => 'Contact Details';
 
   @override
+  String get accountActions => 'Account actions';
+
+  @override
+  String get logoutDescription =>
+      'Sign out of this device. You can sign in again with your phone and password.';
+
+  @override
   String get phone => 'Phone';
 
   @override
@@ -882,11 +891,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whatsAppAction => 'WhatsApp';
 
   @override
-  String get supplierCarsTitle => 'Cars This Supplier Works With';
+  String get supplierCarsTitle => 'Cars This Supplier Supports';
 
   @override
   String get supplierCarsDescription =>
-      'These are the car brands selected on the supplier profile.';
+      'This supplier receives matching requests for these car brands.';
 
   @override
   String ratingLabel(String value) {
@@ -899,14 +908,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get reportUserSectionTitle => 'Report User';
+  String get reportUserSectionTitle => 'Report account';
 
   @override
   String get reportUserSectionBody =>
-      'Send a safety report if this user is abusing chat or request access.';
+      'Send a safety report if this account is abusing chat or supplier acceptance.';
 
   @override
-  String get reportUserAction => 'Report User';
+  String get reportUserAction => 'Report account';
 
   @override
   String get sendingReport => 'Sending report...';
@@ -990,15 +999,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateYourRequest => 'Update your request';
 
   @override
-  String get postNewRequest => 'Post a new request';
+  String get postNewRequest => 'Request a spare part';
 
   @override
   String get editRequestDescription =>
-      'Refresh the request details and the photos you want buyers to see.';
+      'Refresh the request details and photos you want suppliers to see.';
 
   @override
   String get createRequestDescription =>
-      'Create a request that suppliers can browse and open chats from.';
+      'Tell suppliers what spare part you need. Matching suppliers will be notified and can chat with you.';
 
   @override
   String get requestCreationBlocked => 'Request creation is blocked';
@@ -1020,7 +1029,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get requestTitleLabel => 'Request title';
+  String get requestTitleLabel => 'What spare part do you need?';
 
   @override
   String get requestTitleHint => 'Front bumper for Toyota Camry 2022';
@@ -1033,7 +1042,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requestDescriptionHint =>
-      'Describe the condition, brand preference, or model details buyers should know.';
+      'Describe the condition, brand preference, or model details suppliers should know.';
 
   @override
   String get addShortDescription => 'Add a short description.';
@@ -1154,4 +1163,114 @@ class AppLocalizationsEn extends AppLocalizations {
   String whatsAppGreeting(String name) {
     return 'Hello $name';
   }
+
+  @override
+  String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get resetPasswordTitle => 'Reset password';
+
+  @override
+  String get passwordResetIntro =>
+      'Enter your phone number to receive an SMS code.';
+
+  @override
+  String get newPassword => 'New password';
+
+  @override
+  String get confirmNewPassword => 'Confirm new password';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match.';
+
+  @override
+  String get sendingSms => 'Sending SMS...';
+
+  @override
+  String get sendSmsCode => 'Send SMS code';
+
+  @override
+  String get smsCode => 'SMS code';
+
+  @override
+  String get changingPassword => 'Changing password...';
+
+  @override
+  String get verifyAndChangePassword => 'Verify and change password';
+
+  @override
+  String resendInSeconds(int count) {
+    return 'Resend in $count s';
+  }
+
+  @override
+  String get resendCode => 'Resend code';
+
+  @override
+  String get sendingNewVerificationCode => 'Sending a new verification code...';
+
+  @override
+  String sendingVerificationCodeToPhone(String phone) {
+    return 'Sending verification code to $phone...';
+  }
+
+  @override
+  String get phoneVerifiedAutomaticallyChangingPassword =>
+      'Phone verified automatically. Changing password...';
+
+  @override
+  String get checkPhoneNumberAndTryAgain =>
+      'Check the phone number and try again.';
+
+  @override
+  String enterSmsCodeSentToPhone(String phone) {
+    return 'Enter the SMS code sent to $phone.';
+  }
+
+  @override
+  String get automaticVerificationTimedOutEnterSmsCode =>
+      'Automatic verification timed out. Enter the SMS code.';
+
+  @override
+  String get phoneVerificationCouldNotStart =>
+      'Phone verification could not start.';
+
+  @override
+  String get waitForSmsCodeFirst => 'Wait for the SMS code first.';
+
+  @override
+  String get enterSixDigitSmsCode => 'Enter the 6-digit SMS code.';
+
+  @override
+  String get passwordChangedSignInAgain => 'Password changed. Sign in again.';
+
+  @override
+  String get passwordResetFailedTryCodeAgain =>
+      'Password reset failed. Try the code again.';
+
+  @override
+  String get firebaseSmsBlocked =>
+      'Firebase is blocking this SMS request. Confirm Phone sign-in is enabled for this region.';
+
+  @override
+  String get validPhoneNumberError =>
+      'Enter a valid +970 or +972 phone number.';
+
+  @override
+  String get tooManySmsAttempts =>
+      'Too many SMS attempts. Wait before requesting another code.';
+
+  @override
+  String get smsCodeIncorrect => 'The SMS code is incorrect.';
+
+  @override
+  String get smsCodeExpired => 'The SMS code expired. Request a new code.';
+
+  @override
+  String firebasePhoneVerificationFailed(String code, String message) {
+    return 'Firebase phone verification failed ($code): $message';
+  }
+
+  @override
+  String get phoneVerificationFailed => 'Phone verification failed.';
 }

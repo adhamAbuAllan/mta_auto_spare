@@ -81,6 +81,30 @@ void main() {
     expect(userApi.upserts, hasLength(1));
   });
 
+  test('registers iOS devices with the iOS platform', () async {
+    final iosService = ChatNotificationService(
+      userApi: userApi,
+      preferences: preferences,
+      messagingClient: messagingClient,
+      localNotificationsClient: localNotificationsClient,
+      notificationsSupported: true,
+      devicePlatform: 'ios',
+      onNavigationRequest: navigationRequests.add,
+      createDeviceId: () => 'ios-device-123',
+      tokenRetryDelay: const Duration(milliseconds: 10),
+      tokenRequestRetryDelay: const Duration(milliseconds: 1),
+    );
+    addTearDown(iosService.dispose);
+
+    await iosService.syncWithSession(_signedInSession());
+
+    expect(userApi.upserts, hasLength(1));
+    expect(userApi.upserts.single.deviceId, 'ios-device-123');
+    expect(userApi.upserts.single.platform, 'ios');
+    expect(userApi.upserts.single.pushToken, 'push-token-1');
+    expect(userApi.upserts.single.isActive, isTrue);
+  });
+
   test('re-registers on token refresh and deactivates on logout', () async {
     await service.syncWithSession(_signedInSession());
     await messagingClient.emitTokenRefresh('push-token-2');

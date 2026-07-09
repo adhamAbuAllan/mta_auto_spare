@@ -252,6 +252,7 @@ class _RequestAccessPanel extends StatelessWidget {
       }
     }
 
+    final pendingSupplierName = pendingOtherAccess?.userDetails?.name;
     final infoText = switch ((
       isOwner,
       myAccess?.status,
@@ -272,13 +273,24 @@ class _RequestAccessPanel extends StatelessWidget {
         ? context.l10n.collapseRequestControl
         : context.l10n.expandRequestControl;
 
+    final panelToneColor = isOwner && pendingOtherAccess != null
+        ? const Color(0xFFFFF7E6)
+        : hasManageAccess || acceptedAccess != null
+        ? const Color(0xFFEAF7EE)
+        : const Color(0xFFF8FAFC);
+    final panelBorderColor = isOwner && pendingOtherAccess != null
+        ? const Color(0xFFF9C975)
+        : hasManageAccess || acceptedAccess != null
+        ? const Color(0xFFB7E4C7)
+        : const Color(0xFFE4E7EC);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F2EC),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFFE0D7CA)),
+        color: panelToneColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: panelBorderColor),
       ),
       child: AnimatedSize(
         duration: const Duration(milliseconds: 220),
@@ -294,10 +306,38 @@ class _RequestAccessPanel extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        context.l10n.requestControl,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w900),
+                      Row(
+                        children: [
+                          Container(
+                            width: 34,
+                            height: 34,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: panelBorderColor),
+                            ),
+                            child: Icon(
+                              isOwner && pendingOtherAccess != null
+                                  ? Icons.handshake_outlined
+                                  : Icons.assignment_turned_in_outlined,
+                              size: 19,
+                              color: const Color(0xFF1F2937),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              isOwner && pendingOtherAccess != null
+                                  ? context.l10n.requestControl
+                                  : context.l10n.requestControl,
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    color: const Color(0xFF111827),
+                                  ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -305,7 +345,7 @@ class _RequestAccessPanel extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: const Color(0xFF0C4A63),
+                          color: const Color(0xFF1F6FEB),
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -363,11 +403,25 @@ class _RequestAccessPanel extends StatelessWidget {
               if (isLoading && request == null)
                 const LinearProgressIndicator()
               else
-                Text(
-                  infoText,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF6F6A63),
-                    height: 1.35,
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: panelBorderColor),
+                  ),
+                  child: Text(
+                    pendingSupplierName != null &&
+                            isOwner &&
+                            pendingOtherAccess != null
+                        ? '$pendingSupplierName: $infoText'
+                        : infoText,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: const Color(0xFF344054),
+                      height: 1.35,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               if (request?.grantedUser != null) ...[
@@ -375,7 +429,7 @@ class _RequestAccessPanel extends StatelessWidget {
                 Text(
                   context.l10n.currentManager(request!.grantedUser!.name),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: const Color(0xFF0C4A63),
+                    color: const Color(0xFF027A48),
                     fontWeight: FontWeight.w700,
                   ),
                 ),

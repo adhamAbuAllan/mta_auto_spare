@@ -4,11 +4,11 @@
   "accountRole": "نوع الحساب",
   "add": "إضافة",
   "allAvailableCarNamesAlreadySelected": "تم اختيار جميع أسماء السيارات المتاحة.",
-  "appTitle": "MTA",
+  "appTitle": "MTA Auto Spare",
   "backend": "الخادم",
   "carCatalogCouldNotBeLoadedRightNow": "تعذر تحميل دليل السيارات الآن.",
   "carName": "اسم السيارة",
-  "carsIHavePartsFor": "السيارات التي أملك قطعًا لها",
+  "carsIHavePartsFor": "السيارات التي أوفر قطعها",
   "changeLanguage": "تغيير اللغة",
   "chats": "الدردشات",
   "chooseAUsername": "اختر اسم مستخدم",
@@ -21,8 +21,8 @@
   "editProfile": "تعديل الملف الشخصي",
   "profileCouldNotBeLoadedRightNow": "تعذر تحميل ملفك الشخصي الآن.",
   "keepYourProfileUpToDate": "حافظ على تحديث ملفك الشخصي",
-  "supplierProfileIntro": "حدّث التفاصيل التي يراها المشترون، واضبط إشعارات الدردشة، واختر موديلات السيارات التي تملك قطعها بالفعل.",
-  "buyerProfileIntro": "حدّث التفاصيل التي يراها الموردون واضبط طريقة وصول إشعارات الدردشة إليك.",
+  "supplierProfileIntro": "حدّث المعلومات التي يراها العملاء، واضبط إشعارات المحادثات، واختر السيارات التي يمكنك توفير قطع لها.",
+  "buyerProfileIntro": "حدّث المعلومات التي يراها المورّدون عند إنشاء الطلبات أو المحادثة معهم.",
   "email": "البريد الإلكتروني",
   "emailHint": "name@example.com",
   "enterAValidEmailAddress": "أدخل بريدًا إلكترونيًا صالحًا",
@@ -55,7 +55,7 @@
   "password": "كلمة المرور",
   "passwordHint": "أدخل كلمة المرور",
   "passwordMinHint": "6 أحرف على الأقل",
-  "pickTheCarNamesYouSupplyPartsFor": "اختر أسماء السيارات التي توفّر لها قطع الغيار.",
+  "pickTheCarNamesYouSupplyPartsFor": "اختر السيارات التي تدعمها. سنستخدم ذلك لإشعارك بطلبات قطع الغيار المطابقة.",
   "registerUsernameHint": "اختر اسم مستخدم",
   "remove": "إزالة",
   "requests": "الطلبات",
@@ -63,31 +63,30 @@
   "setUpMarketplaceProfile": "إعداد ملفك في السوق",
   "signIn": "تسجيل الدخول",
   "signingIn": "جارٍ تسجيل الدخول...",
-  "signInToBrowseSellerRequests": "سجّل الدخول لتصفح طلبات الزبائن والدردشة.",
+  "signInToBrowseSellerRequests": "سجّل الدخول لطلب قطع الغيار، ومحادثة المورّدين، ومتابعة العروض.",
   "somethingWentWrong": "حدث خطأ ما",
   "supplierRole": "مورد",
-  "suppliersCanPostRequests": "يمكن للمشترين نشر الطلبات ويمكن للمورّدين بدء المحادثات.",
+  "suppliersCanPostRequests": "العملاء يطلبون قطع الغيار. المورّدون يختارون السيارات المدعومة وتصلهم الفرص المطابقة.",
   "theCarCatalogCouldNotBeLoaded": "تعذر تحميل دليل السيارات.",
   "thisMessageWasDeleted": "تم حذف هذه الرسالة",
   "tryAgain": "حاول مرة أخرى",
   "useAtLeastSixCharacters": "استخدم 6 أحرف على الأقل",
   "username": "اسم المستخدم",
   "usernameHint": "أدخل اسم المستخدم",
-  "userRole": "مستخدم"
-,
-  "attachment": "\u0645\u0631\u0641\u0642",
-  "attachedRequest": "\u0637\u0644\u0628 \u0645\u0631\u0641\u0642",
-  "cancel": "\u0625\u0644\u063a\u0627\u0621",
-  "copyMessage": "\u0646\u0633\u062e \u0627\u0644\u0631\u0633\u0627\u0644\u0629",
-  "deleteForAll": "\u062d\u0630\u0641 \u0644\u0644\u062c\u0645\u064a\u0639",
-  "deleteMessage": "\u062d\u0630\u0641 \u0627\u0644\u0631\u0633\u0627\u0644\u0629",
-  "deleteOnlyMe": "\u062d\u0630\u0641 \u0644\u062f\u064a \u0641\u0642\u0637",
-  "deletedMessage": "\u0631\u0633\u0627\u0644\u0629 \u0645\u062d\u0630\u0648\u0641\u0629",
-  "discardVoiceMessage": "\u062a\u062c\u0627\u0647\u0644 \u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u062a\u064a\u0629",
-  "editMessage": "\u062a\u0639\u062f\u064a\u0644 \u0627\u0644\u0631\u0633\u0627\u0644\u0629",
-  "editMessageTitle": "\u062a\u0639\u062f\u064a\u0644 \u0627\u0644\u0631\u0633\u0627\u0644\u0629",
-  "edited": "\u062a\u0645 \u0627\u0644\u062a\u0639\u062f\u064a\u0644",
-  "fromPrice": "\u0627\u0628\u062a\u062f\u0627\u0621\u064b \u0645\u0646 {value}",
+  "userRole": "عميل",
+  "attachment": "مرفق",
+  "attachedRequest": "طلب مرفق",
+  "cancel": "إلغاء",
+  "copyMessage": "نسخ الرسالة",
+  "deleteForAll": "حذف للجميع",
+  "deleteMessage": "حذف الرسالة",
+  "deleteOnlyMe": "حذف لدي فقط",
+  "deletedMessage": "رسالة محذوفة",
+  "discardVoiceMessage": "تجاهل الرسالة الصوتية",
+  "editMessage": "تعديل الرسالة",
+  "editMessageTitle": "تعديل الرسالة",
+  "edited": "تم التعديل",
+  "fromPrice": "ابتداءً من {value}",
   "@fromPrice": {
     "placeholders": {
       "value": {
@@ -95,20 +94,20 @@
       }
     }
   },
-  "messageCopied": "\u062a\u0645 \u0646\u0633\u062e \u0627\u0644\u0631\u0633\u0627\u0644\u0629.",
-  "messageCouldNotBeDeleted": "\u062a\u0639\u0630\u0631 \u062d\u0630\u0641 \u0627\u0644\u0631\u0633\u0627\u0644\u0629.",
-  "messageCouldNotBeUpdated": "\u062a\u0639\u0630\u0631 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0631\u0633\u0627\u0644\u0629.",
-  "messageDeletedForEveryone": "\u062a\u0645 \u062d\u0630\u0641 \u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0644\u0644\u062c\u0645\u064a\u0639.",
-  "messageDeletedForYou": "\u062a\u0645 \u062d\u0630\u0641 \u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0644\u062f\u064a\u0643.",
-  "messageLabel": "\u0631\u0633\u0627\u0644\u0629",
-  "messageUpdated": "\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0631\u0633\u0627\u0644\u0629.",
-  "microphonePermissionRequiredForVoiceMessage": "\u064a\u0644\u0632\u0645 \u0625\u0630\u0646 \u0627\u0644\u0645\u064a\u0643\u0631\u0648\u0641\u0648\u0646 \u0644\u062a\u0633\u062c\u064a\u0644 \u0631\u0633\u0627\u0644\u0629 \u0635\u0648\u062a\u064a\u0629.",
-  "noMessagesYetMessage": "\u0627\u0628\u062f\u0623 \u0628\u0627\u0644\u062a\u062d\u064a\u0629 \u0648\u0627\u0628\u062f\u0623 \u0627\u0644\u0645\u062d\u0627\u062f\u062b\u0629.",
-  "noPriceRange": "\u0644\u0627 \u064a\u0648\u062c\u062f \u0646\u0637\u0627\u0642 \u0633\u0639\u0631",
-  "noVoiceMessageCaptured": "\u0644\u0645 \u064a\u062a\u0645 \u0627\u0644\u062a\u0642\u0627\u0637 \u0623\u064a \u0631\u0633\u0627\u0644\u0629 \u0635\u0648\u062a\u064a\u0629.",
-  "pauseVoiceMessage": "\u0625\u064a\u0642\u0627\u0641 \u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u062a\u064a\u0629 \u0645\u0624\u0642\u062a\u064b\u0627",
-  "photo": "\u0635\u0648\u0631\u0629",
-  "photosCount": "{count} \u0635\u0648\u0631",
+  "messageCopied": "تم نسخ الرسالة.",
+  "messageCouldNotBeDeleted": "تعذر حذف الرسالة.",
+  "messageCouldNotBeUpdated": "تعذر تحديث الرسالة.",
+  "messageDeletedForEveryone": "تم حذف الرسالة للجميع.",
+  "messageDeletedForYou": "تم حذف الرسالة لديك.",
+  "messageLabel": "رسالة",
+  "messageUpdated": "تم تحديث الرسالة.",
+  "microphonePermissionRequiredForVoiceMessage": "يلزم إذن الميكروفون لتسجيل رسالة صوتية.",
+  "noMessagesYetMessage": "ابدأ بالتحية وابدأ المحادثة.",
+  "noPriceRange": "لا يوجد نطاق سعر",
+  "noVoiceMessageCaptured": "لم يتم التقاط أي رسالة صوتية.",
+  "pauseVoiceMessage": "إيقاف الرسالة الصوتية مؤقتًا",
+  "photo": "صورة",
+  "photosCount": "{count} صور",
   "@photosCount": {
     "placeholders": {
       "count": {
@@ -116,10 +115,10 @@
       }
     }
   },
-  "playVoiceMessage": "\u062a\u0634\u063a\u064a\u0644 \u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u062a\u064a\u0629",
-  "preparingRecorder": "\u062c\u0627\u0631\u064d \u062a\u062c\u0647\u064a\u0632 \u0627\u0644\u0645\u0633\u062c\u0644...",
-  "recordVoiceMessage": "\u062a\u0633\u062c\u064a\u0644 \u0631\u0633\u0627\u0644\u0629 \u0635\u0648\u062a\u064a\u0629",
-  "replyingTo": "\u062c\u0627\u0631\u064d \u0627\u0644\u0631\u062f \u0639\u0644\u0649 {name}",
+  "playVoiceMessage": "تشغيل الرسالة الصوتية",
+  "preparingRecorder": "جارٍ تجهيز المسجل...",
+  "recordVoiceMessage": "تسجيل رسالة صوتية",
+  "replyingTo": "جارٍ الرد على {name}",
   "@replyingTo": {
     "placeholders": {
       "name": {
@@ -127,7 +126,7 @@
       }
     }
   },
-  "requestWithTitle": "\u0627\u0644\u0637\u0644\u0628: {title}",
+  "requestWithTitle": "الطلب: {title}",
   "@requestWithTitle": {
     "placeholders": {
       "title": {
@@ -135,12 +134,12 @@
       }
     }
   },
-  "save": "\u062d\u0641\u0638",
-  "sendMessage": "\u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0631\u0633\u0627\u0644\u0629",
-  "sendOrClearDraftBeforeVoiceMessage": "\u0623\u0631\u0633\u0644 \u0627\u0644\u0645\u0633\u0648\u062f\u0629 \u0627\u0644\u062d\u0627\u0644\u064a\u0629 \u0623\u0648 \u0627\u0645\u0633\u062d\u0647\u0627 \u0642\u0628\u0644 \u062a\u0633\u062c\u064a\u0644 \u0631\u0633\u0627\u0644\u0629 \u0635\u0648\u062a\u064a\u0629.",
-  "sending": "\u062c\u0627\u0631\u064d \u0627\u0644\u0625\u0631\u0633\u0627\u0644...",
-  "sendVoiceMessage": "\u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u062a\u064a\u0629",
-  "sentAttachmentsCount": "\u062a\u0645 \u0625\u0631\u0633\u0627\u0644 {count} \u0645\u0631\u0641\u0642",
+  "save": "حفظ",
+  "sendMessage": "إرسال الرسالة",
+  "sendOrClearDraftBeforeVoiceMessage": "أرسل المسودة الحالية أو امسحها قبل تسجيل رسالة صوتية.",
+  "sending": "جارٍ الإرسال...",
+  "sendVoiceMessage": "إرسال الرسالة الصوتية",
+  "sentAttachmentsCount": "تم إرسال {count} مرفق",
   "@sentAttachmentsCount": {
     "placeholders": {
       "count": {
@@ -148,14 +147,14 @@
       }
     }
   },
-  "sharedRequest": "\u062a\u0645\u062a \u0645\u0634\u0627\u0631\u0643\u0629 \u0637\u0644\u0628",
-  "showOriginal": "\u0625\u0638\u0647\u0627\u0631 \u0627\u0644\u0623\u0635\u0644",
-  "showTranslation": "\u0625\u0638\u0647\u0627\u0631 \u0627\u0644\u062a\u0631\u062c\u0645\u0629",
-  "typing": "\u064a\u0643\u062a\u0628...",
-  "unableToPlayVoiceMessage": "\u062a\u0639\u0630\u0631 \u062a\u0634\u063a\u064a\u0644 \u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u062a\u064a\u0629",
-  "unableToSeekVoiceMessage": "\u062a\u0639\u0630\u0631 \u0627\u0644\u062a\u0642\u062f\u064a\u0645 \u062f\u0627\u062e\u0644 \u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u062a\u064a\u0629",
-  "updateYourMessage": "\u062d\u062f\u0651\u062b \u0631\u0633\u0627\u0644\u062a\u0643",
-  "upToPrice": "\u062d\u062a\u0649 {value}",
+  "sharedRequest": "تمت مشاركة طلب",
+  "showOriginal": "إظهار الأصل",
+  "showTranslation": "إظهار الترجمة",
+  "typing": "يكتب...",
+  "unableToPlayVoiceMessage": "تعذر تشغيل الرسالة الصوتية",
+  "unableToSeekVoiceMessage": "تعذر التقديم داخل الرسالة الصوتية",
+  "updateYourMessage": "حدّث رسالتك",
+  "upToPrice": "حتى {value}",
   "@upToPrice": {
     "placeholders": {
       "value": {
@@ -163,30 +162,29 @@
       }
     }
   },
-  "uploadImages": "\u0631\u0641\u0639 \u0627\u0644\u0635\u0648\u0631",
-  "voiceMessage": "\u0631\u0633\u0627\u0644\u0629 \u0635\u0648\u062a\u064a\u0629",
-  "voiceMessageCouldNotBeSent": "\u062a\u0639\u0630\u0631 \u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u062a\u064a\u0629.",
-  "voiceMessageDiscarded": "\u062a\u0645 \u062a\u062c\u0627\u0647\u0644 \u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u062a\u064a\u0629.",
-  "voiceMessageDiscardFailed": "\u062a\u0639\u0630\u0631 \u062a\u062c\u0627\u0647\u0644 \u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0627\u0644\u0635\u0648\u062a\u064a\u0629 \u0628\u0634\u0643\u0644 \u0635\u062d\u064a\u062d.",
-  "voiceRecordingCouldNotStart": "\u062a\u0639\u0630\u0631 \u0628\u062f\u0621 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u0635\u0648\u062a \u0639\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u062c\u0647\u0627\u0632.",
-  "writeAMessage": "\u0627\u0643\u062a\u0628 \u0631\u0633\u0627\u0644\u0629..."
-,
-  "connecting": "\u062c\u0627\u0631\u064d \u0627\u0644\u0627\u062a\u0635\u0627\u0644...",
-  "liveUpdatesUnavailable": "\u0627\u0644\u062a\u062d\u062f\u064a\u062b\u0627\u062a \u0627\u0644\u0645\u0628\u0627\u0634\u0631\u0629 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629",
-  "reconnecting": "\u062c\u0627\u0631\u064d \u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0627\u062a\u0635\u0627\u0644...",
-  "marketplaceUser": "\u0645\u0633\u062a\u062e\u062f\u0645 \u0627\u0644\u0633\u0648\u0642",
-  "refreshRequests": "\u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0637\u0644\u0628\u0627\u062a",
-  "browseRequestPostsFromOtherSellers": "\u062a\u0635\u0641\u062d \u0645\u0646\u0634\u0648\u0631\u0627\u062a \u0627\u0644\u0637\u0644\u0628\u0627\u062a \u0645\u0646 \u0627\u0644\u0628\u0627\u0626\u0639\u064a\u0646 \u0627\u0644\u0622\u062e\u0631\u064a\u0646.",
-  "seeRequestPostsYouCreated": "\u0634\u0627\u0647\u062f \u0645\u0646\u0634\u0648\u0631\u0627\u062a \u0627\u0644\u0637\u0644\u0628\u0627\u062a \u0627\u0644\u062a\u064a \u0623\u0646\u0634\u0623\u062a\u0647\u0627.",
-  "browseRequests": "\u062a\u0635\u0641\u062d \u0627\u0644\u0637\u0644\u0628\u0627\u062a",
-  "myRequests": "\u0637\u0644\u0628\u0627\u062a\u064a",
-  "noRequestsYet": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0637\u0644\u0628\u0627\u062a \u0628\u0639\u062f",
-  "createFirstRequestPostMessage": "\u0623\u0646\u0634\u0626 \u0623\u0648\u0644 \u0645\u0646\u0634\u0648\u0631 \u0637\u0644\u0628 \u0648\u0633\u064a\u0638\u0647\u0631 \u0647\u0646\u0627.",
-  "noSellerRequestsYet": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0637\u0644\u0628\u0627\u062a \u0628\u0627\u0626\u0639\u064a\u0646 \u0628\u0639\u062f",
-  "noSellerRequestsYetMessage": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0646\u0634\u0648\u0631\u0627\u062a \u0637\u0644\u0628 \u0645\u0646 \u0627\u0644\u0628\u0627\u0626\u0639\u064a\u0646 \u0627\u0644\u0622\u062e\u0631\u064a\u0646 \u0628\u0639\u062f. \u0627\u0633\u062d\u0628 \u0644\u0644\u062a\u062d\u062f\u064a\u062b \u0644\u0627\u062d\u0642\u064b\u0627.",
-  "createRequest": "\u0625\u0646\u0634\u0627\u0621 \u0637\u0644\u0628",
-  "deleteRequest": "\u062d\u0630\u0641 \u0627\u0644\u0637\u0644\u0628",
-  "deleteRequestConfirmation": "\u062d\u0630\u0641 \"{title}\"\u061f \u0633\u062a\u062a\u0645 \u0625\u0632\u0627\u0644\u0629 \u0645\u0646\u0634\u0648\u0631 \u0627\u0644\u0637\u0644\u0628 \u0647\u0630\u0627 \u0645\u0646 \u0642\u0627\u0626\u0645\u062a\u0643.",
+  "uploadImages": "رفع الصور",
+  "voiceMessage": "رسالة صوتية",
+  "voiceMessageCouldNotBeSent": "تعذر إرسال الرسالة الصوتية.",
+  "voiceMessageDiscarded": "تم تجاهل الرسالة الصوتية.",
+  "voiceMessageDiscardFailed": "تعذر تجاهل الرسالة الصوتية بشكل صحيح.",
+  "voiceRecordingCouldNotStart": "تعذر بدء تسجيل الصوت على هذا الجهاز.",
+  "writeAMessage": "اكتب رسالة...",
+  "connecting": "جارٍ الاتصال...",
+  "liveUpdatesUnavailable": "التحديثات المباشرة غير متاحة",
+  "reconnecting": "جارٍ إعادة الاتصال...",
+  "marketplaceUser": "مستخدم السوق",
+  "refreshRequests": "تحديث الطلبات",
+  "browseRequestPostsFromOtherSellers": "تصفح طلبات قطع الغيار المفتوحة من العملاء.",
+  "seeRequestPostsYouCreated": "شاهد طلبات قطع الغيار التي أنشأتها.",
+  "browseRequests": "الطلبات المفتوحة",
+  "myRequests": "طلباتي",
+  "noRequestsYet": "لا توجد طلبات بعد",
+  "createFirstRequestPostMessage": "أنشئ أول طلب قطعة غيار ليتواصل معك المورّدون.",
+  "noSellerRequestsYet": "لا توجد طلبات مفتوحة بعد",
+  "noSellerRequestsYetMessage": "لا توجد طلبات قطع غيار مفتوحة الآن. اسحب للتحديث لاحقًا.",
+  "createRequest": "إنشاء طلب",
+  "deleteRequest": "حذف الطلب",
+  "deleteRequestConfirmation": "حذف \"{title}\"؟ ستتم إزالة منشور الطلب هذا من قائمتك.",
   "@deleteRequestConfirmation": {
     "placeholders": {
       "title": {
@@ -194,17 +192,17 @@
       }
     }
   },
-  "delete": "\u062d\u0630\u0641",
-  "edit": "\u062a\u0639\u062f\u064a\u0644",
-  "deleting": "\u062c\u0627\u0631\u064d \u0627\u0644\u062d\u0630\u0641...",
-  "chat": "المحادثة",
-  "opening": "\u062c\u0627\u0631\u064d \u0627\u0644\u0641\u062a\u062d...",
-  "requestDeletedSuccessfully": "\u062a\u0645 \u062d\u0630\u0641 \u0627\u0644\u0637\u0644\u0628 \u0628\u0646\u062c\u0627\u062d.",
-  "couldNotDeleteRequest": "\u062a\u0639\u0630\u0631 \u062d\u0630\u0641 \u0627\u0644\u0637\u0644\u0628.",
-  "couldNotOpenConversation": "\u062a\u0639\u0630\u0631 \u0641\u062a\u062d \u0627\u0644\u0645\u062d\u0627\u062f\u062b\u0629.",
-  "requestAttachedResendHint": "\u062a\u0645 \u0625\u0631\u0641\u0627\u0642 \u0627\u0644\u0637\u0644\u0628 \u0641\u064a \u0645\u062d\u0631\u0631 \u0627\u0644\u062f\u0631\u062f\u0634\u0629 \u062d\u062a\u0649 \u062a\u062a\u0645\u0643\u0646 \u0645\u0646 \u0625\u0639\u0627\u062f\u0629 \u0625\u0631\u0633\u0627\u0644\u0647.",
-  "initialRequestCouldNotBeSentAutomatically": "\u062a\u0645 \u0641\u062a\u062d \u0627\u0644\u062f\u0631\u062f\u0634\u0629\u060c \u0644\u0643\u0646 \u062a\u0639\u0630\u0631 \u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0637\u0644\u0628 \u0627\u0644\u0623\u0648\u0644 \u062a\u0644\u0642\u0627\u0626\u064a\u064b\u0627.",
-  "welcomeBackUser": "\u0645\u0631\u062d\u0628\u064b\u0627 \u0628\u0639\u0648\u062f\u062a\u0643\u060c {name}",
+  "delete": "حذف",
+  "edit": "تعديل",
+  "deleting": "جارٍ الحذف...",
+  "chat": "محادثة العميل",
+  "opening": "جارٍ الفتح...",
+  "requestDeletedSuccessfully": "تم حذف الطلب بنجاح.",
+  "couldNotDeleteRequest": "تعذر حذف الطلب.",
+  "couldNotOpenConversation": "تعذر فتح المحادثة.",
+  "requestAttachedResendHint": "تم إرفاق الطلب في محرر الدردشة حتى تتمكن من إعادة إرساله.",
+  "initialRequestCouldNotBeSentAutomatically": "تم فتح الدردشة، لكن تعذر إرسال الطلب الأول تلقائيًا.",
+  "welcomeBackUser": "مرحبًا بعودتك، {name}",
   "@welcomeBackUser": {
     "placeholders": {
       "name": {
@@ -212,31 +210,31 @@
       }
     }
   },
-  "browse": "\u062a\u0635\u0641\u062d",
-  "mine": "\u0637\u0644\u0628\u0627\u062a\u064a",
-  "assigned": "\u0645\u0633\u0646\u062f\u0629",
-  "assignedRequests": "\u0627\u0644\u0637\u0644\u0628\u0627\u062a \u0627\u0644\u0645\u0633\u0646\u062f\u0629",
-  "allStatuses": "\u0643\u0644 \u0627\u0644\u062d\u0627\u0644\u0627\u062a",
-  "cityNotSet": "\u0627\u0644\u0645\u062f\u064a\u0646\u0629 \u063a\u064a\u0631 \u0645\u062d\u062f\u062f\u0629",
-  "thisRequestBelongsToYou": "\u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628 \u064a\u062e\u0635\u0643.",
-  "openChatWithSellerBehindRequest": "\u0627\u0641\u062a\u062d \u0645\u062d\u0627\u062f\u062b\u0629 \u0645\u0639 \u0635\u0627\u062d\u0628 \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628.",
-  "requestsYouCanManageNow": "\u0627\u0644\u0637\u0644\u0628\u0627\u062a \u0627\u0644\u062a\u064a \u064a\u0645\u0643\u0646\u0643 \u0625\u062f\u0627\u0631\u062a\u0647\u0627 \u0627\u0644\u0622\u0646.",
-  "noAssignedRequestsYet": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0637\u0644\u0628\u0627\u062a \u0645\u0633\u0646\u062f\u0629 \u0628\u0639\u062f",
-  "noAssignedRequestsYetMessage": "\u0639\u0646\u062f\u0645\u0627 \u064a\u0648\u0627\u0641\u0642 \u0627\u0644\u0645\u0627\u0644\u0643 \u0639\u0644\u0649 \u0637\u0644\u0628 \u0627\u0644\u0648\u0635\u0648\u0644 \u0633\u064a\u0638\u0647\u0631 \u0627\u0644\u0637\u0644\u0628 \u0647\u0646\u0627.",
-  "youCanManageThisRequestStatus": "\u064a\u0645\u0643\u0646\u0643 \u0625\u062f\u0627\u0631\u0629 \u062d\u0627\u0644\u0629 \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628.",
-  "changeStatus": "\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u062d\u0627\u0644\u0629",
-  "requestStatusUpdated": "\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u062d\u0627\u0644\u0629 \u0627\u0644\u0637\u0644\u0628.",
-  "couldNotUpdateRequestStatus": "\u062a\u0639\u0630\u0631 \u062a\u062d\u062f\u064a\u062b \u062d\u0627\u0644\u0629 \u0627\u0644\u0637\u0644\u0628.",
-  "updatingStatus": "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u062f\u064a\u062b...",
-  "requestControl": "\u0627\u0644\u062a\u062d\u0643\u0645 \u0641\u064a \u0627\u0644\u0637\u0644\u0628",
-  "thisChatCanManageRequestStatus": "\u064a\u0645\u0643\u0646 \u0644\u0644\u0645\u0648\u0631\u062f \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u062f\u0631\u062f\u0634\u0629 \u0625\u062f\u0627\u0631\u0629 \u062d\u0627\u0644\u0629 \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628 \u0627\u0644\u0622\u0646.",
-  "thisRequestIsAssignedToAnotherSupplier": "\u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628 \u0645\u0633\u0646\u062f \u062d\u0627\u0644\u064a\u064b\u0627 \u0625\u0644\u0649 \u0645\u0648\u0631\u062f \u0622\u062e\u0631.",
-  "noAccessRequestForThisRequestYet": "\u0644\u0645 \u064a\u062a\u0645 \u0625\u0631\u0633\u0627\u0644 \u0637\u0644\u0628 \u0648\u0635\u0648\u0644 \u0644\u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628 \u0628\u0639\u062f.",
-  "youCanChangeThisRequestStatusNow": "\u064a\u0645\u0643\u0646\u0643 \u062a\u063a\u064a\u064a\u0631 \u062d\u0627\u0644\u0629 \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628 \u0627\u0644\u0622\u0646.",
-  "waitingForOwnerApproval": "\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u0645\u0648\u0627\u0641\u0642\u0629 \u0627\u0644\u0645\u0627\u0644\u0643 \u0639\u0644\u0649 \u0637\u0644\u0628 \u0627\u0644\u0648\u0635\u0648\u0644.",
-  "ownerRejectedYourAccessRequest": "\u0631\u0641\u0636 \u0627\u0644\u0645\u0627\u0644\u0643 \u0637\u0644\u0628 \u0648\u0635\u0648\u0644\u0643.",
-  "askOwnerForStatusAccess": "\u0627\u0637\u0644\u0628 \u0645\u0646 \u0627\u0644\u0645\u0627\u0644\u0643 \u0625\u0630\u0646\u064b\u0627 \u0644\u0625\u062f\u0627\u0631\u0629 \u062d\u0627\u0644\u0629 \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628.",
-  "currentManager": "\u0627\u0644\u0645\u062f\u064a\u0631 \u0627\u0644\u062d\u0627\u0644\u064a: {name}",
+  "browse": "تصفح",
+  "mine": "طلباتي",
+  "assigned": "مسندة",
+  "assignedRequests": "طلبات أتعامل معها",
+  "allStatuses": "كل الحالات",
+  "cityNotSet": "المدينة غير محددة",
+  "thisRequestBelongsToYou": "طلبك مفتوح لاستقبال عروض المورّدين.",
+  "openChatWithSellerBehindRequest": "حادث العميل وقدّم عرضك لهذه القطعة.",
+  "requestsYouCanManageNow": "طلبات قبلك العملاء للتعامل معها.",
+  "noAssignedRequestsYet": "لا توجد طلبات مقبولة بعد",
+  "noAssignedRequestsYetMessage": "عندما يقبلك عميل للتعامل مع طلب، سيظهر هنا.",
+  "youCanManageThisRequestStatus": "قبلك العميل للتعامل مع هذا الطلب.",
+  "changeStatus": "تغيير الحالة",
+  "requestStatusUpdated": "تم تحديث حالة الطلب.",
+  "couldNotUpdateRequestStatus": "تعذر تحديث حالة الطلب.",
+  "updatingStatus": "جارٍ التحديث...",
+  "requestControl": "قبول المورّد",
+  "thisChatCanManageRequestStatus": "لقد قبلت هذا المورّد. لم يعد الطلب عامًا.",
+  "thisRequestIsAssignedToAnotherSupplier": "هذا الطلب يتعامل معه مورّد آخر حاليًا.",
+  "noAccessRequestForThisRequestYet": "لم يطلب أي مورّد التعامل مع هذا الطلب بعد.",
+  "youCanChangeThisRequestStatusNow": "قبلك العميل. يمكنك الآن إدارة هذا الطلب.",
+  "waitingForOwnerApproval": "في انتظار قبول العميل لك.",
+  "ownerRejectedYourAccessRequest": "رفض العميل هذا الطلب.",
+  "askOwnerForStatusAccess": "هل تريد التعامل مع هذا الطلب؟ اطلب من العميل قبولك.",
+  "currentManager": "المورّد المقبول: {name}",
   "@currentManager": {
     "placeholders": {
       "name": {
@@ -244,29 +242,29 @@
       }
     }
   },
-  "approving": "\u062c\u0627\u0631\u064d \u0627\u0644\u0645\u0648\u0627\u0641\u0642\u0629...",
-  "approveAccess": "\u0645\u0648\u0627\u0641\u0642\u0629 \u0639\u0644\u0649 \u0627\u0644\u0648\u0635\u0648\u0644",
-  "rejectAccess": "\u0631\u0641\u0636 \u0627\u0644\u0648\u0635\u0648\u0644",
-  "sendingRequest": "\u062c\u0627\u0631\u064d \u0627\u0644\u0625\u0631\u0633\u0627\u0644...",
-  "requestAccess": "\u0637\u0644\u0628 \u0627\u0644\u0648\u0635\u0648\u0644",
-  "accessRequestPending": "\u0637\u0644\u0628 \u0627\u0644\u0648\u0635\u0648\u0644 \u0627\u0644\u062e\u0627\u0635 \u0628\u0643 \u0642\u064a\u062f \u0627\u0644\u0627\u0646\u062a\u0638\u0627\u0631.",
-  "openAssignedRequestsToUpdateStatus": "\u0627\u0641\u062a\u062d \u0627\u0644\u0637\u0644\u0628\u0627\u062a \u0627\u0644\u0645\u0633\u0646\u062f\u0629 \u0644\u062a\u062d\u062f\u064a\u062b \u0627\u0644\u062d\u0627\u0644\u0629 \u0641\u064a \u0623\u064a \u0648\u0642\u062a.",
-  "accessRequestSent": "\u062a\u0645 \u0625\u0631\u0633\u0627\u0644 \u0637\u0644\u0628 \u0627\u0644\u0648\u0635\u0648\u0644.",
-  "couldNotSendAccessRequest": "\u062a\u0639\u0630\u0631 \u0625\u0631\u0633\u0627\u0644 \u0637\u0644\u0628 \u0627\u0644\u0648\u0635\u0648\u0644.",
-  "accessRequestApproved": "\u062a\u0645\u062a \u0627\u0644\u0645\u0648\u0627\u0641\u0642\u0629 \u0639\u0644\u0649 \u0637\u0644\u0628 \u0627\u0644\u0648\u0635\u0648\u0644.",
-  "couldNotApproveAccessRequest": "\u062a\u0639\u0630\u0631\u062a \u0627\u0644\u0645\u0648\u0627\u0641\u0642\u0629 \u0639\u0644\u0649 \u0637\u0644\u0628 \u0627\u0644\u0648\u0635\u0648\u0644.",
-  "accessRequestRejected": "\u062a\u0645 \u0631\u0641\u0636 \u0637\u0644\u0628 \u0627\u0644\u0648\u0635\u0648\u0644.",
-  "couldNotRejectAccessRequest": "\u062a\u0639\u0630\u0631 \u0631\u0641\u0636 \u0637\u0644\u0628 \u0627\u0644\u0648\u0635\u0648\u0644.",
-  "expandRequestControl": "\u0625\u0638\u0647\u0627\u0631 \u0623\u062f\u0648\u0627\u062a \u0627\u0644\u062a\u062d\u0643\u0645 \u0628\u0627\u0644\u0637\u0644\u0628",
-  "collapseRequestControl": "\u0625\u062e\u0641\u0627\u0621 \u0623\u062f\u0648\u0627\u062a \u0627\u0644\u062a\u062d\u0643\u0645 \u0628\u0627\u0644\u0637\u0644\u0628",
-  "adminPanel": "\u0644\u0648\u062d\u0629 \u0627\u0644\u0645\u0634\u0631\u0641",
-  "adminAccessRequired": "\u064a\u0645\u0643\u0646 \u0641\u0642\u0637 \u0644\u062d\u0633\u0627\u0628\u0627\u062a \u0627\u0644\u0645\u0634\u0631\u0641\u064a\u0646 \u0641\u062a\u062d \u0647\u0630\u0647 \u0627\u0644\u0644\u0648\u062d\u0629.",
-  "adminUsersTab": "\u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\u0648\u0646",
-  "adminReportsTab": "\u0627\u0644\u0628\u0644\u0627\u063a\u0627\u062a",
-  "adminUsersCouldNotBeLoaded": "\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\u064a\u0646 \u0627\u0644\u0622\u0646.",
-  "adminReportsCouldNotBeLoaded": "\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0628\u0644\u0627\u063a\u0627\u062a \u0627\u0644\u0622\u0646.",
-  "noUserReportsYet": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0628\u0644\u0627\u063a\u0627\u062a \u0645\u0633\u062a\u062e\u062f\u0645\u064a\u0646 \u0628\u0639\u062f.",
-  "blockUserTitle": "\u062d\u0638\u0631 {name}",
+  "approving": "جارٍ الموافقة...",
+  "approveAccess": "قبول المورّد",
+  "rejectAccess": "رفض",
+  "sendingRequest": "جارٍ الإرسال...",
+  "requestAccess": "اطلب من العميل قبولك",
+  "accessRequestPending": "في انتظار موافقة العميل.",
+  "openAssignedRequestsToUpdateStatus": "افتح طلبات أتعامل معها لتحديث الحالة في أي وقت.",
+  "accessRequestSent": "تم إرسال الطلب إلى العميل.",
+  "couldNotSendAccessRequest": "تعذر طلب قبول العميل الآن.",
+  "accessRequestApproved": "تم قبول المورّد.",
+  "couldNotApproveAccessRequest": "تعذر قبول المورّد.",
+  "accessRequestRejected": "تم رفض المورّد.",
+  "couldNotRejectAccessRequest": "تعذر رفض المورّد.",
+  "expandRequestControl": "إظهار قبول المورّد",
+  "collapseRequestControl": "إخفاء قبول المورّد",
+  "adminPanel": "لوحة المشرف",
+  "adminAccessRequired": "يمكن فقط لحسابات المشرفين فتح هذه اللوحة.",
+  "adminUsersTab": "المستخدمون",
+  "adminReportsTab": "البلاغات",
+  "adminUsersCouldNotBeLoaded": "تعذر تحميل قائمة المستخدمين الآن.",
+  "adminReportsCouldNotBeLoaded": "تعذر تحميل البلاغات الآن.",
+  "noUserReportsYet": "لا توجد بلاغات مستخدمين بعد.",
+  "blockUserTitle": "حظر {name}",
   "@blockUserTitle": {
     "placeholders": {
       "name": {
@@ -274,10 +272,10 @@
       }
     }
   },
-  "blockUserAction": "\u062d\u0638\u0631 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645",
-  "blockReasonLabel": "\u0633\u0628\u0628 \u0627\u0644\u062d\u0638\u0631",
-  "blockReasonHint": "\u0623\u0636\u0641 \u0633\u0628\u0628\u064b\u0627 \u0627\u062e\u062a\u064a\u0627\u0631\u064a\u064b\u0627 \u0644\u0647\u0630\u0627 \u0627\u0644\u0625\u062c\u0631\u0627\u0621.",
-  "unblockUserTitle": "\u0625\u0644\u063a\u0627\u0621 \u062d\u0638\u0631 {name}",
+  "blockUserAction": "حظر المستخدم",
+  "blockReasonLabel": "سبب الحظر",
+  "blockReasonHint": "أضف سببًا اختياريًا لهذا الإجراء.",
+  "unblockUserTitle": "إلغاء حظر {name}",
   "@unblockUserTitle": {
     "placeholders": {
       "name": {
@@ -285,7 +283,7 @@
       }
     }
   },
-  "unblockUserMessage": "\u0627\u0644\u0633\u0645\u0627\u062d \u0644\u0640 {name} \u0628\u0627\u0644\u0648\u0635\u0648\u0644 \u0625\u0644\u0649 \u0627\u0644\u062a\u0637\u0628\u064a\u0642 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649\u061f",
+  "unblockUserMessage": "السماح لـ {name} بالوصول إلى التطبيق مرة أخرى؟",
   "@unblockUserMessage": {
     "placeholders": {
       "name": {
@@ -293,27 +291,27 @@
       }
     }
   },
-  "unblockUserAction": "\u0625\u0644\u063a\u0627\u0621 \u0627\u0644\u062d\u0638\u0631",
-  "userBlocked": "\u062a\u0645 \u062d\u0638\u0631 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645.",
-  "userUnblocked": "\u062a\u0645 \u0625\u0644\u063a\u0627\u0621 \u062d\u0638\u0631 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645.",
-  "couldNotBlockUser": "\u062a\u0639\u0630\u0631 \u062d\u0638\u0631 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645.",
-  "couldNotUnblockUser": "\u062a\u0639\u0630\u0631 \u0625\u0644\u063a\u0627\u0621 \u062d\u0638\u0631 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645.",
-  "reviewReportTitle": "\u0645\u0631\u0627\u062c\u0639\u0629 \u0627\u0644\u0628\u0644\u0627\u063a",
-  "reviewReportAction": "\u0645\u0631\u0627\u062c\u0639\u0629",
-  "reportStatusLabel": "\u062d\u0627\u0644\u0629 \u0627\u0644\u0628\u0644\u0627\u063a",
-  "reportStatusOpen": "\u0645\u0641\u062a\u0648\u062d",
-  "reportStatusReviewed": "\u062a\u0645\u062a \u0645\u0631\u0627\u062c\u0639\u062a\u0647",
-  "reportStatusDismissed": "\u062a\u0645 \u062a\u062c\u0627\u0647\u0644\u0647",
-  "reportStatusActioned": "\u062a\u0645 \u0627\u062a\u062e\u0627\u0630 \u0625\u062c\u0631\u0627\u0621",
-  "reportUpdated": "\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0628\u0644\u0627\u063a.",
-  "couldNotUpdateReport": "\u062a\u0639\u0630\u0631 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0628\u0644\u0627\u063a.",
-  "adminNotesLabel": "\u0645\u0644\u0627\u062d\u0638\u0627\u062a \u0627\u0644\u0645\u0634\u0631\u0641",
-  "adminNotesHint": "\u0623\u0636\u0641 \u0645\u0644\u0627\u062d\u0638\u0627\u062a \u0644\u0645\u0631\u0627\u062c\u0639\u0629 \u0627\u0644\u0628\u0644\u0627\u063a.",
-  "userBlockedStatus": "\u0645\u062d\u0638\u0648\u0631",
-  "userActiveStatus": "\u0646\u0634\u0637",
-  "adminCurrentAccount": "\u0647\u0630\u0627 \u0647\u0648 \u062d\u0633\u0627\u0628\u0643 \u0627\u0644\u062d\u0627\u0644\u064a.",
-  "adminRole": "\u0645\u0634\u0631\u0641",
-  "reportCardTitle": "\u0628\u0644\u0627\u063a \u0639\u0646 {name}",
+  "unblockUserAction": "إلغاء الحظر",
+  "userBlocked": "تم حظر المستخدم.",
+  "userUnblocked": "تم إلغاء حظر المستخدم.",
+  "couldNotBlockUser": "تعذر حظر المستخدم.",
+  "couldNotUnblockUser": "تعذر إلغاء حظر المستخدم.",
+  "reviewReportTitle": "مراجعة البلاغ",
+  "reviewReportAction": "مراجعة",
+  "reportStatusLabel": "حالة البلاغ",
+  "reportStatusOpen": "مفتوح",
+  "reportStatusReviewed": "تمت مراجعته",
+  "reportStatusDismissed": "تم تجاهله",
+  "reportStatusActioned": "تم اتخاذ إجراء",
+  "reportUpdated": "تم تحديث البلاغ.",
+  "couldNotUpdateReport": "تعذر تحديث البلاغ.",
+  "adminNotesLabel": "ملاحظات المشرف",
+  "adminNotesHint": "أضف ملاحظات لمراجعة البلاغ.",
+  "userBlockedStatus": "محظور",
+  "userActiveStatus": "نشط",
+  "adminCurrentAccount": "هذا هو حسابك الحالي.",
+  "adminRole": "مشرف",
+  "reportCardTitle": "بلاغ عن {name}",
   "@reportCardTitle": {
     "placeholders": {
       "name": {
@@ -321,7 +319,7 @@
       }
     }
   },
-  "reportedByLabel": "\u062a\u0645 \u0627\u0644\u0625\u0628\u0644\u0627\u063a \u0628\u0648\u0627\u0633\u0637\u0629 {name}",
+  "reportedByLabel": "تم الإبلاغ بواسطة {name}",
   "@reportedByLabel": {
     "placeholders": {
       "name": {
@@ -329,7 +327,7 @@
       }
     }
   },
-  "reportCreatedAt": "\u0623\u064f\u0646\u0634\u0626 {time}",
+  "reportCreatedAt": "أُنشئ {time}",
   "@reportCreatedAt": {
     "placeholders": {
       "time": {
@@ -337,7 +335,7 @@
       }
     }
   },
-  "reportReviewedAt": "\u062a\u0645\u062a \u0645\u0631\u0627\u062c\u0639\u062a\u0647 {time}",
+  "reportReviewedAt": "تمت مراجعته {time}",
   "@reportReviewedAt": {
     "placeholders": {
       "time": {
@@ -345,39 +343,39 @@
       }
     }
   },
-  "profileTitle": "\u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a",
-  "profileLoadError": "\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0647\u0630\u0627 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a \u0627\u0644\u0622\u0646.",
-  "contactDetails": "\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u062a\u0648\u0627\u0635\u0644",
-  "phone": "\u0627\u0644\u0647\u0627\u062a\u0641",
-  "cityLabel": "\u0627\u0644\u0645\u062f\u064a\u0646\u0629",
-  "filterByCarMake": "\u062a\u0635\u0641\u064a\u0629 \u062d\u0633\u0628 \u0627\u0644\u0634\u0631\u0643\u0629 \u0627\u0644\u0645\u0635\u0646\u0651\u0639\u0629",
-  "chatPushNotifications": "\u0625\u0634\u0639\u0627\u0631\u0627\u062a \u0627\u0644\u062f\u0631\u062f\u0634\u0629",
-  "chatPushNotificationsDescription": "\u0627\u0633\u062a\u0642\u0628\u0644 \u0625\u0634\u0639\u0627\u0631\u064b\u0627 \u0639\u0646\u062f \u0648\u0635\u0648\u0644 \u0631\u0633\u0627\u0644\u0629 \u062f\u0631\u062f\u0634\u0629 \u062c\u062f\u064a\u062f\u0629.",
-  "showMessagePreview": "\u0625\u0638\u0647\u0627\u0631 \u0645\u0639\u0627\u064a\u0646\u0629 \u0627\u0644\u0631\u0633\u0627\u0644\u0629",
-  "showMessagePreviewDescription": "\u062a\u0636\u0645\u064a\u0646 \u062c\u0632\u0621 \u0645\u0646 \u0631\u0633\u0627\u0644\u0629 \u0627\u0644\u062f\u0631\u062f\u0634\u0629 \u062f\u0627\u062e\u0644 \u0627\u0644\u0625\u0634\u0639\u0627\u0631.",
-  "profileUpdatedSuccessfully": "\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a \u0628\u0646\u062c\u0627\u062d.",
-  "profilePhoto": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a",
-  "newPhotoReadyMessage": "\u0627\u0644\u0635\u0648\u0631\u0629 \u0627\u0644\u062c\u062f\u064a\u062f\u0629 \u062c\u0627\u0647\u0632\u0629. \u0627\u062d\u0641\u0638 \u0645\u0644\u0641\u0643 \u0627\u0644\u0634\u062e\u0635\u064a \u0644\u062a\u0637\u0628\u064a\u0642\u0647\u0627.",
-  "choosePhotoForRequestsAndChats": "\u0627\u062e\u062a\u0631 \u0635\u0648\u0631\u0629 \u0644\u064a\u0633\u0647\u0644 \u0627\u0644\u062a\u0639\u0631\u0641 \u0639\u0644\u064a\u0643 \u0641\u064a \u0627\u0644\u0637\u0644\u0628\u0627\u062a \u0648\u0627\u0644\u062f\u0631\u062f\u0634\u0627\u062a.",
-  "chooseAnotherPhoto": "\u0627\u062e\u062a\u0631 \u0635\u0648\u0631\u0629 \u0623\u062e\u0631\u0649",
-  "changePhoto": "\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0635\u0648\u0631\u0629",
-  "undoPhotoChange": "\u0627\u0644\u062a\u0631\u0627\u062c\u0639 \u0639\u0646 \u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0635\u0648\u0631\u0629",
-  "noCarModelsSelectedYetMessage": "\u0644\u0645 \u064a\u062a\u0645 \u0627\u062e\u062a\u064a\u0627\u0631 \u0623\u064a \u0645\u0648\u062f\u064a\u0644\u0627\u062a \u0628\u0639\u062f. \u0627\u062e\u062a\u0631 \u0627\u0644\u0645\u0648\u062f\u064a\u0644\u0627\u062a \u0627\u0644\u062a\u064a \u062a\u062f\u0639\u0645\u0647\u0627 \u0645\u0646 \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0623\u062f\u0646\u0627\u0647.",
-  "deleteAccountTitle": "\u062d\u0630\u0641 \u0627\u0644\u062d\u0633\u0627\u0628",
-  "deleteAccountPermanentMessage": "\u0633\u064a\u0624\u062f\u064a \u0647\u0630\u0627 \u0625\u0644\u0649 \u062d\u0630\u0641 \u062d\u0633\u0627\u0628\u0643 \u0648\u0637\u0644\u0628\u0627\u062a\u0643 \u0648\u0633\u062c\u0644 \u0627\u0644\u062f\u0631\u062f\u0634\u0629 \u0648\u0627\u0644\u0623\u062c\u0647\u0632\u0629 \u0627\u0644\u0645\u0633\u062c\u0644\u0629 \u0646\u0647\u0627\u0626\u064a\u064b\u0627. \u0644\u0627 \u064a\u0645\u0643\u0646 \u0627\u0644\u062a\u0631\u0627\u062c\u0639 \u0639\u0646 \u0647\u0630\u0627 \u0627\u0644\u0625\u062c\u0631\u0627\u0621.",
-  "accountDeletedSuccessfully": "\u062a\u0645 \u062d\u0630\u0641 \u062d\u0633\u0627\u0628\u0643.",
-  "accountCouldNotBeDeletedRightNow": "\u062a\u0639\u0630\u0631 \u062d\u0630\u0641 \u062d\u0633\u0627\u0628\u0643 \u0627\u0644\u0622\u0646.",
-  "deleteAccountDangerDescription": "\u0627\u062d\u0630\u0641 \u0645\u0644\u0641\u0643 \u0627\u0644\u0634\u062e\u0635\u064a \u0648\u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0645\u0631\u062a\u0628\u0637\u0629 \u0628\u062d\u0633\u0627\u0628\u0643 \u0646\u0647\u0627\u0626\u064a\u064b\u0627 \u0625\u0630\u0627 \u0644\u0645 \u062a\u0639\u062f \u062a\u0631\u063a\u0628 \u0641\u064a \u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u0627\u0644\u062a\u0637\u0628\u064a\u0642.",
-  "pleaseWait": "\u064a\u0631\u062c\u0649 \u0627\u0644\u0627\u0646\u062a\u0638\u0627\u0631...",
-  "quickActions": "\u0625\u062c\u0631\u0627\u0621\u0627\u062a \u0633\u0631\u064a\u0639\u0629",
-  "quickActionsDescription": "\u0627\u0628\u062f\u0623 \u0645\u062d\u0627\u062f\u062b\u0629 \u0645\u0628\u0627\u0634\u0631\u0629 \u0623\u0648 \u0627\u0641\u062a\u062d \u0648\u0627\u062a\u0633\u0627\u0628 \u0628\u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641 \u0627\u0644\u0645\u0648\u0631\u062f.",
-  "openingChat": "\u062c\u0627\u0631\u064d \u0641\u062a\u062d \u0627\u0644\u0645\u062d\u0627\u062f\u062b\u0629...",
-  "chatAction": "\u0645\u062d\u0627\u062f\u062b\u0629",
-  "openingWhatsApp": "\u062c\u0627\u0631\u064d \u0641\u062a\u062d \u0648\u0627\u062a\u0633\u0627\u0628...",
-  "whatsAppAction": "\u0648\u0627\u062a\u0633\u0627\u0628",
-  "supplierCarsTitle": "\u0627\u0644\u0633\u064a\u0627\u0631\u0627\u062a \u0627\u0644\u062a\u064a \u064a\u0639\u0645\u0644 \u0639\u0644\u064a\u0647\u0627 \u0647\u0630\u0627 \u0627\u0644\u0645\u0648\u0631\u062f",
-  "supplierCarsDescription": "\u0647\u0630\u0647 \u0647\u064a \u0639\u0644\u0627\u0645\u0627\u062a \u0627\u0644\u0633\u064a\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u062d\u062f\u062f\u0629 \u0641\u064a \u0645\u0644\u0641 \u0627\u0644\u0645\u0648\u0631\u062f.",
-  "ratingLabel": "\u0627\u0644\u062a\u0642\u064a\u064a\u0645 {value}",
+  "profileTitle": "الملف الشخصي",
+  "profileLoadError": "تعذر تحميل هذا الملف الشخصي الآن.",
+  "contactDetails": "بيانات التواصل",
+  "phone": "الهاتف",
+  "cityLabel": "المدينة",
+  "filterByCarMake": "تصفية حسب الشركة المصنّعة",
+  "chatPushNotifications": "إشعارات الدردشة",
+  "chatPushNotificationsDescription": "استقبل إشعارًا عند وصول رسالة دردشة جديدة.",
+  "showMessagePreview": "إظهار معاينة الرسالة",
+  "showMessagePreviewDescription": "تضمين جزء من رسالة الدردشة داخل الإشعار.",
+  "profileUpdatedSuccessfully": "تم تحديث الملف الشخصي بنجاح.",
+  "profilePhoto": "صورة الملف الشخصي",
+  "newPhotoReadyMessage": "الصورة الجديدة جاهزة. احفظ ملفك الشخصي لتطبيقها.",
+  "choosePhotoForRequestsAndChats": "اختر صورة ليسهل التعرف عليك في الطلبات والدردشات.",
+  "chooseAnotherPhoto": "اختر صورة أخرى",
+  "changePhoto": "تغيير الصورة",
+  "undoPhotoChange": "التراجع عن تغيير الصورة",
+  "noCarModelsSelectedYetMessage": "لم يتم اختيار أي موديلات بعد. اختر الموديلات التي تدعمها من القائمة أدناه.",
+  "deleteAccountTitle": "حذف الحساب",
+  "deleteAccountPermanentMessage": "سيؤدي هذا إلى حذف حسابك وطلباتك وسجل الدردشة والأجهزة المسجلة نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+  "accountDeletedSuccessfully": "تم حذف حسابك.",
+  "accountCouldNotBeDeletedRightNow": "تعذر حذف حسابك الآن.",
+  "deleteAccountDangerDescription": "احذف ملفك الشخصي والبيانات المرتبطة بحسابك نهائيًا إذا لم تعد ترغب في استخدام التطبيق.",
+  "pleaseWait": "يرجى الانتظار...",
+  "quickActions": "إجراءات سريعة",
+  "quickActionsDescription": "ابدأ محادثة مباشرة أو افتح واتساب باستخدام رقم هاتف المورد.",
+  "openingChat": "جارٍ فتح المحادثة...",
+  "chatAction": "محادثة",
+  "openingWhatsApp": "جارٍ فتح واتساب...",
+  "whatsAppAction": "واتساب",
+  "supplierCarsTitle": "السيارات التي يدعمها هذا المورّد",
+  "supplierCarsDescription": "يتلقى هذا المورّد الطلبات المطابقة لهذه السيارات.",
+  "ratingLabel": "التقييم {value}",
   "@ratingLabel": {
     "placeholders": {
       "value": {
@@ -385,7 +383,7 @@
       }
     }
   },
-  "joinedLabel": "\u0627\u0646\u0636\u0645 {time}",
+  "joinedLabel": "انضم {time}",
   "@joinedLabel": {
     "placeholders": {
       "time": {
@@ -393,11 +391,11 @@
       }
     }
   },
-  "reportUserSectionTitle": "\u0627\u0644\u0625\u0628\u0644\u0627\u063a \u0639\u0646 \u0645\u0633\u062a\u062e\u062f\u0645",
-  "reportUserSectionBody": "\u0623\u0631\u0633\u0644 \u0628\u0644\u0627\u063a\u064b\u0627 \u0625\u0630\u0627 \u0643\u0627\u0646 \u0647\u0630\u0627 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645 \u064a\u0633\u064a\u0621 \u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u0627\u0644\u062f\u0631\u062f\u0634\u0629 \u0623\u0648 \u0637\u0644\u0628\u0627\u062a \u0627\u0644\u0648\u0635\u0648\u0644.",
-  "reportUserAction": "\u0625\u0628\u0644\u0627\u063a",
-  "sendingReport": "\u062c\u0627\u0631\u064d \u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0628\u0644\u0627\u063a...",
-  "reportUserDialogTitle": "\u0625\u0628\u0644\u0627\u063a \u0639\u0646 {name}",
+  "reportUserSectionTitle": "الإبلاغ عن الحساب",
+  "reportUserSectionBody": "أرسل بلاغ أمان إذا كان هذا الحساب يسيء استخدام المحادثات أو قبول المورّدين.",
+  "reportUserAction": "الإبلاغ عن الحساب",
+  "sendingReport": "جارٍ إرسال البلاغ...",
+  "reportUserDialogTitle": "إبلاغ عن {name}",
   "@reportUserDialogTitle": {
     "placeholders": {
       "name": {
@@ -405,36 +403,36 @@
       }
     }
   },
-  "reportReasonLabel": "\u0627\u0644\u0633\u0628\u0628",
-  "reportDetailsLabel": "\u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644",
-  "reportDetailsHint": "\u0623\u0636\u0641 \u0623\u064a \u0645\u0639\u0644\u0648\u0645\u0627\u062a \u062a\u0633\u0627\u0639\u062f \u0627\u0644\u0645\u0634\u0631\u0641 \u0639\u0644\u0649 \u0645\u0631\u0627\u062c\u0639\u0629 \u0627\u0644\u0628\u0644\u0627\u063a.",
-  "sendReport": "\u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0628\u0644\u0627\u063a",
-  "userReportSubmitted": "\u062a\u0645 \u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0628\u0644\u0627\u063a.",
-  "couldNotSendUserReport": "\u062a\u0639\u0630\u0631 \u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0628\u0644\u0627\u063a.",
-  "reportReasonSpam": "\u0631\u0633\u0627\u0626\u0644 \u0645\u0632\u0639\u062c\u0629",
-  "reportReasonFraud": "\u0627\u062d\u062a\u064a\u0627\u0644",
-  "reportReasonHarassment": "\u0645\u0636\u0627\u064a\u0642\u0629",
-  "reportReasonImpersonation": "\u0627\u0646\u062a\u062d\u0627\u0644 \u0635\u0641\u0629",
-  "reportReasonOther": "\u0623\u062e\u0631\u0649",
-  "couldNotOpenChatRightNow": "\u062a\u0639\u0630\u0631 \u0641\u062a\u062d \u0627\u0644\u0645\u062d\u0627\u062f\u062b\u0629 \u0627\u0644\u0622\u0646.",
-  "whatsAppPhoneNotReady": "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0647\u0630\u0627 \u063a\u064a\u0631 \u062c\u0627\u0647\u0632 \u0644\u0648\u0627\u062a\u0633\u0627\u0628.",
-  "couldNotOpenWhatsApp": "\u062a\u0639\u0630\u0631 \u0641\u062a\u062d \u0648\u0627\u062a\u0633\u0627\u0628 \u0627\u0644\u0622\u0646.",
-  "privacyPolicy": "\u0633\u064a\u0627\u0633\u0629 \u0627\u0644\u062e\u0635\u0648\u0635\u064a\u0629",
-  "privacyPolicyDescription": "\u0627\u0642\u0631\u0623 \u0643\u064a\u0641 \u064a\u062c\u0645\u0639 \u0647\u0630\u0627 \u0627\u0644\u062a\u0637\u0628\u064a\u0642 \u0628\u064a\u0627\u0646\u0627\u062a\u0643 \u0648\u064a\u0633\u062a\u062e\u062f\u0645\u0647\u0627 \u0648\u064a\u062d\u0645\u064a\u0647\u0627.",
-  "openPrivacyPolicy": "\u0641\u062a\u062d \u0633\u064a\u0627\u0633\u0629 \u0627\u0644\u062e\u0635\u0648\u0635\u064a\u0629",
-  "couldNotOpenPrivacyPolicy": "\u062a\u0639\u0630\u0631 \u0641\u062a\u062d \u0633\u064a\u0627\u0633\u0629 \u0627\u0644\u062e\u0635\u0648\u0635\u064a\u0629 \u0627\u0644\u0622\u0646.",
-  "requestUpdatedSuccessfully": "\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0637\u0644\u0628 \u0628\u0646\u062c\u0627\u062d.",
-  "requestCreatedSuccessfully": "\u062a\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0637\u0644\u0628 \u0628\u0646\u062c\u0627\u062d.",
-  "editRequestTitle": "\u062a\u0639\u062f\u064a\u0644 \u0627\u0644\u0637\u0644\u0628",
-  "createRequestTitle": "\u0625\u0646\u0634\u0627\u0621 \u0637\u0644\u0628",
-  "updateYourRequest": "\u062d\u062f\u0651\u062b \u0637\u0644\u0628\u0643",
-  "postNewRequest": "\u0627\u0646\u0634\u0631 \u0637\u0644\u0628\u064b\u0627 \u062c\u062f\u064a\u062f\u064b\u0627",
-  "editRequestDescription": "\u062d\u062f\u0651\u062b \u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0637\u0644\u0628 \u0648\u0627\u0644\u0635\u0648\u0631 \u0627\u0644\u062a\u064a \u062a\u0631\u064a\u062f \u0623\u0646 \u064a\u0631\u0627\u0647\u0627 \u0627\u0644\u0645\u0634\u062a\u0631\u0648\u0646.",
-  "createRequestDescription": "أنشئ طلبًا يمكن للمورّدين تصفحه وفتح محادثات من خلاله.",
-  "requestCreationBlocked": "\u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0637\u0644\u0628 \u0645\u062d\u0638\u0648\u0631",
-  "currentStatus": "\u0627\u0644\u062d\u0627\u0644\u0629 \u0627\u0644\u062d\u0627\u0644\u064a\u0629",
-  "initialStatus": "\u0627\u0644\u062d\u0627\u0644\u0629 \u0627\u0644\u0623\u0648\u0644\u064a\u0629",
-  "currentStatusMessage": "\u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628 \u0645\u0635\u0646\u0641 \u062d\u0627\u0644\u064a\u064b\u0627 \u0628\u0627\u0633\u0645 \"{status}\".",
+  "reportReasonLabel": "السبب",
+  "reportDetailsLabel": "التفاصيل",
+  "reportDetailsHint": "أضف أي معلومات تساعد المشرف على مراجعة البلاغ.",
+  "sendReport": "إرسال البلاغ",
+  "userReportSubmitted": "تم إرسال البلاغ.",
+  "couldNotSendUserReport": "تعذر إرسال البلاغ.",
+  "reportReasonSpam": "رسائل مزعجة",
+  "reportReasonFraud": "احتيال",
+  "reportReasonHarassment": "مضايقة",
+  "reportReasonImpersonation": "انتحال صفة",
+  "reportReasonOther": "أخرى",
+  "couldNotOpenChatRightNow": "تعذر فتح المحادثة الآن.",
+  "whatsAppPhoneNotReady": "رقم الهاتف هذا غير جاهز لواتساب.",
+  "couldNotOpenWhatsApp": "تعذر فتح واتساب الآن.",
+  "privacyPolicy": "سياسة الخصوصية",
+  "privacyPolicyDescription": "اقرأ كيف يجمع هذا التطبيق بياناتك ويستخدمها ويحميها.",
+  "openPrivacyPolicy": "فتح سياسة الخصوصية",
+  "couldNotOpenPrivacyPolicy": "تعذر فتح سياسة الخصوصية الآن.",
+  "requestUpdatedSuccessfully": "تم تحديث الطلب بنجاح.",
+  "requestCreatedSuccessfully": "تم إنشاء الطلب بنجاح.",
+  "editRequestTitle": "تعديل الطلب",
+  "createRequestTitle": "إنشاء طلب",
+  "updateYourRequest": "حدّث طلبك",
+  "postNewRequest": "اطلب قطعة غيار",
+  "editRequestDescription": "حدّث تفاصيل الطلب والصور التي تريد أن يراها المورّدون.",
+  "createRequestDescription": "أخبر المورّدين عن قطعة الغيار التي تحتاجها. سيتم إشعار المورّدين المطابقين ويمكنهم محادثتك.",
+  "requestCreationBlocked": "إنشاء الطلب محظور",
+  "currentStatus": "الحالة الحالية",
+  "initialStatus": "الحالة الأولية",
+  "currentStatusMessage": "هذا الطلب مصنف حاليًا باسم \"{status}\".",
   "@currentStatusMessage": {
     "placeholders": {
       "status": {
@@ -442,7 +440,7 @@
       }
     }
   },
-  "initialStatusMessage": "\u0633\u062a\u0628\u062f\u0623 \u0627\u0644\u0637\u0644\u0628\u0627\u062a \u0627\u0644\u062c\u062f\u064a\u062f\u0629 \u0628\u0627\u0644\u062d\u0627\u0644\u0629 \"{status}\".",
+  "initialStatusMessage": "ستبدأ الطلبات الجديدة بالحالة \"{status}\".",
   "@initialStatusMessage": {
     "placeholders": {
       "status": {
@@ -450,53 +448,117 @@
       }
     }
   },
-  "requestTitleLabel": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0637\u0644\u0628",
-  "requestTitleHint": "\u0635\u062f\u0627\u0645 \u0623\u0645\u0627\u0645\u064a \u0644\u062a\u0648\u064a\u0648\u062a\u0627 \u0643\u0627\u0645\u0631\u064a 2022",
-  "enterRequestTitle": "\u0623\u062f\u062e\u0644 \u0639\u0646\u0648\u0627\u0646\u064b\u0627 \u0644\u0644\u0637\u0644\u0628.",
-  "requestDescriptionLabel": "\u0627\u0644\u0648\u0635\u0641",
-  "requestDescriptionHint": "\u0635\u0641 \u0627\u0644\u062d\u0627\u0644\u0629 \u0623\u0648 \u0627\u0644\u0639\u0644\u0627\u0645\u0629 \u0627\u0644\u0645\u0641\u0636\u0644\u0629 \u0623\u0648 \u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0645\u0648\u062f\u064a\u0644 \u0627\u0644\u062a\u064a \u064a\u062c\u0628 \u0623\u0646 \u064a\u0639\u0631\u0641\u0647\u0627 \u0627\u0644\u0645\u0634\u062a\u0631\u0648\u0646.",
-  "addShortDescription": "\u0623\u0636\u0641 \u0648\u0635\u0641\u064b\u0627 \u0642\u0635\u064a\u0631\u064b\u0627.",
-  "carModelLabel": "\u0645\u0648\u062f\u064a\u0644 \u0627\u0644\u0633\u064a\u0627\u0631\u0629",
+  "requestTitleLabel": "ما قطعة الغيار التي تحتاجها؟",
+  "requestTitleHint": "صدام أمامي لتويوتا كامري 2022",
+  "enterRequestTitle": "أدخل عنوانًا للطلب.",
+  "requestDescriptionLabel": "الوصف",
+  "requestDescriptionHint": "صف الحالة أو العلامة المفضلة أو تفاصيل الموديل التي يحتاج المورّدون معرفتها.",
+  "addShortDescription": "أضف وصفًا قصيرًا.",
+  "carModelLabel": "موديل السيارة",
   "carModelDescription": "اختر موديل السيارة الدقيق لهذا الطلب حتى يصل الإشعار فقط للمورّدين المناسبين.",
-  "addCarManually": "\u0625\u0636\u0627\u0641\u0629 \u0633\u064a\u0627\u0631\u0629 \u064a\u062f\u0648\u064a\u064b\u0627",
-  "addCarManuallyDescription": "\u0627\u0633\u062a\u062e\u062f\u0645 \u0647\u0630\u0627 \u0625\u0630\u0627 \u0644\u0645 \u062a\u062c\u062f \u0627\u0644\u0634\u0631\u0643\u0629 \u0623\u0648 \u0627\u0644\u0645\u0648\u062f\u064a\u0644 \u0641\u064a \u0627\u0644\u062f\u0644\u064a\u0644 \u0628\u0639\u062f.",
-  "carMakeLabel": "\u0634\u0631\u0643\u0629 \u0627\u0644\u0633\u064a\u0627\u0631\u0629",
-  "carModelSearchLabel": "\u0627\u0628\u062d\u062b \u0639\u0646 \u0645\u0648\u062f\u064a\u0644 \u0633\u064a\u0627\u0631\u0629",
+  "addCarManually": "إضافة سيارة يدويًا",
+  "addCarManuallyDescription": "استخدم هذا إذا لم تجد الشركة أو الموديل في الدليل بعد.",
+  "carMakeLabel": "شركة السيارة",
+  "carModelSearchLabel": "ابحث عن موديل سيارة",
   "carModelSearchHint": "Audi RS7",
-  "clearCarModelSearch": "\u0645\u0633\u062d \u0627\u0644\u0628\u062d\u062b",
-  "carModelSearchFailed": "\u0641\u0634\u0644 \u0627\u0644\u0628\u062d\u062b \u0639\u0646 \u0645\u0648\u062f\u064a\u0644 \u0627\u0644\u0633\u064a\u0627\u0631\u0629. \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.",
-  "noMatchingCarModelsFound": "\u0644\u0645 \u064a\u062a\u0645 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0645\u0648\u062f\u064a\u0644\u0627\u062a \u0633\u064a\u0627\u0631\u0627\u062a \u0645\u0637\u0627\u0628\u0642\u0629.",
-  "newCarMakeLabel": "\u0634\u0631\u0643\u0629 \u0633\u064a\u0627\u0631\u0629 \u062c\u062f\u064a\u062f\u0629",
-  "newCarMakeHint": "\u062a\u0648\u064a\u0648\u062a\u0627",
-  "newCarModelLabel": "\u0645\u0648\u062f\u064a\u0644 \u0633\u064a\u0627\u0631\u0629 \u062c\u062f\u064a\u062f",
-  "newCarModelHint": "\u0643\u0627\u0645\u0631\u064a 2024",
-  "cityOptionalLabel": "\u0627\u0644\u0645\u062f\u064a\u0646\u0629 (\u0627\u062e\u062a\u064a\u0627\u0631\u064a)",
-  "cityOptionalHint": "\u0627\u0644\u0631\u064a\u0627\u0636",
-  "addPhotos": "\u0625\u0636\u0627\u0641\u0629 \u0635\u0648\u0631",
-  "addMorePhotos": "\u0625\u0636\u0627\u0641\u0629 \u0627\u0644\u0645\u0632\u064a\u062f \u0645\u0646 \u0627\u0644\u0635\u0648\u0631",
-  "minPriceLabel": "\u0627\u0644\u0633\u0639\u0631 \u0627\u0644\u0623\u062f\u0646\u0649",
-  "maxPriceLabel": "\u0627\u0644\u0633\u0639\u0631 \u0627\u0644\u0623\u0642\u0635\u0649",
-  "maxPriceMustBeGreaterThanMinPrice": "\u064a\u062c\u0628 \u0623\u0646 \u064a\u0643\u0648\u0646 \u0627\u0644\u0633\u0639\u0631 \u0627\u0644\u0623\u0642\u0635\u0649 \u0623\u0643\u0628\u0631 \u0645\u0646 \u0627\u0644\u0633\u0639\u0631 \u0627\u0644\u0623\u062f\u0646\u0649.",
-  "saving": "\u062c\u0627\u0631\u064d \u0627\u0644\u062d\u0641\u0638...",
-  "saveChanges": "\u062d\u0641\u0638 \u0627\u0644\u062a\u063a\u064a\u064a\u0631\u0627\u062a",
-  "enterValidNumber": "\u0623\u062f\u062e\u0644 \u0631\u0642\u0645\u064b\u0627 \u0635\u0627\u0644\u062d\u064b\u0627.",
-  "enterCarMake": "\u0623\u062f\u062e\u0644 \u0634\u0631\u0643\u0629 \u0627\u0644\u0633\u064a\u0627\u0631\u0629.",
-  "enterCarModel": "\u0623\u062f\u062e\u0644 \u0645\u0648\u062f\u064a\u0644 \u0627\u0644\u0633\u064a\u0627\u0631\u0629.",
-  "enterCarMakeAndModelBeforeSaving": "\u0623\u062f\u062e\u0644 \u0634\u0631\u0643\u0629 \u0627\u0644\u0633\u064a\u0627\u0631\u0629 \u0648\u0645\u0648\u062f\u064a\u0644\u0647\u0627 \u0642\u0628\u0644 \u062d\u0641\u0638 \u0627\u0644\u0637\u0644\u0628.",
-  "chooseCarModelBeforeSaving": "\u0627\u062e\u062a\u0631 \u0645\u0648\u062f\u064a\u0644 \u0633\u064a\u0627\u0631\u0629 \u0642\u0628\u0644 \u062d\u0641\u0638 \u0647\u0630\u0627 \u0627\u0644\u0637\u0644\u0628.",
-  "viewMyRequests": "\u0639\u0631\u0636 \u0637\u0644\u0628\u0627\u062a\u064a",
-  "viewRequest": "\u0639\u0631\u0636 \u0627\u0644\u0637\u0644\u0628",
-  "dismiss": "\u0625\u063a\u0644\u0627\u0642",
-  "appUpdateAvailableMessage": "\u064a\u062a\u0648\u0641\u0631 \u0625\u0635\u062f\u0627\u0631 \u062c\u062f\u064a\u062f \u0645\u0646 MTA. \u062d\u062f\u0651\u062b \u0627\u0644\u0622\u0646 \u0644\u0644\u062d\u0635\u0648\u0644 \u0639\u0644\u0649 \u0623\u062d\u062f\u062b \u0627\u0644\u0645\u064a\u0632\u0627\u062a \u0648\u0627\u0644\u062a\u062d\u0633\u064a\u0646\u0627\u062a.",
-  "updateNow": "\u062d\u062f\u0651\u062b \u0627\u0644\u0622\u0646",
-  "later": "\u0644\u0627\u062d\u0642\u064b\u0627",
-  "couldNotOpenAppStore": "\u062a\u0639\u0630\u0631 \u0641\u062a\u062d \u0645\u062a\u062c\u0631 \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u0627\u062a \u0627\u0644\u0622\u0646.",
-  "whatsAppGreeting": "\u0645\u0631\u062d\u0628\u064b\u0627 {name}",
+  "clearCarModelSearch": "مسح البحث",
+  "carModelSearchFailed": "فشل البحث عن موديل السيارة. حاول مرة أخرى.",
+  "noMatchingCarModelsFound": "لم يتم العثور على موديلات سيارات مطابقة.",
+  "newCarMakeLabel": "شركة سيارة جديدة",
+  "newCarMakeHint": "تويوتا",
+  "newCarModelLabel": "موديل سيارة جديد",
+  "newCarModelHint": "كامري 2024",
+  "cityOptionalLabel": "المدينة (اختياري)",
+  "cityOptionalHint": "الرياض",
+  "addPhotos": "إضافة صور",
+  "addMorePhotos": "إضافة المزيد من الصور",
+  "minPriceLabel": "السعر الأدنى",
+  "maxPriceLabel": "السعر الأقصى",
+  "maxPriceMustBeGreaterThanMinPrice": "يجب أن يكون السعر الأقصى أكبر من السعر الأدنى.",
+  "saving": "جارٍ الحفظ...",
+  "saveChanges": "حفظ التغييرات",
+  "enterValidNumber": "أدخل رقمًا صالحًا.",
+  "enterCarMake": "أدخل شركة السيارة.",
+  "enterCarModel": "أدخل موديل السيارة.",
+  "enterCarMakeAndModelBeforeSaving": "أدخل شركة السيارة وموديلها قبل حفظ الطلب.",
+  "chooseCarModelBeforeSaving": "اختر موديل سيارة قبل حفظ هذا الطلب.",
+  "viewMyRequests": "عرض طلباتي",
+  "viewRequest": "عرض الطلب",
+  "dismiss": "إغلاق",
+  "appUpdateAvailableMessage": "يتوفر إصدار جديد من MTA. حدّث الآن للحصول على أحدث الميزات والتحسينات.",
+  "updateNow": "حدّث الآن",
+  "later": "لاحقًا",
+  "couldNotOpenAppStore": "تعذر فتح متجر التطبيقات الآن.",
+  "whatsAppGreeting": "مرحبًا {name}",
   "@whatsAppGreeting": {
     "placeholders": {
       "name": {
         "type": "String"
       }
     }
-  }
+  },
+  "accountActions": "إجراءات الحساب",
+  "logoutDescription": "سجّل الخروج من هذا الجهاز. يمكنك تسجيل الدخول مرة أخرى برقم الهاتف وكلمة المرور.",
+  "forgotPassword": "هل نسيت كلمة المرور؟",
+  "resetPasswordTitle": "إعادة تعيين كلمة المرور",
+  "passwordResetIntro": "أدخل رقم هاتفك لاستلام رمز عبر الرسائل النصية.",
+  "newPassword": "كلمة المرور الجديدة",
+  "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+  "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين.",
+  "sendingSms": "جارٍ إرسال الرسالة...",
+  "sendSmsCode": "إرسال رمز SMS",
+  "smsCode": "رمز SMS",
+  "changingPassword": "جارٍ تغيير كلمة المرور...",
+  "verifyAndChangePassword": "تحقق وغيّر كلمة المرور",
+  "resendInSeconds": "إعادة الإرسال خلال {count} ث",
+  "@resendInSeconds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resendCode": "إعادة إرسال الرمز",
+  "sendingNewVerificationCode": "جارٍ إرسال رمز تحقق جديد...",
+  "sendingVerificationCodeToPhone": "جارٍ إرسال رمز التحقق إلى {phone}...",
+  "@sendingVerificationCodeToPhone": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "phoneVerifiedAutomaticallyChangingPassword": "تم التحقق من الهاتف تلقائيًا. جارٍ تغيير كلمة المرور...",
+  "checkPhoneNumberAndTryAgain": "تحقق من رقم الهاتف وحاول مرة أخرى.",
+  "enterSmsCodeSentToPhone": "أدخل رمز SMS المرسل إلى {phone}.",
+  "@enterSmsCodeSentToPhone": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "automaticVerificationTimedOutEnterSmsCode": "انتهت مهلة التحقق التلقائي. أدخل رمز SMS.",
+  "phoneVerificationCouldNotStart": "تعذر بدء التحقق من الهاتف.",
+  "waitForSmsCodeFirst": "انتظر وصول رمز SMS أولًا.",
+  "enterSixDigitSmsCode": "أدخل رمز SMS المكون من 6 أرقام.",
+  "passwordChangedSignInAgain": "تم تغيير كلمة المرور. سجّل الدخول مرة أخرى.",
+  "passwordResetFailedTryCodeAgain": "فشلت إعادة تعيين كلمة المرور. حاول استخدام الرمز مرة أخرى.",
+  "firebaseSmsBlocked": "Firebase يمنع طلب SMS هذا. تأكد من تفعيل تسجيل الدخول بالهاتف لهذه المنطقة.",
+  "validPhoneNumberError": "أدخل رقم هاتف صحيح يبدأ بـ +970 أو +972.",
+  "tooManySmsAttempts": "محاولات SMS كثيرة جدًا. انتظر قبل طلب رمز آخر.",
+  "smsCodeIncorrect": "رمز SMS غير صحيح.",
+  "smsCodeExpired": "انتهت صلاحية رمز SMS. اطلب رمزًا جديدًا.",
+  "firebasePhoneVerificationFailed": "فشل تحقق الهاتف من Firebase ({code}): {message}",
+  "@firebasePhoneVerificationFailed": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "phoneVerificationFailed": "فشل التحقق من الهاتف."
 }

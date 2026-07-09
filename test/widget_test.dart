@@ -81,7 +81,7 @@ void main() {
     );
 
     expect(navigationBar.selectedIndex, 0);
-    expect(find.text('Browse Requests'), findsOneWidget);
+    expect(find.text('Open Requests'), findsOneWidget);
   });
 
   testWidgets('my requests empty state shows create request CTA', (
@@ -107,7 +107,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('No requests yet'), findsOneWidget);
-    expect(find.text('Create Request'), findsNWidgets(2));
+    expect(find.text('Create Request'), findsOneWidget);
   });
 
   testWidgets('own request cards hide the chat action', (
@@ -133,7 +133,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Oil filter'), findsOneWidget);
-    expect(find.text('Chat'), findsNothing);
+    expect(find.text('Chat with customer'), findsNothing);
   });
 
   testWidgets('browse requests hide request statuses and status filters', (
@@ -406,7 +406,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final chatButton = find.widgetWithText(FilledButton, 'Chat');
+    final chatButton = find.widgetWithText(FilledButton, 'Chat with customer');
     await tester.tap(chatButton);
     await tester.pumpAndSettle();
 
@@ -443,7 +443,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final chatButton = find.widgetWithText(FilledButton, 'Chat');
+      final chatButton = find.widgetWithText(
+        FilledButton,
+        'Chat with customer',
+      );
       await tester.ensureVisible(chatButton);
       await tester.tap(chatButton);
       await tester.pumpAndSettle();
@@ -485,7 +488,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final chatButton = find.widgetWithText(FilledButton, 'Chat');
+      final chatButton = find.widgetWithText(
+        FilledButton,
+        'Chat with customer',
+      );
       await tester.ensureVisible(chatButton);
       await tester.tap(chatButton);
       await tester.pumpAndSettle();
@@ -516,7 +522,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(NavigationBar), findsNothing);
-    expect(find.text('Requests'), findsOneWidget);
+    expect(find.text('MTA Auto Spare'), findsOneWidget);
     expect(find.text('Conversations'), findsOneWidget);
   });
 
@@ -541,8 +547,8 @@ void main() {
     await tester.tap(find.byTooltip('Edit profile'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Edit Profile'), findsOneWidget);
-    expect(find.text('Save Profile'), findsOneWidget);
+    expect(find.text('Edit profile'), findsOneWidget);
+    expect(find.text('Save Changes'), findsOneWidget);
   });
 
   testWidgets('notification request opens the target chat conversation', (
@@ -647,7 +653,7 @@ void main() {
     await tester.pump();
     await tester.pumpAndSettle();
 
-    expect(find.text('Request Post'), findsOneWidget);
+    expect(find.text('View Request'), findsOneWidget);
     expect(find.text('Front bumper for Camry'), findsOneWidget);
     expect(find.text('Seller User'), findsOneWidget);
   });
@@ -701,7 +707,7 @@ void main() {
       expect(find.byIcon(Icons.done_all_rounded), findsOneWidget);
       expect(find.text('3'), findsOneWidget);
 
-      await tester.tap(find.text('Seller User'));
+      await tester.tap(find.text('Ready for pickup'));
       await tester.pumpAndSettle();
 
       expect(openedConversationId, 77);

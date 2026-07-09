@@ -24,7 +24,7 @@ class AppLocalizationsHe extends AppLocalizations {
       'כל שמות הרכבים הזמינים כבר נבחרו.';
 
   @override
-  String get appTitle => 'MTA';
+  String get appTitle => 'MTA Auto Spare';
 
   @override
   String get backend => 'שרת';
@@ -37,7 +37,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get carName => 'שם הרכב';
 
   @override
-  String get carsIHavePartsFor => 'הרכבים שיש לי עבורם חלקים';
+  String get carsIHavePartsFor => 'רכבים שאני מספק עבורם חלקים';
 
   @override
   String get changeLanguage => 'שינוי שפה';
@@ -82,11 +82,11 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get supplierProfileIntro =>
-      'עדכן את הפרטים שהקונים רואים, כוון את התראות הצ\'אט ובחר את דגמי הרכב שיש לך עבורם כבר חלקים במלאי.';
+      'עדכן את הפרטים שלקוחות רואים, נהל התראות צ׳אט, ובחר את הרכבים שאתה יכול לספק להם חלקים.';
 
   @override
   String get buyerProfileIntro =>
-      'עדכן את הפרטים שהספקים רואים והגדר כיצד התראות הצ\'אט יגיעו אליך.';
+      'עדכן את הפרטים שספקים רואים כשאתה יוצר בקשות או משוחח איתם.';
 
   @override
   String get email => 'אימייל';
@@ -194,7 +194,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get pickTheCarNamesYouSupplyPartsFor =>
-      'בחר את שמות הרכבים שעבורם אתה מספק חלקים.';
+      'בחר את הרכבים שאתה תומך בהם. נשתמש בזה כדי לשלוח לך בקשות חלקים מתאימות.';
 
   @override
   String get registerUsernameHint => 'בחר שם משתמש';
@@ -219,7 +219,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get signInToBrowseSellerRequests =>
-      'התחבר כדי לעיין בבקשות לקוחות ולשוחח.';
+      'התחבר כדי לבקש חלקי חילוף, לשוחח עם ספקים ולנהל הצעות.';
 
   @override
   String get somethingWentWrong => 'משהו השתבש';
@@ -229,7 +229,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get suppliersCanPostRequests =>
-      'קונים יכולים לפרסם בקשות וספקים יכולים להתחיל שיחות.';
+      'לקוחות מבקשים חלקי חילוף. ספקים בוחרים רכבים נתמכים ומקבלים הזדמנויות מתאימות.';
 
   @override
   String get theCarCatalogCouldNotBeLoaded =>
@@ -251,7 +251,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get usernameHint => 'הזן שם משתמש';
 
   @override
-  String get userRole => 'משתמש';
+  String get userRole => 'לקוח';
 
   @override
   String get attachment => 'קובץ מצורף';
@@ -445,13 +445,13 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get browseRequestPostsFromOtherSellers =>
-      'עיין בפוסטים של בקשות ממוכרים אחרים.';
+      'עיין בבקשות פתוחות לחלקי חילוף מלקוחות.';
 
   @override
-  String get seeRequestPostsYouCreated => 'צפה בפוסטים של הבקשות שיצרת.';
+  String get seeRequestPostsYouCreated => 'ראה את בקשות חלקי החילוף שיצרת.';
 
   @override
-  String get browseRequests => 'עיון בבקשות';
+  String get browseRequests => 'בקשות פתוחות';
 
   @override
   String get myRequests => 'הבקשות שלי';
@@ -461,14 +461,14 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get createFirstRequestPostMessage =>
-      'צור את פוסט הבקשה הראשון שלך והוא יופיע כאן.';
+      'צור את בקשת החלק הראשונה שלך וספקים יוכלו ליצור איתך קשר.';
 
   @override
-  String get noSellerRequestsYet => 'אין עדיין בקשות ממוכרים';
+  String get noSellerRequestsYet => 'אין בקשות פתוחות עדיין';
 
   @override
   String get noSellerRequestsYetMessage =>
-      'עדיין אין פוסטים של בקשות ממוכרים אחרים. משוך כדי לרענן מאוחר יותר.';
+      'אין כרגע בקשות פתוחות לחלקי חילוף. משוך לרענון מאוחר יותר.';
 
   @override
   String get createRequest => 'צור בקשה';
@@ -491,7 +491,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get deleting => 'מוחק...';
 
   @override
-  String get chat => 'שוחח';
+  String get chat => 'צ׳אט עם הלקוח';
 
   @override
   String get opening => 'פותח...';
@@ -528,7 +528,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get assigned => 'מוקצה';
 
   @override
-  String get assignedRequests => 'בקשות מוקצות';
+  String get assignedRequests => 'בקשות בטיפול';
 
   @override
   String get allStatuses => 'כל המצבים';
@@ -537,23 +537,24 @@ class AppLocalizationsHe extends AppLocalizations {
   String get cityNotSet => 'העיר לא הוגדרה';
 
   @override
-  String get thisRequestBelongsToYou => 'הבקשה הזו שייכת לך.';
+  String get thisRequestBelongsToYou => 'הבקשה שלך פתוחה להצעות מספקים.';
 
   @override
-  String get openChatWithSellerBehindRequest => 'פתח שיחה עם בעל הבקשה הזו.';
+  String get openChatWithSellerBehindRequest =>
+      'שוחח עם הלקוח והצע את חלק החילוף הזה.';
 
   @override
-  String get requestsYouCanManageNow => 'בקשות שאתה יכול לנהל כרגע.';
+  String get requestsYouCanManageNow => 'בקשות שלקוחות אישרו לך לטפל בהן.';
 
   @override
-  String get noAssignedRequestsYet => 'עדיין אין בקשות מוקצות';
+  String get noAssignedRequestsYet => 'אין בקשות שאושרו עדיין';
 
   @override
   String get noAssignedRequestsYetMessage =>
-      'כשהבעלים יאשר את בקשת הגישה שלך, הבקשה תופיע כאן.';
+      'כאשר לקוח יאשר לך לטפל בבקשה, היא תופיע כאן.';
 
   @override
-  String get youCanManageThisRequestStatus => 'אתה יכול לנהל את מצב הבקשה הזו.';
+  String get youCanManageThisRequestStatus => 'הלקוח אישר לך לטפל בבקשה זו.';
 
   @override
   String get changeStatus => 'שנה מצב';
@@ -568,83 +569,84 @@ class AppLocalizationsHe extends AppLocalizations {
   String get updatingStatus => 'מעדכן...';
 
   @override
-  String get requestControl => 'בקרת בקשה';
+  String get requestControl => 'אישור ספק';
 
   @override
   String get thisChatCanManageRequestStatus =>
-      'הספק בשיחה זו יכול כעת לנהל את מצב הבקשה.';
+      'אישרת ספק זה. הבקשה כבר אינה ציבורית.';
 
   @override
   String get thisRequestIsAssignedToAnotherSupplier =>
-      'הבקשה הזו מוקצה כרגע לספק אחר.';
+      'בקשה זו כבר בטיפול של ספק אחר.';
 
   @override
   String get noAccessRequestForThisRequestYet =>
-      'עדיין לא נשלחה בקשת גישה לבקשה זו.';
+      'אף ספק עדיין לא ביקש לטפל בבקשה זו.';
 
   @override
   String get youCanChangeThisRequestStatusNow =>
-      'אתה יכול לשנות את מצב הבקשה כעת.';
+      'הלקוח אישר אותך. כעת אפשר לנהל בקשה זו.';
 
   @override
-  String get waitingForOwnerApproval => 'ממתין לאישור הבעלים לבקשת הגישה שלך.';
+  String get waitingForOwnerApproval => 'ממתין לאישור הלקוח.';
 
   @override
-  String get ownerRejectedYourAccessRequest => 'הבעלים דחה את בקשת הגישה שלך.';
+  String get ownerRejectedYourAccessRequest => 'הלקוח דחה בקשה זו.';
 
   @override
-  String get askOwnerForStatusAccess => 'בקש מהבעלים הרשאה לנהל את מצב הבקשה.';
+  String get askOwnerForStatusAccess =>
+      'רוצה לטפל בבקשה זו? בקש מהלקוח לאשר אותך.';
 
   @override
   String currentManager(String name) {
-    return 'המנהל הנוכחי: $name';
+    return 'ספק שאושר: $name';
   }
 
   @override
   String get approving => 'מאשר...';
 
   @override
-  String get approveAccess => 'אשר גישה';
+  String get approveAccess => 'אשר ספק';
 
   @override
-  String get rejectAccess => 'דחה גישה';
+  String get rejectAccess => 'דחה';
 
   @override
   String get sendingRequest => 'שולח...';
 
   @override
-  String get requestAccess => 'בקש גישה';
+  String get requestAccess => 'בקש מהלקוח לאשר אותך';
 
   @override
-  String get accessRequestPending => 'בקשת הגישה שלך ממתינה.';
+  String get accessRequestPending => 'ממתין לאישור הלקוח.';
 
   @override
   String get openAssignedRequestsToUpdateStatus =>
-      'פתח בקשות מוקצות כדי לעדכן את המצב בכל עת.';
+      'פתח בקשות בטיפול כדי לעדכן סטטוס בכל זמן.';
 
   @override
-  String get accessRequestSent => 'בקשת הגישה נשלחה.';
+  String get accessRequestSent => 'הבקשה נשלחה ללקוח.';
 
   @override
-  String get couldNotSendAccessRequest => 'לא ניתן לשלוח את בקשת הגישה.';
+  String get couldNotSendAccessRequest => 'לא ניתן לבקש אישור מהלקוח כרגע.';
 
   @override
-  String get accessRequestApproved => 'בקשת הגישה אושרה.';
+  String get accessRequestApproved => 'הספק אושר.';
 
   @override
-  String get couldNotApproveAccessRequest => 'לא ניתן לאשר את בקשת הגישה.';
+  String get couldNotApproveAccessRequest => 'לא ניתן לאשר את הספק.';
 
   @override
-  String get accessRequestRejected => 'בקשת הגישה נדחתה.';
+  String get accessRequestRejected => 'הספק נדחה.';
 
   @override
-  String get couldNotRejectAccessRequest => 'לא ניתן לדחות את בקשת הגישה.';
+  String get couldNotRejectAccessRequest => 'לא ניתן לדחות את הספק.';
 
   @override
-  String get expandRequestControl => 'הצג את בקרות הבקשה';
+  String get expandRequestControl => 'הצג אישור ספק';
 
   @override
-  String get collapseRequestControl => 'הסתר את בקרות הבקשה';
+  String get collapseRequestControl => 'הסתר אישור ספק';
 
   @override
   String get adminPanel => 'לוח בקרה';
@@ -782,6 +784,13 @@ class AppLocalizationsHe extends AppLocalizations {
   String get contactDetails => 'פרטי קשר';
 
   @override
+  String get accountActions => 'פעולות חשבון';
+
+  @override
+  String get logoutDescription =>
+      'התנתק ממכשיר זה. אפשר להתחבר שוב עם הטלפון והסיסמה.';
+
+  @override
   String get phone => 'טלפון';
 
   @override
@@ -872,10 +881,11 @@ class AppLocalizationsHe extends AppLocalizations {
   String get whatsAppAction => 'WhatsApp';
 
   @override
-  String get supplierCarsTitle => 'הרכבים שהספק הזה עובד איתם';
+  String get supplierCarsTitle => 'רכבים שהספק תומך בהם';
 
   @override
-  String get supplierCarsDescription => 'אלו מותגי הרכב שנבחרו בפרופיל הספק.';
+  String get supplierCarsDescription =>
+      'הספק מקבל בקשות מתאימות עבור רכבים אלה.';
 
   @override
   String ratingLabel(String value) {
@@ -888,14 +898,14 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
-  String get reportUserSectionTitle => 'דווח על משתמש';
+  String get reportUserSectionTitle => 'דווח על חשבון';
 
   @override
   String get reportUserSectionBody =>
-      'שלח דיווח בטיחות אם המשתמש הזה מנצל לרעה את הצ\'אט או את בקשות הגישה.';
+      'שלח דיווח בטיחות אם חשבון זה מנצל לרעה צ׳אט או אישור ספקים.';
 
   @override
-  String get reportUserAction => 'דווח';
+  String get reportUserAction => 'דווח על חשבון';
 
   @override
   String get sendingReport => 'שולח דיווח...';
@@ -977,15 +987,15 @@ class AppLocalizationsHe extends AppLocalizations {
   String get updateYourRequest => 'עדכן את הבקשה שלך';
 
   @override
-  String get postNewRequest => 'פרסם בקשה חדשה';
+  String get postNewRequest => 'בקש חלק חילוף';
 
   @override
   String get editRequestDescription =>
-      'רענן את פרטי הבקשה ואת התמונות שאתה רוצה שקונים יראו.';
+      'עדכן את פרטי הבקשה והתמונות שברצונך שספקים יראו.';
 
   @override
   String get createRequestDescription =>
-      'צור בקשה שספקים יוכלו לעיין בה ולפתוח ממנה שיחות.';
+      'ספר לספקים איזה חלק חילוף אתה צריך. ספקים מתאימים יקבלו התראה ויוכלו לשוחח איתך.';
 
   @override
   String get requestCreationBlocked => 'יצירת הבקשה חסומה';
@@ -1007,7 +1017,7 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
-  String get requestTitleLabel => 'כותרת הבקשה';
+  String get requestTitleLabel => 'איזה חלק חילוף אתה צריך?';
 
   @override
   String get requestTitleHint => 'פגוש קדמי ל-Toyota Camry 2022';
@@ -1020,7 +1030,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get requestDescriptionHint =>
-      'תאר את המצב, המותג המועדף או פרטי הדגם שקונים צריכים לדעת.';
+      'תאר מצב, העדפת מותג או פרטי דגם שספקים צריכים לדעת.';
 
   @override
   String get addShortDescription => 'הוסף תיאור קצר.';
@@ -1139,4 +1149,111 @@ class AppLocalizationsHe extends AppLocalizations {
   String whatsAppGreeting(String name) {
     return 'שלום $name';
   }
+
+  @override
+  String get forgotPassword => 'שכחת סיסמה?';
+
+  @override
+  String get resetPasswordTitle => 'איפוס סיסמה';
+
+  @override
+  String get passwordResetIntro => 'הזן את מספר הטלפון שלך כדי לקבל קוד SMS.';
+
+  @override
+  String get newPassword => 'סיסמה חדשה';
+
+  @override
+  String get confirmNewPassword => 'אישור סיסמה חדשה';
+
+  @override
+  String get passwordsDoNotMatch => 'הסיסמאות אינן תואמות.';
+
+  @override
+  String get sendingSms => 'שולח SMS...';
+
+  @override
+  String get sendSmsCode => 'שלח קוד SMS';
+
+  @override
+  String get smsCode => 'קוד SMS';
+
+  @override
+  String get changingPassword => 'מחליף סיסמה...';
+
+  @override
+  String get verifyAndChangePassword => 'אמת והחלף סיסמה';
+
+  @override
+  String resendInSeconds(int count) {
+    return 'שליחה חוזרת בעוד $count שנ׳';
+  }
+
+  @override
+  String get resendCode => 'שלח קוד שוב';
+
+  @override
+  String get sendingNewVerificationCode => 'שולח קוד אימות חדש...';
+
+  @override
+  String sendingVerificationCodeToPhone(String phone) {
+    return 'שולח קוד אימות אל $phone...';
+  }
+
+  @override
+  String get phoneVerifiedAutomaticallyChangingPassword =>
+      'הטלפון אומת אוטומטית. מחליף סיסמה...';
+
+  @override
+  String get checkPhoneNumberAndTryAgain => 'בדוק את מספר הטלפון ונסה שוב.';
+
+  @override
+  String enterSmsCodeSentToPhone(String phone) {
+    return 'הזן את קוד ה-SMS שנשלח אל $phone.';
+  }
+
+  @override
+  String get automaticVerificationTimedOutEnterSmsCode =>
+      'האימות האוטומטי הסתיים. הזן את קוד ה-SMS.';
+
+  @override
+  String get phoneVerificationCouldNotStart => 'לא ניתן להתחיל אימות טלפון.';
+
+  @override
+  String get waitForSmsCodeFirst => 'המתן קודם לקוד ה-SMS.';
+
+  @override
+  String get enterSixDigitSmsCode => 'הזן קוד SMS בן 6 ספרות.';
+
+  @override
+  String get passwordChangedSignInAgain => 'הסיסמה שונתה. התחבר שוב.';
+
+  @override
+  String get passwordResetFailedTryCodeAgain =>
+      'איפוס הסיסמה נכשל. נסה שוב עם הקוד.';
+
+  @override
+  String get firebaseSmsBlocked =>
+      'Firebase חוסם את בקשת ה-SMS הזו. ודא שכניסה בטלפון מופעלת לאזור זה.';
+
+  @override
+  String get validPhoneNumberError =>
+      'הזן מספר טלפון תקין שמתחיל ב-+970 או +972.';
+
+  @override
+  String get tooManySmsAttempts =>
+      'יותר מדי ניסיונות SMS. המתן לפני בקשת קוד נוסף.';
+
+  @override
+  String get smsCodeIncorrect => 'קוד ה-SMS שגוי.';
+
+  @override
+  String get smsCodeExpired => 'פג תוקף קוד ה-SMS. בקש קוד חדש.';
+
+  @override
+  String firebasePhoneVerificationFailed(String code, String message) {
+    return 'אימות הטלפון של Firebase נכשל ($code): $message';
+  }
+
+  @override
+  String get phoneVerificationFailed => 'אימות הטלפון נכשל.';
 }

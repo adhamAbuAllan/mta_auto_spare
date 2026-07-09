@@ -25,7 +25,8 @@ final localNotificationsClientProvider = Provider<LocalNotificationsClient>((
 final chatNotificationServiceProvider = Provider<ChatNotificationService>((
   ref,
 ) {
-  final notificationsSupported = !kIsWeb && Platform.isAndroid;
+  final notificationsSupported =
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
   final service = ChatNotificationService(
     userApi: ref.read(userApiProvider),
     preferences: ref.read(sharedPreferencesProvider),
@@ -36,6 +37,7 @@ final chatNotificationServiceProvider = Provider<ChatNotificationService>((
         ? ref.read(localNotificationsClientProvider)
         : const NoopLocalNotificationsClient(),
     notificationsSupported: notificationsSupported,
+    devicePlatform: Platform.isIOS ? 'ios' : 'android',
     onNavigationRequest: (request) {
       ref.read(chatNotificationNavigationRequestProvider.notifier).state =
           request;

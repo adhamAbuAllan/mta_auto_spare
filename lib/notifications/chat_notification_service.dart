@@ -273,6 +273,11 @@ class FlutterLocalNotificationsClient implements LocalNotificationsClient {
   }) async {
     const initializationSettings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      iOS: DarwinInitializationSettings(
+        requestAlertPermission: false,
+        requestBadgePermission: false,
+        requestSoundPermission: false,
+      ),
     );
     await _plugin.initialize(
       settings: initializationSettings,
@@ -346,6 +351,13 @@ class FlutterLocalNotificationsClient implements LocalNotificationsClient {
             tag:
                 'request-${notification.data['request_id'] ?? notification.id}',
           ),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+            threadIdentifier:
+                'request-${notification.data['request_id'] ?? notification.id}',
+          ),
         ),
         payload: jsonEncode(notification.data),
       );
@@ -391,6 +403,13 @@ class FlutterLocalNotificationsClient implements LocalNotificationsClient {
           tag:
               'chat-${notification.data['conversation_id'] ?? notification.id}',
         ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+          threadIdentifier:
+              'chat-${notification.data['conversation_id'] ?? notification.id}',
+        ),
       ),
       payload: jsonEncode(notification.data),
     );
@@ -404,6 +423,7 @@ class ChatNotificationService {
     required PushMessagingClient messagingClient,
     required LocalNotificationsClient localNotificationsClient,
     required bool notificationsSupported,
+    String devicePlatform = 'android',
     required void Function(ChatNotificationNavigationRequest request)
     onNavigationRequest,
     Future<void> Function(int conversationId)? onConversationMessageReceived,
@@ -417,6 +437,7 @@ class ChatNotificationService {
        _messagingClient = messagingClient,
        _localNotificationsClient = localNotificationsClient,
        _notificationsSupported = notificationsSupported,
+       _devicePlatform = devicePlatform,
        _onNavigationRequest = onNavigationRequest,
        _onConversationMessageReceived = onConversationMessageReceived,
        _onRequestCreatedReceived = onRequestCreatedReceived,
@@ -430,6 +451,7 @@ class ChatNotificationService {
   final PushMessagingClient _messagingClient;
   final LocalNotificationsClient _localNotificationsClient;
   final bool _notificationsSupported;
+  final String _devicePlatform;
   final void Function(ChatNotificationNavigationRequest request)
   _onNavigationRequest;
   final Future<void> Function(int conversationId)?
@@ -513,13 +535,13 @@ class ChatNotificationService {
     await _userApi.upsertMobileDevice(
       MobileDevice(
         deviceId: deviceId,
-        platform: 'android',
+        platform: _devicePlatform,
         pushToken: pushToken,
         isActive: true,
       ),
     );
     debugPrint(
-      'Chat notifications: registered Android device $deviceId for user '
+      'Chat notifications: registered $_devicePlatform device $deviceId for user '
       '${session.profile?.id} with token ${_maskPushToken(pushToken)}.',
     );
     _lastRegistrationFingerprint = nextFingerprint;
@@ -647,7 +669,7 @@ class ChatNotificationService {
       await _userApi.upsertMobileDevice(
         MobileDevice(
           deviceId: deviceId,
-          platform: 'android',
+          platform: _devicePlatform,
           pushToken: normalizedToken,
           isActive: true,
         ),
@@ -655,7 +677,7 @@ class ChatNotificationService {
       _lastRegistrationFingerprint =
           '${_currentSession.profile?.id}|$deviceId|$normalizedToken|active';
       debugPrint(
-        'Chat notifications: refreshed Android device token for user '
+        'Chat notifications: refreshed $_devicePlatform device token for user '
         '${_currentSession.profile?.id} (${_maskPushToken(normalizedToken)}).',
       );
     } catch (error, stackTrace) {
@@ -721,7 +743,7 @@ class ChatNotificationService {
     await _userApi.upsertMobileDevice(
       MobileDevice(
         deviceId: deviceId,
-        platform: 'android',
+        platform: _devicePlatform,
         pushToken: isActive ? _lastKnownPushToken : null,
         isActive: isActive,
       ),
@@ -1078,7 +1100,9 @@ ChatNotificationChannel _chatMessageChannel(NotificationStrings strings) {
   );
 }
 
-ChatNotificationChannel _marketplaceActivityChannel(NotificationStrings strings) {
+ChatNotificationChannel _marketplaceActivityChannel(
+  NotificationStrings strings,
+) {
   return ChatNotificationChannel(
     id: ApiConstants.chatActivityNotificationChannelId,
     name: strings.chatActivityChannel.name,

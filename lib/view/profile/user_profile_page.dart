@@ -140,9 +140,8 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                                 .textTheme
                                                 .titleMedium
                                                 ?.copyWith(
-                                                  color: const Color(
-                                                    0xFF116466,
-                                                  ),
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
                                                   fontWeight: FontWeight.w800,
                                                 ),
                                           ),
@@ -839,7 +838,7 @@ class _CarMakeChip extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: const Color(0xFF116466),
+          color:  Theme.of(context).primaryColor,
           fontWeight: FontWeight.w800,
         ),
       ),

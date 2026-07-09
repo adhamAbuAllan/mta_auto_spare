@@ -151,7 +151,10 @@ class _WideMarketplaceLayout extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.appTitle,style: TextStyle(fontWeight: FontWeight.w800),),
+        title: Text(
+          context.l10n.appTitle,
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsetsDirectional.only(end: 8),
@@ -175,16 +178,11 @@ class _WideMarketplaceLayout extends ConsumerWidget {
             onPressed: () => _openEditProfile(context),
             icon: const Icon(Icons.manage_accounts_outlined),
           ),
-          TextButton(
-            onPressed: () => ref.read(logoutNotifierProvider.notifier).logout(),
-            style: TextButton.styleFrom(foregroundColor: Colors.white),
-            child: Text(context.l10n.logout),
-          ),
           const SizedBox(width: 8),
         ],
       ),
       body: Container(
-        color: const Color(0xFFF6F0E8),
+        color: const Color(0xFFF4F6F8),
         padding: const EdgeInsets.all(20),
         child: Row(
           children: [
@@ -293,15 +291,10 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
             onPressed: () => _openEditProfile(context),
             icon: const Icon(Icons.manage_accounts_outlined),
           ),
-          IconButton(
-            tooltip: context.l10n.logout,
-            onPressed: () => ref.read(logoutNotifierProvider.notifier).logout(),
-            icon: const Icon(Icons.logout_rounded),
-          ),
         ],
       ),
       body: Container(
-        color: const Color(0xFFF6F0E8),
+        color: const Color(0xFFF4F6F8),
         child: IndexedStack(
           index: index,
           children: [
@@ -347,8 +340,11 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
             selectedIcon: Icon(Icons.inventory_2_rounded),
             label: context.l10n.requests,
           ),
-          NavigationDestination(icon: Icon(Icons.add),
-              label: context.l10n.add),
+          NavigationDestination(
+            icon: Icon(Icons.add_circle_outline_rounded),
+            selectedIcon: Icon(Icons.add_circle_rounded),
+            label: context.l10n.createRequest,
+          ),
           NavigationDestination(
             icon: Icon(Icons.chat_bubble_outline_rounded),
             selectedIcon: Icon(Icons.chat_bubble_rounded),

@@ -24,7 +24,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'تم اختيار جميع أسماء السيارات المتاحة.';
 
   @override
-  String get appTitle => 'MTA';
+  String get appTitle => 'MTA Auto Spare';
 
   @override
   String get backend => 'الخادم';
@@ -37,7 +37,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get carName => 'اسم السيارة';
 
   @override
-  String get carsIHavePartsFor => 'السيارات التي أملك قطعًا لها';
+  String get carsIHavePartsFor => 'السيارات التي أوفر قطعها';
 
   @override
   String get changeLanguage => 'تغيير اللغة';
@@ -81,11 +81,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get supplierProfileIntro =>
-      'حدّث التفاصيل التي يراها المشترون، واضبط إشعارات الدردشة، واختر موديلات السيارات التي تملك قطعها بالفعل.';
+      'حدّث المعلومات التي يراها العملاء، واضبط إشعارات المحادثات، واختر السيارات التي يمكنك توفير قطع لها.';
 
   @override
   String get buyerProfileIntro =>
-      'حدّث التفاصيل التي يراها الموردون واضبط طريقة وصول إشعارات الدردشة إليك.';
+      'حدّث المعلومات التي يراها المورّدون عند إنشاء الطلبات أو المحادثة معهم.';
 
   @override
   String get email => 'البريد الإلكتروني';
@@ -193,7 +193,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pickTheCarNamesYouSupplyPartsFor =>
-      'اختر أسماء السيارات التي توفّر لها قطع الغيار.';
+      'اختر السيارات التي تدعمها. سنستخدم ذلك لإشعارك بطلبات قطع الغيار المطابقة.';
 
   @override
   String get registerUsernameHint => 'اختر اسم مستخدم';
@@ -218,7 +218,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get signInToBrowseSellerRequests =>
-      'سجّل الدخول لتصفح طلبات الزبائن والدردشة.';
+      'سجّل الدخول لطلب قطع الغيار، ومحادثة المورّدين، ومتابعة العروض.';
 
   @override
   String get somethingWentWrong => 'حدث خطأ ما';
@@ -228,7 +228,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get suppliersCanPostRequests =>
-      'يمكن للمشترين نشر الطلبات ويمكن للمورّدين بدء المحادثات.';
+      'العملاء يطلبون قطع الغيار. المورّدون يختارون السيارات المدعومة وتصلهم الفرص المطابقة.';
 
   @override
   String get theCarCatalogCouldNotBeLoaded => 'تعذر تحميل دليل السيارات.';
@@ -249,7 +249,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get usernameHint => 'أدخل اسم المستخدم';
 
   @override
-  String get userRole => 'مستخدم';
+  String get userRole => 'عميل';
 
   @override
   String get attachment => 'مرفق';
@@ -443,13 +443,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get browseRequestPostsFromOtherSellers =>
-      'تصفح منشورات الطلبات من البائعين الآخرين.';
+      'تصفح طلبات قطع الغيار المفتوحة من العملاء.';
 
   @override
-  String get seeRequestPostsYouCreated => 'شاهد منشورات الطلبات التي أنشأتها.';
+  String get seeRequestPostsYouCreated => 'شاهد طلبات قطع الغيار التي أنشأتها.';
 
   @override
-  String get browseRequests => 'تصفح الطلبات';
+  String get browseRequests => 'الطلبات المفتوحة';
 
   @override
   String get myRequests => 'طلباتي';
@@ -458,14 +458,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noRequestsYet => 'لا توجد طلبات بعد';
 
   @override
-  String get createFirstRequestPostMessage => 'أنشئ أول منشور طلب وسيظهر هنا.';
+  String get createFirstRequestPostMessage =>
+      'أنشئ أول طلب قطعة غيار ليتواصل معك المورّدون.';
 
   @override
-  String get noSellerRequestsYet => 'لا توجد طلبات بائعين بعد';
+  String get noSellerRequestsYet => 'لا توجد طلبات مفتوحة بعد';
 
   @override
   String get noSellerRequestsYetMessage =>
-      'لا توجد منشورات طلب من البائعين الآخرين بعد. اسحب للتحديث لاحقًا.';
+      'لا توجد طلبات قطع غيار مفتوحة الآن. اسحب للتحديث لاحقًا.';
 
   @override
   String get createRequest => 'إنشاء طلب';
@@ -488,7 +489,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get deleting => 'جارٍ الحذف...';
 
   @override
-  String get chat => 'المحادثة';
+  String get chat => 'محادثة العميل';
 
   @override
   String get opening => 'جارٍ الفتح...';
@@ -525,7 +526,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get assigned => 'مسندة';
 
   @override
-  String get assignedRequests => 'الطلبات المسندة';
+  String get assignedRequests => 'طلبات أتعامل معها';
 
   @override
   String get allStatuses => 'كل الحالات';
@@ -534,24 +535,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cityNotSet => 'المدينة غير محددة';
 
   @override
-  String get thisRequestBelongsToYou => 'هذا الطلب يخصك.';
+  String get thisRequestBelongsToYou => 'طلبك مفتوح لاستقبال عروض المورّدين.';
 
   @override
   String get openChatWithSellerBehindRequest =>
-      'افتح محادثة مع صاحب هذا الطلب.';
+      'حادث العميل وقدّم عرضك لهذه القطعة.';
 
   @override
-  String get requestsYouCanManageNow => 'الطلبات التي يمكنك إدارتها الآن.';
+  String get requestsYouCanManageNow => 'طلبات قبلك العملاء للتعامل معها.';
 
   @override
-  String get noAssignedRequestsYet => 'لا توجد طلبات مسندة بعد';
+  String get noAssignedRequestsYet => 'لا توجد طلبات مقبولة بعد';
 
   @override
   String get noAssignedRequestsYetMessage =>
-      'عندما يوافق المالك على طلب الوصول سيظهر الطلب هنا.';
+      'عندما يقبلك عميل للتعامل مع طلب، سيظهر هنا.';
 
   @override
-  String get youCanManageThisRequestStatus => 'يمكنك إدارة حالة هذا الطلب.';
+  String get youCanManageThisRequestStatus =>
+      'قبلك العميل للتعامل مع هذا الطلب.';
 
   @override
   String get changeStatus => 'تغيير الحالة';
@@ -566,85 +568,84 @@ class AppLocalizationsAr extends AppLocalizations {
   String get updatingStatus => 'جارٍ التحديث...';
 
   @override
-  String get requestControl => 'التحكم في الطلب';
+  String get requestControl => 'قبول المورّد';
 
   @override
   String get thisChatCanManageRequestStatus =>
-      'يمكن للمورد في هذه الدردشة إدارة حالة هذا الطلب الآن.';
+      'لقد قبلت هذا المورّد. لم يعد الطلب عامًا.';
 
   @override
   String get thisRequestIsAssignedToAnotherSupplier =>
-      'هذا الطلب مسند حاليًا إلى مورد آخر.';
+      'هذا الطلب يتعامل معه مورّد آخر حاليًا.';
 
   @override
   String get noAccessRequestForThisRequestYet =>
-      'لم يتم إرسال طلب وصول لهذا الطلب بعد.';
+      'لم يطلب أي مورّد التعامل مع هذا الطلب بعد.';
 
   @override
   String get youCanChangeThisRequestStatusNow =>
-      'يمكنك تغيير حالة هذا الطلب الآن.';
+      'قبلك العميل. يمكنك الآن إدارة هذا الطلب.';
 
   @override
-  String get waitingForOwnerApproval =>
-      'في انتظار موافقة المالك على طلب الوصول.';
+  String get waitingForOwnerApproval => 'في انتظار قبول العميل لك.';
 
   @override
-  String get ownerRejectedYourAccessRequest => 'رفض المالك طلب وصولك.';
+  String get ownerRejectedYourAccessRequest => 'رفض العميل هذا الطلب.';
 
   @override
   String get askOwnerForStatusAccess =>
-      'اطلب من المالك إذنًا لإدارة حالة هذا الطلب.';
+      'هل تريد التعامل مع هذا الطلب؟ اطلب من العميل قبولك.';
 
   @override
   String currentManager(String name) {
-    return 'المدير الحالي: $name';
+    return 'المورّد المقبول: $name';
   }
 
   @override
   String get approving => 'جارٍ الموافقة...';
 
   @override
-  String get approveAccess => 'موافقة على الوصول';
+  String get approveAccess => 'قبول المورّد';
 
   @override
-  String get rejectAccess => 'رفض الوصول';
+  String get rejectAccess => 'رفض';
 
   @override
   String get sendingRequest => 'جارٍ الإرسال...';
 
   @override
-  String get requestAccess => 'طلب الوصول';
+  String get requestAccess => 'اطلب من العميل قبولك';
 
   @override
-  String get accessRequestPending => 'طلب الوصول الخاص بك قيد الانتظار.';
+  String get accessRequestPending => 'في انتظار موافقة العميل.';
 
   @override
   String get openAssignedRequestsToUpdateStatus =>
-      'افتح الطلبات المسندة لتحديث الحالة في أي وقت.';
+      'افتح طلبات أتعامل معها لتحديث الحالة في أي وقت.';
 
   @override
-  String get accessRequestSent => 'تم إرسال طلب الوصول.';
+  String get accessRequestSent => 'تم إرسال الطلب إلى العميل.';
 
   @override
-  String get couldNotSendAccessRequest => 'تعذر إرسال طلب الوصول.';
+  String get couldNotSendAccessRequest => 'تعذر طلب قبول العميل الآن.';
 
   @override
-  String get accessRequestApproved => 'تمت الموافقة على طلب الوصول.';
+  String get accessRequestApproved => 'تم قبول المورّد.';
 
   @override
-  String get couldNotApproveAccessRequest => 'تعذرت الموافقة على طلب الوصول.';
+  String get couldNotApproveAccessRequest => 'تعذر قبول المورّد.';
 
   @override
-  String get accessRequestRejected => 'تم رفض طلب الوصول.';
+  String get accessRequestRejected => 'تم رفض المورّد.';
 
   @override
-  String get couldNotRejectAccessRequest => 'تعذر رفض طلب الوصول.';
+  String get couldNotRejectAccessRequest => 'تعذر رفض المورّد.';
 
   @override
-  String get expandRequestControl => 'إظهار أدوات التحكم بالطلب';
+  String get expandRequestControl => 'إظهار قبول المورّد';
 
   @override
-  String get collapseRequestControl => 'إخفاء أدوات التحكم بالطلب';
+  String get collapseRequestControl => 'إخفاء قبول المورّد';
 
   @override
   String get adminPanel => 'لوحة المشرف';
@@ -781,6 +782,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contactDetails => 'بيانات التواصل';
 
   @override
+  String get accountActions => 'إجراءات الحساب';
+
+  @override
+  String get logoutDescription =>
+      'سجّل الخروج من هذا الجهاز. يمكنك تسجيل الدخول مرة أخرى برقم الهاتف وكلمة المرور.';
+
+  @override
   String get phone => 'الهاتف';
 
   @override
@@ -870,11 +878,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get whatsAppAction => 'واتساب';
 
   @override
-  String get supplierCarsTitle => 'السيارات التي يعمل عليها هذا المورد';
+  String get supplierCarsTitle => 'السيارات التي يدعمها هذا المورّد';
 
   @override
   String get supplierCarsDescription =>
-      'هذه هي علامات السيارات المحددة في ملف المورد.';
+      'يتلقى هذا المورّد الطلبات المطابقة لهذه السيارات.';
 
   @override
   String ratingLabel(String value) {
@@ -887,14 +895,14 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get reportUserSectionTitle => 'الإبلاغ عن مستخدم';
+  String get reportUserSectionTitle => 'الإبلاغ عن الحساب';
 
   @override
   String get reportUserSectionBody =>
-      'أرسل بلاغًا إذا كان هذا المستخدم يسيء استخدام الدردشة أو طلبات الوصول.';
+      'أرسل بلاغ أمان إذا كان هذا الحساب يسيء استخدام المحادثات أو قبول المورّدين.';
 
   @override
-  String get reportUserAction => 'إبلاغ';
+  String get reportUserAction => 'الإبلاغ عن الحساب';
 
   @override
   String get sendingReport => 'جارٍ إرسال البلاغ...';
@@ -976,15 +984,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get updateYourRequest => 'حدّث طلبك';
 
   @override
-  String get postNewRequest => 'انشر طلبًا جديدًا';
+  String get postNewRequest => 'اطلب قطعة غيار';
 
   @override
   String get editRequestDescription =>
-      'حدّث تفاصيل الطلب والصور التي تريد أن يراها المشترون.';
+      'حدّث تفاصيل الطلب والصور التي تريد أن يراها المورّدون.';
 
   @override
   String get createRequestDescription =>
-      'أنشئ طلبًا يمكن للمورّدين تصفحه وفتح محادثات من خلاله.';
+      'أخبر المورّدين عن قطعة الغيار التي تحتاجها. سيتم إشعار المورّدين المطابقين ويمكنهم محادثتك.';
 
   @override
   String get requestCreationBlocked => 'إنشاء الطلب محظور';
@@ -1006,7 +1014,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get requestTitleLabel => 'عنوان الطلب';
+  String get requestTitleLabel => 'ما قطعة الغيار التي تحتاجها؟';
 
   @override
   String get requestTitleHint => 'صدام أمامي لتويوتا كامري 2022';
@@ -1019,7 +1027,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get requestDescriptionHint =>
-      'صف الحالة أو العلامة المفضلة أو تفاصيل الموديل التي يجب أن يعرفها المشترون.';
+      'صف الحالة أو العلامة المفضلة أو تفاصيل الموديل التي يحتاج المورّدون معرفتها.';
 
   @override
   String get addShortDescription => 'أضف وصفًا قصيرًا.';
@@ -1141,4 +1149,114 @@ class AppLocalizationsAr extends AppLocalizations {
   String whatsAppGreeting(String name) {
     return 'مرحبًا $name';
   }
+
+  @override
+  String get forgotPassword => 'هل نسيت كلمة المرور؟';
+
+  @override
+  String get resetPasswordTitle => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get passwordResetIntro =>
+      'أدخل رقم هاتفك لاستلام رمز عبر الرسائل النصية.';
+
+  @override
+  String get newPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get confirmNewPassword => 'تأكيد كلمة المرور الجديدة';
+
+  @override
+  String get passwordsDoNotMatch => 'كلمتا المرور غير متطابقتين.';
+
+  @override
+  String get sendingSms => 'جارٍ إرسال الرسالة...';
+
+  @override
+  String get sendSmsCode => 'إرسال رمز SMS';
+
+  @override
+  String get smsCode => 'رمز SMS';
+
+  @override
+  String get changingPassword => 'جارٍ تغيير كلمة المرور...';
+
+  @override
+  String get verifyAndChangePassword => 'تحقق وغيّر كلمة المرور';
+
+  @override
+  String resendInSeconds(int count) {
+    return 'إعادة الإرسال خلال $count ث';
+  }
+
+  @override
+  String get resendCode => 'إعادة إرسال الرمز';
+
+  @override
+  String get sendingNewVerificationCode => 'جارٍ إرسال رمز تحقق جديد...';
+
+  @override
+  String sendingVerificationCodeToPhone(String phone) {
+    return 'جارٍ إرسال رمز التحقق إلى $phone...';
+  }
+
+  @override
+  String get phoneVerifiedAutomaticallyChangingPassword =>
+      'تم التحقق من الهاتف تلقائيًا. جارٍ تغيير كلمة المرور...';
+
+  @override
+  String get checkPhoneNumberAndTryAgain =>
+      'تحقق من رقم الهاتف وحاول مرة أخرى.';
+
+  @override
+  String enterSmsCodeSentToPhone(String phone) {
+    return 'أدخل رمز SMS المرسل إلى $phone.';
+  }
+
+  @override
+  String get automaticVerificationTimedOutEnterSmsCode =>
+      'انتهت مهلة التحقق التلقائي. أدخل رمز SMS.';
+
+  @override
+  String get phoneVerificationCouldNotStart => 'تعذر بدء التحقق من الهاتف.';
+
+  @override
+  String get waitForSmsCodeFirst => 'انتظر وصول رمز SMS أولًا.';
+
+  @override
+  String get enterSixDigitSmsCode => 'أدخل رمز SMS المكون من 6 أرقام.';
+
+  @override
+  String get passwordChangedSignInAgain =>
+      'تم تغيير كلمة المرور. سجّل الدخول مرة أخرى.';
+
+  @override
+  String get passwordResetFailedTryCodeAgain =>
+      'فشلت إعادة تعيين كلمة المرور. حاول استخدام الرمز مرة أخرى.';
+
+  @override
+  String get firebaseSmsBlocked =>
+      'Firebase يمنع طلب SMS هذا. تأكد من تفعيل تسجيل الدخول بالهاتف لهذه المنطقة.';
+
+  @override
+  String get validPhoneNumberError =>
+      'أدخل رقم هاتف صحيح يبدأ بـ +970 أو +972.';
+
+  @override
+  String get tooManySmsAttempts =>
+      'محاولات SMS كثيرة جدًا. انتظر قبل طلب رمز آخر.';
+
+  @override
+  String get smsCodeIncorrect => 'رمز SMS غير صحيح.';
+
+  @override
+  String get smsCodeExpired => 'انتهت صلاحية رمز SMS. اطلب رمزًا جديدًا.';
+
+  @override
+  String firebasePhoneVerificationFailed(String code, String message) {
+    return 'فشل تحقق الهاتف من Firebase ($code): $message';
+  }
+
+  @override
+  String get phoneVerificationFailed => 'فشل التحقق من الهاتف.';
 }

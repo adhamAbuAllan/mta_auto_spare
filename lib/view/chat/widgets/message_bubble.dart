@@ -49,8 +49,8 @@ class _MessageBubbleState extends State<MessageBubble> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final bubbleColor = widget.isMine
-        ? const Color(0xFF116466)
-        : const Color(0xFFF2EEE7);
+        ? const Color(0xFF1F6FEB)
+        : const Color(0xFFFFFFFF);
     final foreground = widget.isMine ? Colors.white : const Color(0xFF1C1B18);
     final receiptState = widget.message.receiptStateFor(widget.currentUserId);
     final hasTranslatedContent = widget.message.hasTranslatedContent;
@@ -98,10 +98,10 @@ class _MessageBubbleState extends State<MessageBubble> {
                           shape: BoxShape.circle,
                           border: Border.all(color: const Color(0xFFC2DDD4)),
                         ),
-                        child: const Icon(
+                        child:  Icon(
                           Icons.reply_rounded,
                           size: 18,
-                          color: Color(0xFF116466),
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
                     ),
@@ -129,13 +129,13 @@ class _MessageBubbleState extends State<MessageBubble> {
                         color: bubbleColor.withValues(
                           alpha: widget.message.isOptimistic ? 0.88 : 1,
                         ),
-                        border: widget.message.hasSendError
-                            ? Border.all(
-                                color: const Color(
-                                  0xFFFFA552,
-                                ).withValues(alpha: 0.8),
-                              )
-                            : null,
+                        border: Border.all(
+                          color: widget.message.hasSendError
+                              ? const Color(0xFFF59E0B)
+                              : widget.isMine
+                              ? const Color(0xFF1F6FEB)
+                              : const Color(0xFFE4E7EC),
+                        ),
                         borderRadius: BorderRadius.only(
                           topLeft: const Radius.circular(22),
                           topRight: const Radius.circular(22),
@@ -488,7 +488,7 @@ class _MessageMediaGallery extends StatelessWidget {
         children: [
           Icon(
             Icons.attach_file_rounded,
-            color: isMine ? Colors.white : const Color(0xFF116466),
+            color: isMine ? Colors.white : Theme.of(context).primaryColor,
           ),
           const SizedBox(width: 10),
           Expanded(

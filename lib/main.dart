@@ -29,7 +29,10 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final firebaseReady = await ensureFirebaseInitialized();
-  if (firebaseReady && !kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+  if (firebaseReady &&
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS)) {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   }
   final preferences = await SharedPreferences.getInstance();
@@ -112,12 +115,16 @@ class _AutoSpareAppState extends ConsumerState<AutoSpareApp>
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF116466),
+          seedColor: const Color(0xFF1F6FEB),
           brightness: Brightness.light,
+          primary: const Color(0xFF1F6FEB),
+          secondary: const Color(0xFFF59E0B),
+          surface: Colors.white,
+          error: const Color(0xFFB42318),
         ),
-        scaffoldBackgroundColor: const Color(0xFFF6F0E8),
+        scaffoldBackgroundColor: const Color(0xFFF4F6F8),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF0C4A63),
+          backgroundColor: Color(0xFF111827),
           foregroundColor: Colors.white,
           elevation: 0,
           centerTitle: false,
@@ -125,42 +132,63 @@ class _AutoSpareAppState extends ConsumerState<AutoSpareApp>
         cardTheme: CardThemeData(
           color: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
-            borderSide: const BorderSide(color: Color(0xFFD9CFBF)),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFFD0D5DD)),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
-            borderSide: const BorderSide(color: Color(0xFFD9CFBF)),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFFD0D5DD)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
-            borderSide: const BorderSide(color: Color(0xFF116466), width: 1.4),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF1F6FEB), width: 1.5),
           ),
         ),
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFF116466),
+            backgroundColor: const Color(0xFF1F6FEB),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
-            foregroundColor: const Color(0xFF0C4A63),
-            side: const BorderSide(color: Color(0xFFB7C8C9)),
+            foregroundColor: const Color(0xFF1F2937),
+            side: const BorderSide(color: Color(0xFFD0D5DD)),
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+        navigationBarTheme: NavigationBarThemeData(
+          backgroundColor: Colors.white,
+          indicatorColor: const Color(0xFFE8F1FF),
+          labelTextStyle: WidgetStateProperty.resolveWith(
+            (states) => TextStyle(
+              color: states.contains(WidgetState.selected)
+                  ? const Color(0xFF1F6FEB)
+                  : const Color(0xFF475467),
+              fontWeight: states.contains(WidgetState.selected)
+                  ? FontWeight.w800
+                  : FontWeight.w600,
+            ),
+          ),
+        ),
+        segmentedButtonTheme: SegmentedButtonThemeData(
+          style: ButtonStyle(
+            shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
         ),

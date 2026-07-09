@@ -44,10 +44,10 @@ class ConversationTileCard extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFF0F8F7) : Colors.white,
+        color: isSelected ? Color(0xFFEAF0FE) : Colors.white,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: isSelected ? const Color(0xFF116466) : const Color(0xFFE7DFD2),
+          color: isSelected ? Theme.of(context).primaryColor : const Color(0xFFE7DFD2),
           width: isSelected ? 1.5 : 1,
         ),
       ),
@@ -135,8 +135,8 @@ class ConversationTileCard extends StatelessWidget {
                   Container(
                     width: 26,
                     height: 26,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF116466),
+                    decoration:  BoxDecoration(
+                      color: Theme.of(context).primaryColor,
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
