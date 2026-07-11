@@ -29,6 +29,11 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
   ChatConnectionStatus _inboxStatus = ChatConnectionStatus.disconnected;
   int? _currentUserId;
   int? _activeConversationId;
+  // Inbox delivery is at-least-once, so reconnects can replay a message that
+  // has already updated this list. Keep a small in-memory record per chat to
+  // avoid treating that replay as another unread message.
+  final Map<int, Set<int>> _handledInboxMessageIds = {};
+  static const int _maxHandledInboxMessageIdsPerConversation = 200;
 
   @override
   void dispose() {
@@ -83,6 +88,7 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
         nextPageUrl: page.next,
         errorMessage: null,
       );
+      _rememberConversationPreviews(page.results);
     } on ApiException catch (error) {
       debugPrint('[Chat][Conversations][Load] ${error.message}');
       state = state.copyWith(isLoading: false, errorMessage: error.message);
@@ -110,6 +116,7 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
         nextPageUrl: page.next,
         errorMessage: null,
       );
+      _rememberConversationPreviews(page.results);
     } on ApiException catch (error) {
       debugPrint('[Chat][Conversations][LoadMore] ${error.message}');
       state = state.copyWith(isLoadingMore: false, errorMessage: error.message);
@@ -140,6 +147,10 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
     }
 
     final currentConversation = state.conversations[index];
+    if (_wasInboxMessageHandled(message)) {
+      return;
+    }
+    _rememberInboxMessage(message);
     final nextUnreadCount =
         isActiveConversation || message.sender.id == currentUserId
         ? 0
@@ -363,6 +374,42 @@ class LoadConversationsNotifier extends StateNotifier<ConversationState> {
       currentUserId: currentUserId,
       isActiveConversation: _activeConversationId == message.conversationId,
     );
+  }
+
+  bool _wasInboxMessageHandled(MessageModel message) {
+    final handledIds = _handledInboxMessageIds[message.conversationId];
+    if (handledIds?.contains(message.id) == true) {
+      return true;
+    }
+
+    final conversation = state.conversations
+        .where((item) => item.id == message.conversationId)
+        .firstOrNull;
+    return conversation?.lastMessage?.id == message.id;
+  }
+
+  void _rememberConversationPreviews(List<ConversationListItem> conversations) {
+    for (final conversation in conversations) {
+      final messageId = conversation.lastMessage?.id;
+      if (messageId != null) {
+        _rememberInboxMessageId(conversation.id, messageId);
+      }
+    }
+  }
+
+  void _rememberInboxMessage(MessageModel message) {
+    _rememberInboxMessageId(message.conversationId, message.id);
+  }
+
+  void _rememberInboxMessageId(int conversationId, int messageId) {
+    final handledIds = _handledInboxMessageIds.putIfAbsent(
+      conversationId,
+      () => <int>{},
+    );
+    handledIds.add(messageId);
+    if (handledIds.length > _maxHandledInboxMessageIdsPerConversation) {
+      handledIds.remove(handledIds.first);
+    }
   }
 
   void _handleInboxStatus(ChatConnectionStatus status) {

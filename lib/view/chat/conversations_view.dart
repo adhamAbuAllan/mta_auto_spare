@@ -90,7 +90,7 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
           const SizedBox(height: 16),
           AppErrorCard(message: conversationState.errorMessage!),
         ],
-        const SizedBox(height: 18),
+        const SizedBox(height: 8),
         Expanded(
           child: _buildBody(
             context,
@@ -140,9 +140,9 @@ class _ConversationsViewState extends ConsumerState<ConversationsView>
       );
     }
     return ListView.separated(
-      padding: EdgeInsets.zero,
+      padding: const EdgeInsets.only(bottom: 8),
       itemCount: conversationState.conversations.length + 1,
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      separatorBuilder: (context, index) => const SizedBox.shrink(),
       itemBuilder: (context, index) {
         if (index == conversationState.conversations.length) {
           if (!conversationState.hasMore) {

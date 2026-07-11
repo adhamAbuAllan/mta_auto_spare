@@ -25,6 +25,7 @@ class ConversationTileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
     final displayName = conversationDisplayName(
       conversation,
       currentUserId,
@@ -40,31 +41,38 @@ class ConversationTileCard extends StatelessWidget {
         : participant.user.isOnline
         ? const Color(0xFF20A05A)
         : const Color(0xFFB9B2A8);
+    final unreadCount = conversation.unreadCount;
+    final hasUnread = unreadCount > 0;
+    final previewColor = hasUnread
+        ? const Color(0xFF111827)
+        : const Color(0xFF6F6A63);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
       decoration: BoxDecoration(
-        color: isSelected ? Color(0xFFEAF0FE) : Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: isSelected ? Theme.of(context).primaryColor : const Color(0xFFE7DFD2),
-          width: isSelected ? 1.5 : 1,
+        color: isSelected ? const Color(0xFFEAF7F2) : Colors.white,
+        borderRadius: BorderRadius.circular(isSelected ? 16 : 0),
+        border: Border(
+          bottom: BorderSide(
+            color: isSelected ? Colors.transparent : const Color(0xFFE5E7EB),
+            width: 1,
+          ),
         ),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(isSelected ? 16 : 0),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 UserAvatar(
                   label: displayName,
                   imageUrl: participant?.user.avatar,
-                  radius: 22,
+                  radius: 24,
                   presenceColor: presenceColor,
                   onTap: onProfileTap,
                 ),
@@ -73,38 +81,19 @@ class ConversationTileCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-
-                        children: [
-                          TextButton(
-                            onPressed: onProfileTap,
-                            style: TextButton.styleFrom(
-                              alignment: Alignment.centerLeft,
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: Text(
-                              displayName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w800),
-                            ),
-                          ),
-                          Spacer(),
-
-                          Text(
-                            formatRelativeTime(
-                              conversation.lastMessage?.timestamp,
-                              l10n,
-                            ),
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(color: const Color(0xFF7A746C)),
-                          ),
-                        ],
+                      Text(
+                        displayName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: const Color(0xFF111827),
+                          fontWeight: hasUnread
+                              ? FontWeight.w900
+                              : FontWeight.w800,
+                          height: 1.15,
+                        ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 5),
                       Row(
                         children: [
                           if (lastOwnMessage != null) ...[
@@ -119,10 +108,15 @@ class ConversationTileCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               conversationPreview(conversation, l10n),
-                              maxLines: 2,
+                              maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: const Color(0xFF6F6A63)),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: previewColor,
+                                fontWeight: hasUnread
+                                    ? FontWeight.w700
+                                    : FontWeight.w400,
+                                height: 1.25,
+                              ),
                             ),
                           ),
                         ],
@@ -130,27 +124,54 @@ class ConversationTileCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (conversation.unreadCount > 0) ...[
-                  const SizedBox(width: 12),
-                  Container(
-                    width: 26,
-                    height: 26,
-                    decoration:  BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      conversation.unreadCount > 9
-                          ? '9+'
-                          : '${conversation.unreadCount}',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
+                const SizedBox(width: 10),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: 42, maxWidth: 58),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        formatRelativeTime(
+                          conversation.lastMessage?.timestamp,
+                          l10n,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: hasUnread
+                              ? theme.primaryColor
+                              : const Color(0xFF7A746C),
+                          fontWeight: hasUnread
+                              ? FontWeight.w800
+                              : FontWeight.w500,
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 8),
+                      if (hasUnread)
+                        Container(
+                          constraints: const BoxConstraints(minWidth: 22),
+                          height: 22,
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          decoration: BoxDecoration(
+                            color: theme.primaryColor,
+                            borderRadius: BorderRadius.circular(99),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            unreadCount > 99 ? '99+' : '$unreadCount',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              height: 1,
+                            ),
+                          ),
+                        )
+                      else
+                        const SizedBox(height: 22),
+                    ],
                   ),
-                ],
+                ),
               ],
             ),
           ),

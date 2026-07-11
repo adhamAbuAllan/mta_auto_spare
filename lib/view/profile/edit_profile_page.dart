@@ -16,7 +16,6 @@ import '../../utils/phone_number.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/app_panel.dart';
 import '../common_widgets/async_error_message.dart';
-import '../common_widgets/car_model_card.dart';
 import '../common_widgets/user_avatar.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
@@ -38,7 +37,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   bool _isDeletingAccount = false;
   String? _deleteAccountError;
   RequestUploadImage? _selectedAvatarImage;
-  final Set<int> _selectedCarModelIds = <int>{};
+  final Set<int> _selectedCarMakeIds = <int>{};
   int? _selectedCarMakeId;
 
   @override
@@ -84,15 +83,17 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final isBusy = updateState.isLoading || _isDeletingAccount;
     final carCatalog = ref.watch(carCatalogProvider);
     final availableMakes = carCatalog.valueOrNull ?? const <CarMakeOption>[];
-    final selectedMake = _selectedCarMakeId != null
-        ? _findMakeById(availableMakes, _selectedCarMakeId!)
-        : (availableMakes.isEmpty ? null : availableMakes.first);
-    final selectedModels = _resolveSelectedCarModels(
+    final selectedMakes = _resolveSelectedCarMakes(
       profile: profile,
       catalog: availableMakes,
     );
-    final selectedModelIds = selectedModels.map((item) => item.id).toSet();
-    final visibleModels = selectedMake?.models ?? const <CarModelOption>[];
+    final selectableMakes = availableMakes
+        .where((make) => !_selectedCarMakeIds.contains(make.id))
+        .toList(growable: false);
+    final selectedPickerMakeId =
+        selectableMakes.any((make) => make.id == _selectedCarMakeId)
+        ? _selectedCarMakeId
+        : null;
     final isSupplierProfile = profile.role == 'supplier';
     final carCatalogErrorMessage = asyncErrorMessage(
       carCatalog.error,
@@ -207,7 +208,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               ?.copyWith(color: const Color(0xFF6F6A63)),
                         ),
                         const SizedBox(height: 14),
-                        if (selectedModels.isEmpty)
+                        if (selectedMakes.isEmpty)
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.all(16),
@@ -219,7 +220,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               ),
                             ),
                             child: Text(
-                              context.l10n.noCarModelsSelectedYetMessage,
+                              context.l10n.noCarNamesSelectedYet,
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(color: const Color(0xFF6F6A63)),
                             ),
@@ -229,20 +230,17 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                             spacing: 12,
                             runSpacing: 12,
                             children: [
-                              for (final carModel in selectedModels)
-                                SizedBox(
-                                  width: 240,
-                                  child: CarModelCard(
-                                    carModel: carModel,
-                                    compact: true,
-                                    onRemove: () {
-                                      setState(() {
-                                        _selectedCarModelIds.remove(
-                                          carModel.id,
-                                        );
-                                      });
-                                    },
-                                  ),
+                              for (final make in selectedMakes)
+                                _SelectedMakeChip(
+                                  make: make,
+                                  onRemove: () {
+                                    setState(() {
+                                      _selectedCarMakeIds.remove(make.id);
+                                      if (_selectedCarMakeId == make.id) {
+                                        _selectedCarMakeId = null;
+                                      }
+                                    });
+                                  },
                                 ),
                             ],
                           ),
@@ -256,56 +254,64 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                             onRetry: () => ref.invalidate(carCatalogProvider),
                           )
                         else ...[
-                          DropdownButtonFormField<int>(
-                            initialValue: selectedMake?.id,
-                            decoration: InputDecoration(
-                              labelText: context.l10n.filterByCarMake,
-                            ),
-                            items: [
-                              for (final make in availableMakes)
-                                DropdownMenuItem<int>(
-                                  value: make.id,
-                                  child: Text(make.name),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: DropdownButtonFormField<int>(
+                                  key: ValueKey(
+                                    'profile-make-picker-${selectedPickerMakeId ?? 'none'}-${selectableMakes.length}',
+                                  ),
+                                  initialValue: selectedPickerMakeId,
+                                  decoration: InputDecoration(
+                                    labelText: context.l10n.carName,
+                                  ),
+                                  items: [
+                                    for (final make in selectableMakes)
+                                      DropdownMenuItem<int>(
+                                        value: make.id,
+                                        child: Text(make.name),
+                                      ),
+                                  ],
+                                  onChanged: selectableMakes.isEmpty
+                                      ? null
+                                      : (value) {
+                                          setState(() {
+                                            _selectedCarMakeId = value;
+                                          });
+                                        },
                                 ),
+                              ),
+                              const SizedBox(width: 12),
+                              FilledButton.tonalIcon(
+                                onPressed: selectedPickerMakeId == null
+                                    ? null
+                                    : () {
+                                        final selectedMakeId =
+                                            selectedPickerMakeId;
+                                        setState(() {
+                                          _selectedCarMakeIds.add(
+                                            selectedMakeId,
+                                          );
+                                          _selectedCarMakeId = null;
+                                        });
+                                      },
+                                icon: const Icon(Icons.add_rounded),
+                                label: Text(context.l10n.add),
+                              ),
                             ],
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedCarMakeId = value;
-                              });
-                            },
                           ),
-                          const SizedBox(height: 14),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: visibleModels.length,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 12,
-                                  childAspectRatio: 0.82,
-                                ),
-                            itemBuilder: (context, index) {
-                              final carModel = visibleModels[index];
-                              final isSelected = selectedModelIds.contains(
-                                carModel.id,
-                              );
-                              return CarModelCard(
-                                carModel: carModel,
-                                isSelected: isSelected,
-                                onTap: () {
-                                  setState(() {
-                                    if (isSelected) {
-                                      _selectedCarModelIds.remove(carModel.id);
-                                    } else {
-                                      _selectedCarModelIds.add(carModel.id);
-                                    }
-                                  });
-                                },
-                              );
-                            },
-                          ),
+                          if (selectableMakes.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: Text(
+                                context
+                                    .l10n
+                                    .allAvailableCarNamesAlreadySelected,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(color: const Color(0xFF6F6A63)),
+                              ),
+                            ),
                         ],
                       ],
                       const SizedBox(height: 20),
@@ -382,7 +388,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
           chatPushEnabled: _chatPushEnabled,
           chatMessagePreviewEnabled: _chatMessagePreviewEnabled,
           supportedCarModelIds: profile.role == 'supplier'
-              ? (_selectedCarModelIds.toList()..sort())
+              ? _resolveSelectedCarModelIdsFromMakes(
+                  profile: profile,
+                  catalog:
+                      ref.read(carCatalogProvider).valueOrNull ??
+                      const <CarMakeOption>[],
+                )
               : null,
           avatarImage: _selectedAvatarImage,
         );
@@ -502,39 +513,44 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     _cityController.text = profile.city ?? '';
     _chatPushEnabled = profile.chatPushEnabled;
     _chatMessagePreviewEnabled = profile.chatMessagePreviewEnabled;
-    _selectedCarModelIds
+    _selectedCarMakeIds
       ..clear()
-      ..addAll(profile.supportedCarModels.map((item) => item.id));
+      ..addAll(profile.supportedCarModels.map((item) => item.makeId));
     if (profile.supportedCarModels.isNotEmpty) {
-      _selectedCarMakeId = profile.supportedCarModels.first.makeId;
+      _selectedCarMakeId = null;
     }
   }
 
-  List<CarModelOption> _resolveSelectedCarModels({
+  List<CarMakeOption> _resolveSelectedCarMakes({
     required MeProfile profile,
     required List<CarMakeOption> catalog,
   }) {
-    final catalogById = <int, CarModelOption>{
-      for (final make in catalog)
-        for (final model in make.models) model.id: model,
+    final profileMakesById = <int, CarMakeOption>{
+      for (final model in profile.supportedCarModels)
+        model.makeId: CarMakeOption(
+          id: model.makeId,
+          name: model.makeName,
+          slug: '',
+          models: profile.supportedCarModels
+              .where((item) => item.makeId == model.makeId)
+              .toList(growable: false),
+        ),
     };
 
-    final selectedModels = <CarModelOption>[];
-    for (final modelId in _selectedCarModelIds) {
-      final resolvedModel =
-          catalogById[modelId] ?? _findProfileCarModel(profile, modelId);
-      if (resolvedModel != null) {
-        selectedModels.add(resolvedModel);
+    final selectedMakes = <CarMakeOption>[];
+    for (final makeId in _selectedCarMakeIds) {
+      final resolvedMake = _findMakeById(catalog, makeId);
+      if (resolvedMake != null) {
+        selectedMakes.add(resolvedMake);
+        continue;
+      }
+      final profileMake = profileMakesById[makeId];
+      if (profileMake != null) {
+        selectedMakes.add(profileMake);
       }
     }
-    selectedModels.sort((left, right) {
-      final makeCompare = left.makeName.compareTo(right.makeName);
-      if (makeCompare != 0) {
-        return makeCompare;
-      }
-      return left.name.compareTo(right.name);
-    });
-    return selectedModels;
+    selectedMakes.sort((left, right) => left.name.compareTo(right.name));
+    return selectedMakes;
   }
 
   CarMakeOption? _findMakeById(List<CarMakeOption> makes, int makeId) {
@@ -546,13 +562,61 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     return null;
   }
 
-  CarModelOption? _findProfileCarModel(MeProfile profile, int modelId) {
-    for (final carModel in profile.supportedCarModels) {
-      if (carModel.id == modelId) {
-        return carModel;
-      }
-    }
-    return null;
+  List<int> _resolveSelectedCarModelIdsFromMakes({
+    required MeProfile profile,
+    required List<CarMakeOption> catalog,
+  }) {
+    final modelIds = <int>{
+      for (final make in catalog)
+        if (_selectedCarMakeIds.contains(make.id))
+          ...make.models.map((model) => model.id),
+      for (final model in profile.supportedCarModels)
+        if (_selectedCarMakeIds.contains(model.makeId)) model.id,
+    };
+    return modelIds.toList()..sort();
+  }
+}
+
+class _SelectedMakeChip extends StatelessWidget {
+  const _SelectedMakeChip({required this.make, required this.onRemove});
+
+  final CarMakeOption make;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F8F7),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFD5E8E4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.directions_car_filled_rounded,
+            size: 18,
+            color: Color(0xFF1F6FEB),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            make.name,
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(width: 6),
+          IconButton(
+            tooltip: context.l10n.remove,
+            onPressed: onRemove,
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.close_rounded),
+          ),
+        ],
+      ),
+    );
   }
 }
 
