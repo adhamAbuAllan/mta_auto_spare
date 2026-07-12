@@ -1888,6 +1888,12 @@ abstract class AppLocalizations {
   /// **'Tell suppliers what spare part you need. Matching suppliers will be notified and can chat with you.'**
   String get createRequestDescription;
 
+  /// No description provided for @requestExpiresAfter48Hours.
+  ///
+  /// In en, this message translates to:
+  /// **'This request will be automatically removed by the backend 48 hours after it is created.'**
+  String get requestExpiresAfter48Hours;
+
   /// No description provided for @requestCreationBlocked.
   ///
   /// In en, this message translates to:
@@ -2143,7 +2149,7 @@ abstract class AppLocalizations {
   /// No description provided for @appUpdateAvailableMessage.
   ///
   /// In en, this message translates to:
-  /// **'A new version of MTA is available. Update now to get the latest features and improvements.'**
+  /// **'Update the app now and enjoy the latest features and improvements.'**
   String get appUpdateAvailableMessage;
 
   /// No description provided for @updateNow.

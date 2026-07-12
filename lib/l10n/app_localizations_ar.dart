@@ -995,6 +995,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'أخبر المورّدين عن قطعة الغيار التي تحتاجها. سيتم إشعار المورّدين المطابقين ويمكنهم محادثتك.';
 
   @override
+  String get requestExpiresAfter48Hours =>
+      'سيتم حذف هذا الطلب تلقائيًا من الخادم بعد 48 ساعة من إنشائه.';
+
+  @override
   String get requestCreationBlocked => 'إنشاء الطلب محظور';
 
   @override
@@ -1134,7 +1138,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get appUpdateAvailableMessage =>
-      'يتوفر إصدار جديد من MTA. حدّث الآن للحصول على أحدث الميزات والتحسينات.';
+      'حدّث التطبيق الآن واستمتع بأحدث الميزات والتحسينات.';
 
   @override
   String get updateNow => 'حدّث الآن';

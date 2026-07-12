@@ -998,6 +998,10 @@ class AppLocalizationsHe extends AppLocalizations {
       'ספר לספקים איזה חלק חילוף אתה צריך. ספקים מתאימים יקבלו התראה ויוכלו לשוחח איתך.';
 
   @override
+  String get requestExpiresAfter48Hours =>
+      'בקשה זו תוסר אוטומטית מהשרת 48 שעות לאחר יצירתה.';
+
+  @override
   String get requestCreationBlocked => 'יצירת הבקשה חסומה';
 
   @override
@@ -1134,7 +1138,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get appUpdateAvailableMessage =>
-      'גרסה חדשה של MTA זמינה. עדכן כעת כדי לקבל את התכונות והשיפורים החדשים.';
+      'עדכנו את האפליקציה עכשיו ותיהנו מהתכונות והשיפורים החדשים.';
 
   @override
   String get updateNow => 'עדכן כעת';

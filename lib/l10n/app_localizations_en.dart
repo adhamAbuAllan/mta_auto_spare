@@ -1010,6 +1010,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Tell suppliers what spare part you need. Matching suppliers will be notified and can chat with you.';
 
   @override
+  String get requestExpiresAfter48Hours =>
+      'This request will be automatically removed by the backend 48 hours after it is created.';
+
+  @override
   String get requestCreationBlocked => 'Request creation is blocked';
 
   @override
@@ -1147,7 +1151,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appUpdateAvailableMessage =>
-      'A new version of MTA is available. Update now to get the latest features and improvements.';
+      'Update the app now and enjoy the latest features and improvements.';
 
   @override
   String get updateNow => 'Update Now';

@@ -207,6 +207,12 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                           height: 1.35,
                         ),
                       ),
+                      if (!widget.isEditing) ...[
+                        const SizedBox(height: 16),
+                        _RequestExpiryNotice(
+                          message: l10n.requestExpiresAfter48Hours,
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       _RequestStepHeader(
                         icon: Icons.build_circle_outlined,
@@ -940,6 +946,41 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
       }
     }
     return null;
+  }
+}
+
+class _RequestExpiryNotice extends StatelessWidget {
+  const _RequestExpiryNotice({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFF6FF),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFBFDBFE)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.schedule_outlined, color: Color(0xFF1D4ED8)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: const Color(0xFF1E3A8A),
+                height: 1.35,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

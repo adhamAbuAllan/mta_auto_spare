@@ -72,7 +72,7 @@ NotificationStrings notificationStringsForLanguageCode(String languageCode) {
         supplierFallbackName: 'البائع',
         requestCreatedFallbackBody: 'قام بائع بنشر طلب جديد.',
         appUpdateTitle: 'يتوفر تحديث جديد',
-        appUpdateBody: 'حدّث تطبيق MTA للحصول على أحدث الميزات والتحسينات.',
+        appUpdateBody: 'حدّث التطبيق الآن واستمتع بأحدث الميزات والتحسينات.',
         appUpdatesChannel: NotificationChannelStrings(
           name: 'تحديثات التطبيق',
           description: 'تنبيهات عند توفر إصدار جديد من التطبيق',
@@ -95,7 +95,7 @@ NotificationStrings notificationStringsForLanguageCode(String languageCode) {
         supplierFallbackName: 'מוכר',
         requestCreatedFallbackBody: 'מוכר פרסם בקשה חדשה.',
         appUpdateTitle: 'עדכון חדש זמין',
-        appUpdateBody: 'עדכן את MTA כדי לקבל את התכונות והשיפורים החדשים.',
+        appUpdateBody: 'עדכנו את האפליקציה עכשיו ותיהנו מהתכונות והשיפורים החדשים.',
         appUpdatesChannel: NotificationChannelStrings(
           name: 'עדכוני אפליקציה',
           description: 'התראות כאשר זמינה גרסה חדשה של האפליקציה',
@@ -119,7 +119,7 @@ NotificationStrings notificationStringsForLanguageCode(String languageCode) {
         requestCreatedFallbackBody: 'A supplier posted a new request.',
         appUpdateTitle: 'New update available',
         appUpdateBody:
-            'Update MTA to get the latest features and improvements.',
+            'Update the app now and enjoy the latest features and improvements.',
         appUpdatesChannel: NotificationChannelStrings(
           name: 'App Updates',
           description: 'Alerts when a new app version is available',
