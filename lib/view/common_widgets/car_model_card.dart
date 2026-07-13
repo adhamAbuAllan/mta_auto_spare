@@ -11,6 +11,7 @@ class CarModelCard extends StatelessWidget {
     this.onTap,
     this.onRemove,
     this.compact = false,
+    this.showImage = true,
   });
 
   final CarModelOption carModel;
@@ -19,6 +20,9 @@ class CarModelCard extends StatelessWidget {
   final VoidCallback? onRemove;
   final bool compact;
 
+  /// Whether the card displays the car-model image or image placeholder.
+  final bool showImage;
+
   @override
   Widget build(BuildContext context) {
     final content = compact
@@ -26,11 +30,13 @@ class CarModelCard extends StatelessWidget {
             carModel: carModel,
             isSelected: isSelected,
             onRemove: onRemove,
+            showImage: showImage,
           )
         : _FullCarModelCard(
             carModel: carModel,
             isSelected: isSelected,
             onRemove: onRemove,
+            showImage: showImage,
           );
 
     if (onTap == null) {
@@ -53,11 +59,13 @@ class _FullCarModelCard extends StatelessWidget {
     required this.carModel,
     required this.isSelected,
     required this.onRemove,
+    required this.showImage,
   });
 
   final CarModelOption carModel;
   final bool isSelected;
   final VoidCallback? onRemove;
+  final bool showImage;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +75,9 @@ class _FullCarModelCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: isSelected ? Theme.of(context).primaryColor : const Color(0xFFE5DED1),
+          color: isSelected
+              ? Theme.of(context).primaryColor
+              : const Color(0xFFE5DED1),
           width: isSelected ? 1.6 : 1,
         ),
         boxShadow: isSelected
@@ -83,71 +93,89 @@ class _FullCarModelCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Flexible(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(21),
-                      ),
-                      child: _CarModelImage(
-                        imageUrl: carModel.imageUrl,
-                        height: constraints.maxHeight,
-                        width: double.infinity,
-                      ),
-                    ),
-                    if (isSelected)
-                      Positioned(
-                        top: 10,
-                        right: 10,
-                        child: Container(
-                          width: 28,
-                          height: 28,
-                          decoration:  BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.check_rounded,
-                            size: 18,
-                            color: Colors.white,
-                          ),
+          if (showImage)
+            Flexible(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(21),
+                        ),
+                        child: _CarModelImage(
+                          imageUrl: carModel.imageUrl,
+                          height: constraints.maxHeight,
+                          width: double.infinity,
                         ),
                       ),
-                    if (onRemove != null)
-                      Positioned(
-                        top: 10,
-                        left: 10,
-                        child: Material(
-                          color: Colors.black.withValues(alpha: 0.18),
-                          shape: const CircleBorder(),
-                          child: InkWell(
-                            customBorder: const CircleBorder(),
-                            onTap: onRemove,
-                            child: const Padding(
-                              padding: EdgeInsets.all(6),
-                              child: Icon(
-                                Icons.close_rounded,
-                                size: 18,
-                                color: Colors.white,
+                      if (isSelected)
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: Container(
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.check_rounded,
+                              size: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      if (onRemove != null)
+                        Positioned(
+                          top: 10,
+                          left: 10,
+                          child: Material(
+                            color: Colors.black.withValues(alpha: 0.18),
+                            shape: const CircleBorder(),
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: onRemove,
+                              child: const Padding(
+                                padding: EdgeInsets.all(6),
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  size: 18,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                  ],
-                );
-              },
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (!showImage && (isSelected || onRemove != null))
+                  Row(
+                    children: [
+                      const Spacer(),
+                      if (isSelected)
+                        Icon(
+                          Icons.check_circle_rounded,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      if (onRemove != null)
+                        IconButton(
+                          tooltip: 'Remove',
+                          onPressed: onRemove,
+                          icon: const Icon(Icons.close_rounded),
+                        ),
+                    ],
+                  ),
                 const SizedBox(height: 4),
                 Text(
                   carModel.makeName,
@@ -183,11 +211,13 @@ class _CompactCarModelCard extends StatelessWidget {
     required this.carModel,
     required this.isSelected,
     required this.onRemove,
+    required this.showImage,
   });
 
   final CarModelOption carModel;
   final bool isSelected;
   final VoidCallback? onRemove;
+  final bool showImage;
 
   @override
   Widget build(BuildContext context) {
@@ -196,22 +226,25 @@ class _CompactCarModelCard extends StatelessWidget {
         color: isSelected ? const Color(0xFFEAF0FE) : const Color(0xFFFBF8F4),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isSelected ? Theme.of(context).primaryColor : const Color(0xFFE7DFD2),
+          color: isSelected
+              ? Theme.of(context).primaryColor
+              : const Color(0xFFE7DFD2),
           width: isSelected ? 1.4 : 1,
         ),
       ),
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.horizontal(
-              left: Radius.circular(17),
+          if (showImage)
+            ClipRRect(
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(17),
+              ),
+              child: _CarModelImage(
+                imageUrl: carModel.imageUrl,
+                width: 92,
+                height: 72,
+              ),
             ),
-            child: _CarModelImage(
-              imageUrl: carModel.imageUrl,
-              width: 92,
-              height: 72,
-            ),
-          ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -247,9 +280,12 @@ class _CompactCarModelCard extends StatelessWidget {
               icon: const Icon(Icons.close_rounded),
             )
           else if (isSelected)
-             Padding(
+            Padding(
               padding: EdgeInsets.only(right: 12),
-              child: Icon(Icons.check_circle_rounded, color: Theme.of(context).primaryColor),
+              child: Icon(
+                Icons.check_circle_rounded,
+                color: Theme.of(context).primaryColor,
+              ),
             )
           else
             const SizedBox(width: 8),

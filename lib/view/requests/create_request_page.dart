@@ -308,6 +308,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                           carModel: selectedCarModel,
                           compact: true,
                           isSelected: true,
+                          showImage: false,
                         ),
                         const SizedBox(height: 12),
                       ],
@@ -437,9 +438,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                         else
                           LayoutBuilder(
                             builder: (context, constraints) {
-                              final crossAxisCount = _carGridCrossAxisCount(
-                                constraints.maxWidth,
-                              );
+                              final crossAxisCount = _carGridCrossAxisCount();
                               final cardWidth =
                                   (constraints.maxWidth -
                                       ((crossAxisCount - 1) * 12)) /
@@ -457,6 +456,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                                       mainAxisExtent: _carCardMainAxisExtent(
                                         context,
                                         cardWidth,
+                                        showImage: false,
                                       ),
                                     ),
                                 itemBuilder: (context, index) {
@@ -465,6 +465,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                                     carModel: carModel,
                                     isSelected:
                                         carModel.id == _selectedCarModelId,
+                                    showImage: false,
                                     onTap: () => _selectCarModel(carModel),
                                   );
                                 },
@@ -629,13 +630,18 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
   //       : null;
   // }
 
-  int _carGridCrossAxisCount(double availableWidth) {
-    return availableWidth < 330 ? 1 : 2;
-  }
+  static int _carGridCrossAxisCount() => 2;
 
-  double _carCardMainAxisExtent(BuildContext context, double cardWidth) {
+  double _carCardMainAxisExtent(
+    BuildContext context,
+    double cardWidth, {
+    required bool showImage,
+  }) {
     final textScaleFactor = MediaQuery.textScalerOf(context).scale(1);
     final scaledTextAllowance = (textScaleFactor - 1).clamp(0.0, 1.0) * 48;
+    if (!showImage) {
+      return (92 + scaledTextAllowance).clamp(92.0, 140.0);
+    }
     return (cardWidth * 1.22 + scaledTextAllowance).clamp(218.0, 300.0);
   }
 
