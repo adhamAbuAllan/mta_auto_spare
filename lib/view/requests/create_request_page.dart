@@ -270,6 +270,66 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                         ),
                       ),
                       const SizedBox(height: 10),
+                      if (!_useCustomCarEntry &&
+                          !carCatalog.isLoading &&
+                          !carCatalog.hasError) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEAF0FE),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Theme.of(context).primaryColor,
+                              width: 1.4,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.manage_search_rounded,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    l10n.carModelSearchLabel,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(fontWeight: FontWeight.w900),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                controller: _carModelSearchController,
+                                textInputAction: TextInputAction.search,
+                                decoration: InputDecoration(
+                                  labelText: l10n.carModelSearchLabel,
+                                  hintText: l10n.carModelSearchHint,
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  prefixIcon: const Icon(Icons.search_rounded),
+                                  suffixIcon: carModelSearchQuery.isEmpty
+                                      ? null
+                                      : IconButton(
+                                          tooltip: l10n.clearCarModelSearch,
+                                          onPressed: _clearCarModelSearch,
+                                          icon: const Icon(Icons.close_rounded),
+                                        ),
+                                ),
+                                onChanged: _scheduleCarModelSearch,
+                                onFieldSubmitted: (value) =>
+                                    _runCarModelSearch(value.trim()),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
@@ -361,28 +421,9 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                           onRetry: () => ref.invalidate(carCatalogProvider),
                         )
                       else ...[
-                        TextFormField(
-                          controller: _carModelSearchController,
-                          textInputAction: TextInputAction.search,
-                          decoration: InputDecoration(
-                            labelText: l10n.carModelSearchLabel,
-                            hintText: l10n.carModelSearchHint,
-                            prefixIcon: const Icon(Icons.search_rounded),
-                            suffixIcon: carModelSearchQuery.isEmpty
-                                ? null
-                                : IconButton(
-                                    tooltip: l10n.clearCarModelSearch,
-                                    onPressed: _clearCarModelSearch,
-                                    icon: const Icon(Icons.close_rounded),
-                                  ),
-                          ),
-                          onChanged: _scheduleCarModelSearch,
-                          onFieldSubmitted: (value) =>
-                              _runCarModelSearch(value.trim()),
-                        ),
                         if (_isCarModelSearchLoading) ...[
-                          const SizedBox(height: 8),
                           const LinearProgressIndicator(),
+                          const SizedBox(height: 10),
                         ],
                         if (_carModelSearchError != null) ...[
                           const SizedBox(height: 10),

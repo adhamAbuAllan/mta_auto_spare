@@ -408,6 +408,7 @@ class MobileDevice {
     this.pushToken,
     this.deviceName,
     this.appVersion,
+    this.notificationLanguage,
     required this.isActive,
     this.lastSeenAt,
     this.createdAt,
@@ -420,6 +421,7 @@ class MobileDevice {
   final String? pushToken;
   final String? deviceName;
   final String? appVersion;
+  final String? notificationLanguage;
   final bool isActive;
   final DateTime? lastSeenAt;
   final DateTime? createdAt;
@@ -433,6 +435,7 @@ class MobileDevice {
       pushToken: stringFromJson(json['push_token']),
       deviceName: stringFromJson(json['device_name']),
       appVersion: stringFromJson(json['app_version']),
+      notificationLanguage: stringFromJson(json['notification_language']),
       isActive: boolFromJson(json['is_active']) ?? true,
       lastSeenAt: dateTimeFromJson(json['last_seen_at']),
       createdAt: dateTimeFromJson(json['created_at']),
@@ -459,6 +462,10 @@ class MobileDevice {
     }
     if (appVersion != null && appVersion!.trim().isNotEmpty) {
       json['app_version'] = appVersion!.trim();
+    }
+    if (notificationLanguage != null &&
+        notificationLanguage!.trim().isNotEmpty) {
+      json['notification_language'] = notificationLanguage!.trim();
     }
     if (lastSeenAt != null) {
       json['last_seen_at'] = lastSeenAt!.toIso8601String();

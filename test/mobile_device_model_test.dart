@@ -32,4 +32,15 @@ void main() {
     expect(json['push_token'], '');
     expect(json['is_active'], isFalse);
   });
+
+  test('mobile device JSON includes the notification language', () {
+    const device = MobileDevice(
+      deviceId: 'android-001',
+      platform: 'android',
+      notificationLanguage: 'ar',
+      isActive: true,
+    );
+
+    expect(device.toJson()['notification_language'], 'ar');
+  });
 }

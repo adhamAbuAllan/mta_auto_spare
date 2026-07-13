@@ -429,6 +429,7 @@ class ChatNotificationService {
     Future<void> Function(int conversationId)? onConversationMessageReceived,
     Future<void> Function(int requestId)? onRequestCreatedReceived,
     int? Function()? resolveVisibleConversationId,
+    String Function()? resolveNotificationLanguage,
     String Function()? createDeviceId,
     Duration tokenRetryDelay = const Duration(seconds: 12),
     Duration tokenRequestRetryDelay = const Duration(seconds: 2),
@@ -442,6 +443,8 @@ class ChatNotificationService {
        _onConversationMessageReceived = onConversationMessageReceived,
        _onRequestCreatedReceived = onRequestCreatedReceived,
        _resolveVisibleConversationId = resolveVisibleConversationId,
+       _resolveNotificationLanguage =
+           resolveNotificationLanguage ?? (() => 'en'),
        _createDeviceId = createDeviceId ?? Uuid().v4,
        _tokenRetryDelay = tokenRetryDelay,
        _tokenRequestRetryDelay = tokenRequestRetryDelay;
@@ -458,6 +461,7 @@ class ChatNotificationService {
   _onConversationMessageReceived;
   final Future<void> Function(int requestId)? _onRequestCreatedReceived;
   final int? Function()? _resolveVisibleConversationId;
+  final String Function() _resolveNotificationLanguage;
   final String Function() _createDeviceId;
   final Duration _tokenRetryDelay;
   final Duration _tokenRequestRetryDelay;
@@ -505,6 +509,7 @@ class ChatNotificationService {
 
     final deviceId = await _ensureDeviceId();
     final pushToken = await _resolvePushToken();
+    final notificationLanguage = _resolveNotificationLanguage();
     _lastKnownPushToken = pushToken;
 
     if (pushToken == null || pushToken.isEmpty) {
@@ -527,7 +532,7 @@ class ChatNotificationService {
 
     _cancelRegistrationRetry();
     final nextFingerprint =
-        '${session.profile?.id}|$deviceId|$pushToken|active';
+        '${session.profile?.id}|$deviceId|$pushToken|$notificationLanguage|active';
     if (_lastRegistrationFingerprint == nextFingerprint) {
       return;
     }
@@ -537,6 +542,7 @@ class ChatNotificationService {
         deviceId: deviceId,
         platform: _devicePlatform,
         pushToken: pushToken,
+        notificationLanguage: notificationLanguage,
         isActive: true,
       ),
     );
@@ -666,16 +672,18 @@ class ChatNotificationService {
       }
 
       final deviceId = await _ensureDeviceId();
+      final notificationLanguage = _resolveNotificationLanguage();
       await _userApi.upsertMobileDevice(
         MobileDevice(
           deviceId: deviceId,
           platform: _devicePlatform,
           pushToken: normalizedToken,
+          notificationLanguage: notificationLanguage,
           isActive: true,
         ),
       );
       _lastRegistrationFingerprint =
-          '${_currentSession.profile?.id}|$deviceId|$normalizedToken|active';
+          '${_currentSession.profile?.id}|$deviceId|$normalizedToken|$notificationLanguage|active';
       debugPrint(
         'Chat notifications: refreshed $_devicePlatform device token for user '
         '${_currentSession.profile?.id} (${_maskPushToken(normalizedToken)}).',

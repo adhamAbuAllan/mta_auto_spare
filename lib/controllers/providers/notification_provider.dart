@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../notifications/chat_notification_service.dart';
+import '../../localization/app_locale.dart';
+import '../../localization/app_locale_notifier.dart';
 import '../../session/session_notifier.dart';
 import 'api_provider.dart';
 import 'chat_provider.dart';
@@ -53,7 +56,17 @@ final chatNotificationServiceProvider = Provider<ChatNotificationService>((
     resolveVisibleConversationId: () {
       return ref.read(messagesNotifierProvider).conversationId;
     },
+    resolveNotificationLanguage: () {
+      final mode = ref.read(appLocaleProvider);
+      return resolveEffectiveAppLocale(
+        mode: mode,
+        deviceLocale: currentDeviceLocale(),
+      ).languageCode;
+    },
   );
+  ref.listen(appLocaleProvider, (previous, next) {
+    unawaited(service.syncWithSession(ref.read(sessionNotifierProvider)));
+  });
   ref.onDispose(service.dispose);
   return service;
 });
