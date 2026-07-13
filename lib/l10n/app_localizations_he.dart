@@ -1254,6 +1254,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get smsCodeExpired => 'פג תוקף קוד ה-SMS. בקש קוד חדש.';
 
   @override
+  String get firebaseNetworkError =>
+      'אין חיבור לאינטרנט. בדוק את החיבור ונסה שוב.';
+
+  @override
   String firebasePhoneVerificationFailed(String code, String message) {
     return 'אימות הטלפון של Firebase נכשל ($code): $message';
   }

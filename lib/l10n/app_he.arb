@@ -550,6 +550,7 @@
   "tooManySmsAttempts": "יותר מדי ניסיונות SMS. המתן לפני בקשת קוד נוסף.",
   "smsCodeIncorrect": "קוד ה-SMS שגוי.",
   "smsCodeExpired": "פג תוקף קוד ה-SMS. בקש קוד חדש.",
+  "firebaseNetworkError": "אין חיבור לאינטרנט. בדוק את החיבור ונסה שוב.",
   "firebasePhoneVerificationFailed": "אימות הטלפון של Firebase נכשל ({code}): {message}",
   "@firebasePhoneVerificationFailed": {
     "placeholders": {

@@ -9,6 +9,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../controllers/providers/auth_provider.dart';
 import '../../firebase/firebase_bootstrap.dart';
+import '../../localization/firebase_error_localizer.dart';
 import '../../localization/app_localizations_x.dart';
 import '../common_widgets/app_error_card.dart';
 
@@ -322,38 +323,7 @@ class _PhoneOtpPageState extends ConsumerState<PhoneOtpPage> {
   }
 
   String _phoneVerificationErrorMessage(Object error) {
-    if (error is FirebaseAuthException) {
-      final code = error.code.trim();
-      final message = (error.message ?? '').trim();
-      final searchable = '$code $message'.toLowerCase();
-
-      if (code == 'operation-not-allowed' ||
-          searchable.contains('sms unable') ||
-          searchable.contains('region')) {
-        return 'Firebase is blocking this SMS request. Confirm Phone sign-in is enabled and allow Israel (+972) and Palestinian Territory (+970) in Firebase SMS region policy.';
-      }
-      if (code == 'invalid-phone-number') {
-        return 'Enter a valid +970 or +972 phone number.';
-      }
-      if (code == 'too-many-requests' || code == 'quota-exceeded') {
-        return 'Too many SMS attempts. Wait before requesting another code.';
-      }
-      if (code == 'unknown' && searchable.contains('error code:39')) {
-        return 'SMS delivery is temporarily unavailable for this carrier. Try again later or contact support.';
-      }
-      if (code == 'invalid-verification-code') {
-        return 'The SMS code is incorrect.';
-      }
-      if (code == 'session-expired') {
-        return 'The SMS code expired. Request a new code.';
-      }
-      if (message.isNotEmpty) {
-        return 'Firebase phone verification failed ($code): $message';
-      }
-    }
-
-    final fallback = error.toString().trim();
-    return fallback.isEmpty ? 'Phone verification failed.' : fallback;
+    return localizeFirebaseError(error, context.l10n);
   }
 
   Future<void> _logPhoneVerificationError(

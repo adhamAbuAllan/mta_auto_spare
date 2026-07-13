@@ -1257,6 +1257,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get smsCodeExpired => 'انتهت صلاحية رمز SMS. اطلب رمزًا جديدًا.';
 
   @override
+  String get firebaseNetworkError =>
+      'لا يوجد اتصال بالإنترنت. تحقق من الاتصال ثم حاول مرة أخرى.';
+
+  @override
   String firebasePhoneVerificationFailed(String code, String message) {
     return 'فشل تحقق الهاتف من Firebase ($code): $message';
   }

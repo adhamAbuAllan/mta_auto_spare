@@ -550,6 +550,7 @@
   "tooManySmsAttempts": "محاولات SMS كثيرة جدًا. انتظر قبل طلب رمز آخر.",
   "smsCodeIncorrect": "رمز SMS غير صحيح.",
   "smsCodeExpired": "انتهت صلاحية رمز SMS. اطلب رمزًا جديدًا.",
+  "firebaseNetworkError": "لا يوجد اتصال بالإنترنت. تحقق من الاتصال ثم حاول مرة أخرى.",
   "firebasePhoneVerificationFailed": "فشل تحقق الهاتف من Firebase ({code}): {message}",
   "@firebasePhoneVerificationFailed": {
     "placeholders": {

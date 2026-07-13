@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../api/api_exception.dart';
 import '../../controllers/providers/api_provider.dart';
 import '../../firebase/firebase_bootstrap.dart';
+import '../../localization/firebase_error_localizer.dart';
 import '../../localization/app_localizations_x.dart';
 import '../../utils/phone_number.dart';
 import '../common_widgets/app_error_card.dart';
@@ -408,34 +409,6 @@ class _PasswordResetPageState extends ConsumerState<PasswordResetPage> {
     if (error is ApiException) {
       return error.message;
     }
-    if (error is FirebaseAuthException) {
-      final code = error.code.trim();
-      final message = (error.message ?? '').trim();
-      final searchable = '$code $message'.toLowerCase();
-
-      if (code == 'operation-not-allowed' ||
-          searchable.contains('sms unable') ||
-          searchable.contains('region')) {
-        return context.l10n.firebaseSmsBlocked;
-      }
-      if (code == 'invalid-phone-number') {
-        return context.l10n.validPhoneNumberError;
-      }
-      if (code == 'too-many-requests' || code == 'quota-exceeded') {
-        return context.l10n.tooManySmsAttempts;
-      }
-      if (code == 'invalid-verification-code') {
-        return context.l10n.smsCodeIncorrect;
-      }
-      if (code == 'session-expired') {
-        return context.l10n.smsCodeExpired;
-      }
-      if (message.isNotEmpty) {
-        return context.l10n.firebasePhoneVerificationFailed(code, message);
-      }
-    }
-
-    final fallback = error.toString().trim();
-    return fallback.isEmpty ? context.l10n.phoneVerificationFailed : fallback;
+    return localizeFirebaseError(error, context.l10n);
   }
 }

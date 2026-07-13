@@ -2350,6 +2350,12 @@ abstract class AppLocalizations {
   /// **'The SMS code expired. Request a new code.'**
   String get smsCodeExpired;
 
+  /// No description provided for @firebaseNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Check your connection and try again.'**
+  String get firebaseNetworkError;
+
   /// No description provided for @firebasePhoneVerificationFailed.
   ///
   /// In en, this message translates to:

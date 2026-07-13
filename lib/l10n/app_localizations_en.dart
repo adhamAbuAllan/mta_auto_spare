@@ -1271,6 +1271,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get smsCodeExpired => 'The SMS code expired. Request a new code.';
 
   @override
+  String get firebaseNetworkError =>
+      'No internet connection. Check your connection and try again.';
+
+  @override
   String firebasePhoneVerificationFailed(String code, String message) {
     return 'Firebase phone verification failed ($code): $message';
   }

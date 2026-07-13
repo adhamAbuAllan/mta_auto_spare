@@ -599,6 +599,7 @@
   "tooManySmsAttempts": "Too many SMS attempts. Wait before requesting another code.",
   "smsCodeIncorrect": "The SMS code is incorrect.",
   "smsCodeExpired": "The SMS code expired. Request a new code.",
+  "firebaseNetworkError": "No internet connection. Check your connection and try again.",
   "firebasePhoneVerificationFailed": "Firebase phone verification failed ({code}): {message}",
   "@firebasePhoneVerificationFailed": {
     "placeholders": {
