@@ -66,6 +66,7 @@
   "languageArabic": "العربية",
   "languageEnglish": "English",
   "languageHebrew": "עברית",
+  "languageRussian": "Русский",
   "languageSystemDefault": "System default",
   "lastSeenOn": "Last seen on {time}",
   "@lastSeenOn": {

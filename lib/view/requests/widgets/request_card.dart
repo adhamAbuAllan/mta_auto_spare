@@ -108,10 +108,8 @@ class RequestCard extends StatelessWidget {
               label: isMine
                   ? context.l10n.thisRequestBelongsToYou
                   : context.l10n.youCanManageThisRequestStatus,
-              tone: isMine ? const Color(0xFFE8F1FF) : const Color(0xFFEAF7EE),
-              foreground: isMine
-                  ? const Color(0xFF1F6FEB)
-                  : const Color(0xFF027A48),
+              tone: const Color(0xFFEAF7EE),
+              foreground: const Color(0xFF027A48),
             ),
             const SizedBox(height: 12),
           ],
@@ -398,7 +396,7 @@ class _RequesterSummary extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF0C4A63),
+                color: const Color(0xFF1E5E33),
               ),
             ),
           ),
@@ -505,7 +503,7 @@ class _MetaChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF0C4A63)),
+          Icon(icon, size: 16, color: const Color(0xFF1E5E33)),
           const SizedBox(width: 6),
           Text(
             label,

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../api/chat_socket_service.dart';
 import '../../api/inbox_socket_service.dart';
+import '../../notifications/chat_sound_effects.dart';
 import '../../localization/app_locale.dart';
 import '../../localization/app_locale_notifier.dart';
 import '../../models/models.dart';
@@ -47,6 +48,12 @@ final inboxSocketServiceProvider = Provider<InboxSocketService>((ref) {
 
 final chatMessageCacheStoreProvider = Provider<ChatMessageCacheStore>((ref) {
   return ChatMessageCacheStore(ref.read(sharedPreferencesProvider));
+});
+
+final chatSoundEffectsProvider = Provider<ChatSoundEffects>((ref) {
+  final effects = ChatSoundEffects();
+  ref.onDispose(() => unawaited(effects.dispose()));
+  return effects;
 });
 
 final conversationsNotifierProvider =
@@ -112,6 +119,18 @@ final messagesNotifierProvider =
                     isActiveConversation: isActiveConversation,
                     currentUserId: currentUserId,
                   );
+            },
+        onIncomingMessageReceived:
+            ({
+              required message,
+              required isActiveConversation,
+              required currentUserId,
+            }) {
+              if (isActiveConversation && message.sender.id != currentUserId) {
+                unawaited(
+                  ref.read(chatSoundEffectsProvider).playIncomingMessage(),
+                );
+              }
             },
         onConversationMessagesChanged:
             ({

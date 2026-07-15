@@ -598,7 +598,7 @@ class _SelectedMakeChip extends StatelessWidget {
           const Icon(
             Icons.directions_car_filled_rounded,
             size: 18,
-            color: Color(0xFF1F6FEB),
+            color: Color(0xFF027A48),
           ),
           const SizedBox(width: 8),
           Text(
@@ -904,7 +904,7 @@ class _MetaPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF0C4A63)),
+          Icon(icon, size: 16, color: const Color(0xFF1E5E33)),
           const SizedBox(width: 6),
           Text(
             label,

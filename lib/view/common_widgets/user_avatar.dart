@@ -10,7 +10,7 @@ class UserAvatar extends StatelessWidget {
     this.imageProvider,
     this.radius = 22,
     this.backgroundColor = const Color(0xFFD7E9E4),
-    this.foregroundColor = const Color(0xFF0C4A63),
+    this.foregroundColor = const Color(0xFF1E5E33),
     this.presenceColor,
     this.onTap,
   });

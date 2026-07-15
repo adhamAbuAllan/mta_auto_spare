@@ -12,14 +12,12 @@ String localizedLanguageLabel(BuildContext context, AppLocaleMode mode) {
     AppLocaleMode.en => l10n.languageEnglish,
     AppLocaleMode.ar => l10n.languageArabic,
     AppLocaleMode.he => l10n.languageHebrew,
+    AppLocaleMode.ru => l10n.languageRussian,
   };
 }
 
 class AppLanguageMenuButton extends ConsumerWidget {
-  const AppLanguageMenuButton({
-    super.key,
-    this.foregroundColor,
-  });
+  const AppLanguageMenuButton({super.key, this.foregroundColor});
 
   final Color? foregroundColor;
 
@@ -42,9 +40,10 @@ class AppLanguageMenuButton extends ConsumerWidget {
               value: option,
               child: Row(
                 children: [
-                  Expanded(child: Text(localizedLanguageLabel(context, option))),
-                  if (mode == option)
-                    const Icon(Icons.check_rounded, size: 18),
+                  Expanded(
+                    child: Text(localizedLanguageLabel(context, option)),
+                  ),
+                  if (mode == option) const Icon(Icons.check_rounded, size: 18),
                 ],
               ),
             ),
@@ -60,7 +59,11 @@ class AppLanguageMenuButton extends ConsumerWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.translate_rounded, size: 18, color: resolvedForegroundColor),
+            Icon(
+              Icons.translate_rounded,
+              size: 18,
+              color: resolvedForegroundColor,
+            ),
             const SizedBox(width: 8),
             Text(
               localizedLanguageLabel(context, mode),
@@ -103,9 +106,7 @@ class AppLanguageSettingTile extends ConsumerWidget {
           const SizedBox(height: 12),
           DropdownButtonFormField<AppLocaleMode>(
             initialValue: mode,
-            decoration: InputDecoration(
-              labelText: context.l10n.selectLanguage,
-            ),
+            decoration: InputDecoration(labelText: context.l10n.selectLanguage),
             items: [
               for (final option in AppLocaleMode.values)
                 DropdownMenuItem<AppLocaleMode>(

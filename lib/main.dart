@@ -115,16 +115,16 @@ class _AutoSpareAppState extends ConsumerState<AutoSpareApp>
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1F6FEB),
+          seedColor: const Color(0xFF027A48),
           brightness: Brightness.light,
-          primary: const Color(0xFF1F6FEB),
+          primary: const Color(0xFF027A48),
           secondary: const Color(0xFFF59E0B),
           surface: Colors.white,
           error: const Color(0xFFB42318),
         ),
         scaffoldBackgroundColor: const Color(0xFFF4F6F8),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF111827),
+          backgroundColor: Color(0xFF12372A),
           foregroundColor: Colors.white,
           elevation: 0,
           centerTitle: false,
@@ -148,12 +148,12 @@ class _AutoSpareAppState extends ConsumerState<AutoSpareApp>
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF1F6FEB), width: 1.5),
+            borderSide: const BorderSide(color: Color(0xFF027A48), width: 1.5),
           ),
         ),
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFF1F6FEB),
+            backgroundColor: const Color(0xFF027A48),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             shape: RoundedRectangleBorder(
@@ -173,11 +173,11 @@ class _AutoSpareAppState extends ConsumerState<AutoSpareApp>
         ),
         navigationBarTheme: NavigationBarThemeData(
           backgroundColor: Colors.white,
-          indicatorColor: const Color(0xFFE8F1FF),
+          indicatorColor: const Color(0xFFEAF7EE),
           labelTextStyle: WidgetStateProperty.resolveWith(
             (states) => TextStyle(
               color: states.contains(WidgetState.selected)
-                  ? const Color(0xFF1F6FEB)
+                  ? const Color(0xFF027A48)
                   : const Color(0xFF475467),
               fontWeight: states.contains(WidgetState.selected)
                   ? FontWeight.w800

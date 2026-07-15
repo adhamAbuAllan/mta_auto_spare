@@ -810,7 +810,7 @@ class _AdminReportCard extends StatelessWidget {
             Text(
               '${context.l10n.adminNotesLabel}: ${report.adminNotes.trim()}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: const Color(0xFF0C4A63),
+                color: const Color(0xFF1E5E33),
                 fontWeight: FontWeight.w700,
               ),
             ),

@@ -345,7 +345,7 @@ class _RequestAccessPanel extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: const Color(0xFF1F6FEB),
+                          color: const Color(0xFF027A48),
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -492,7 +492,7 @@ class _RequestAccessPanel extends StatelessWidget {
                 Text(
                   context.l10n.openAssignedRequestsToUpdateStatus,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: const Color(0xFF0C4A63),
+                    color: const Color(0xFF1E5E33),
                     fontWeight: FontWeight.w700,
                   ),
                 ),

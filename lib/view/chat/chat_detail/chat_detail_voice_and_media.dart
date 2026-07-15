@@ -2,6 +2,22 @@ part of '../chat_detail_page.dart';
 
 abstract class _ChatDetailPageStateVoiceAndMedia
     extends _ChatDetailPageStateMessageActions {
+  static const int _minimumVoiceMessageBytes = 1024;
+
+  void _handleVoiceRecorderState(RecordState state) {
+    if (state != RecordState.stop ||
+        !_isVoiceRecording ||
+        _isVoiceRecorderBusy ||
+        !mounted) {
+      return;
+    }
+
+    // Audio focus can be taken away by the operating system. Do not leave the
+    // composer in a recording state that could send a partial audio file.
+    _resetVoiceRecordingState();
+    _showComposerSnackBar(context.l10n.noVoiceMessageCaptured);
+  }
+
   Future<void> _startVoiceRecording() async {
     final l10n = context.l10n;
     if (_isVoiceRecording || _isVoiceRecorderBusy) {
@@ -53,6 +69,7 @@ abstract class _ChatDetailPageStateVoiceAndMedia
         _voiceRecordingStartedAt = DateTime.now();
         _voiceRecordingDuration = Duration.zero;
       });
+      unawaited(ref.read(chatSoundEffectsProvider).playRecordingStarted());
       _startVoiceRecordingTicker();
       _keepLatestMessageVisible();
     } catch (_) {
@@ -113,6 +130,12 @@ abstract class _ChatDetailPageStateVoiceAndMedia
     });
 
     try {
+      if (!await _audioRecorder.isRecording()) {
+        _resetVoiceRecordingState();
+        _showComposerSnackBar(l10n.noVoiceMessageCaptured);
+        return;
+      }
+
       final recordedPath = await _audioRecorder.stop();
       if (recordedPath == null || recordedPath.trim().isEmpty) {
         _resetVoiceRecordingState();
@@ -121,11 +144,17 @@ abstract class _ChatDetailPageStateVoiceAndMedia
       }
 
       final recordedFile = File(recordedPath);
+      final fileSize = await _validatedVoiceRecordingSize(recordedFile);
+      if (fileSize == null) {
+        _resetVoiceRecordingState();
+        _showComposerSnackBar(l10n.noVoiceMessageCaptured);
+        return;
+      }
       final attachment = ChatUploadImage(
         path: recordedPath,
         fileName: recordedFile.path.split(Platform.pathSeparator).last,
         contentType: 'audio/mp4',
-        size: await recordedFile.length(),
+        size: fileSize,
       );
 
       _resetVoiceRecordingState();
@@ -218,6 +247,22 @@ abstract class _ChatDetailPageStateVoiceAndMedia
         _voiceRecordingDuration = DateTime.now().difference(startedAt);
       });
     });
+  }
+
+  Future<int?> _validatedVoiceRecordingSize(File file) async {
+    if (!await file.exists()) {
+      return null;
+    }
+    final size = await file.length();
+    if (size < _minimumVoiceMessageBytes) {
+      try {
+        await file.delete();
+      } catch (_) {
+        // The recording is already rejected; cleanup is best effort.
+      }
+      return null;
+    }
+    return size;
   }
 
   void _resetVoiceRecordingState() {

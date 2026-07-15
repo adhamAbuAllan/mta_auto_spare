@@ -26,6 +26,13 @@ typedef ConversationMessagesChanged =
       required int currentUserId,
     });
 
+typedef IncomingMessageReceived =
+    void Function({
+      required MessageModel message,
+      required bool isActiveConversation,
+      required int currentUserId,
+    });
+
 typedef ConversationReadChanged = void Function(int conversationId);
 typedef ResolveLiveAccessToken = Future<String?> Function();
 typedef ResolveCacheUserId = int? Function();
@@ -47,6 +54,7 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
     required ResolveLiveAccessToken resolveLiveAccessToken,
     required ResolveCacheUserId resolveCacheUserId,
     this.onMessagePreviewChanged,
+    this.onIncomingMessageReceived,
     this.onConversationMessagesChanged,
     this.onConversationReadChanged,
     this.onUserPresenceChanged,
@@ -66,6 +74,7 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
   final ResolveCacheUserId _resolveCacheUserId;
   final ChatMessageCacheStore _cacheStore;
   final MessagePreviewChanged? onMessagePreviewChanged;
+  final IncomingMessageReceived? onIncomingMessageReceived;
   final ConversationMessagesChanged? onConversationMessagesChanged;
   final ConversationReadChanged? onConversationReadChanged;
   final UserPresenceChanged? onUserPresenceChanged;
@@ -416,7 +425,6 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
       message: optimisticMessage,
       isActiveConversation: request.conversation == _activeConversationId,
     );
-
     try {
       final createdMessage = await _chatApi.createMessage(request);
       final currentState = _stateForConversation(request.conversation);
@@ -682,6 +690,11 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
       conversationId: conversationId,
       message: message,
       isActiveConversation: conversationId == _activeConversationId,
+    );
+    onIncomingMessageReceived?.call(
+      message: message,
+      isActiveConversation: true,
+      currentUserId: _currentUserId ?? 0,
     );
     if (conversationId == _activeConversationId) {
       sendSeenIfNeeded();

@@ -182,7 +182,7 @@ class _FullCarModelCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: const Color(0xFF0C4A63),
+                    color: const Color(0xFF1E5E33),
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -223,7 +223,7 @@ class _CompactCarModelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFEAF0FE) : const Color(0xFFFBF8F4),
+        color: isSelected ? const Color(0xFFEAF7EE) : const Color(0xFFFBF8F4),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: isSelected
@@ -256,7 +256,7 @@ class _CompactCarModelCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: const Color(0xFF0C4A63),
+                      color: const Color(0xFF1E5E33),
                       fontWeight: FontWeight.w800,
                     ),
                   ),

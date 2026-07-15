@@ -444,7 +444,7 @@ class _ProductPreviewCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: const Color(0xFF0C4A63),
+                      color: const Color(0xFF1E5E33),
                       fontWeight: FontWeight.w700,
                     ),
                   ),

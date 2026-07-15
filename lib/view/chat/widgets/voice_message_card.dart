@@ -8,16 +8,21 @@ import 'package:just_audio/just_audio.dart';
 import '../../../constants/api_constants.dart';
 import '../../../localization/app_localizations_x.dart';
 import '../../../models/models.dart';
+import 'voice_message_playback_controller.dart';
 
 class VoiceMessageCard extends StatefulWidget {
   const VoiceMessageCard({
     super.key,
     required this.attachment,
     required this.isMine,
+    required this.playbackId,
+    required this.playbackController,
   });
 
   final MessageAttachmentModel attachment;
   final bool isMine;
+  final String playbackId;
+  final VoiceMessagePlaybackController playbackController;
 
   @override
   State<VoiceMessageCard> createState() => _VoiceMessageCardState();
@@ -37,6 +42,7 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
   double? _dragProgress;
   String? _errorMessage;
   Future<void>? _prepareFuture;
+  bool _hasReportedCompletion = false;
 
   @override
   void initState() {
@@ -49,7 +55,14 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
       final isCompleted =
           playerState.processingState == ProcessingState.completed;
       if (isCompleted) {
-        unawaited(_player.seek(Duration.zero));
+        if (!_hasReportedCompletion) {
+          _hasReportedCompletion = true;
+          unawaited(
+            widget.playbackController.notifyCompleted(widget.playbackId),
+          );
+        }
+      } else if (playerState.playing) {
+        _hasReportedCompletion = false;
       }
 
       setState(() {
@@ -64,6 +77,11 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
         }
       });
     });
+    widget.playbackController.register(
+      playbackId: widget.playbackId,
+      play: _playFromQueue,
+      stop: _stopFromQueue,
+    );
     _durationSubscription = _player.durationStream.listen((duration) {
       if (!mounted || duration == null) {
         return;
@@ -85,6 +103,7 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
 
   @override
   void dispose() {
+    widget.playbackController.unregister(widget.playbackId);
     _playerStateSubscription?.cancel();
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
@@ -95,10 +114,8 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final foreground = widget.isMine ? Colors.white : const Color(0xFF1C1B18);
-    final activeColor = widget.isMine
-        ? const Color(0xFF93E8FF)
-        : Theme.of(context).primaryColor;
+    final foreground = const Color(0xFF1C1B18);
+    final activeColor = Theme.of(context).primaryColor;
     final inactiveColor = foreground.withValues(alpha: 0.24);
     final containerColor = widget.isMine
         ? Colors.white.withValues(alpha: 0.12)
@@ -124,7 +141,7 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
             onPressed: _isPreparing ? null : _togglePlayback,
             style: IconButton.styleFrom(
               backgroundColor: widget.isMine
-                  ? Colors.white.withValues(alpha: 0.2)
+                  ? Colors.grey.withValues(alpha: 0.2)
                   : Theme.of(context).primaryColor,
               foregroundColor: widget.isMine ? Colors.white : Colors.white,
             ),
@@ -139,6 +156,7 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
             tooltip: _isPlaying
                 ? l10n.pauseVoiceMessage
                 : l10n.playVoiceMessage,
+            iconSize: 28,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -222,12 +240,12 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
   Future<void> _togglePlayback() async {
     if (_isPlaying) {
       await _player.pause();
+      widget.playbackController.notifyPaused(widget.playbackId);
       return;
     }
 
     try {
-      await _ensurePrepared(showLoadingIndicator: true);
-      await _player.play();
+      await widget.playbackController.requestPlay(widget.playbackId);
     } catch (_) {
       if (!mounted) {
         return;
@@ -237,6 +255,21 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
         _errorMessage = context.l10n.unableToPlayVoiceMessage;
       });
     }
+  }
+
+  Future<void> _playFromQueue() async {
+    await _ensurePrepared(showLoadingIndicator: true);
+    if (_player.processingState == ProcessingState.completed) {
+      await _player.seek(Duration.zero);
+    }
+    _hasReportedCompletion = false;
+    await _player.play();
+  }
+
+  Future<void> _stopFromQueue() async {
+    await _player.pause();
+    await _player.seek(Duration.zero);
+    _hasReportedCompletion = false;
   }
 
   Future<void> _warmUpDuration() async {

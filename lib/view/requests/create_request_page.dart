@@ -277,7 +277,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
                           width: double.infinity,
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEAF0FE),
+                            color: const Color(0xFFEAF7EE),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
                               color: Theme.of(context).primaryColor,
@@ -1007,20 +1007,20 @@ class _RequestExpiryNotice extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFEFF6FF),
+        color: const Color(0xFFEAF7EE),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFBFDBFE)),
+        border: Border.all(color: const Color(0xFFB7E4C7)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.schedule_outlined, color: Color(0xFF1D4ED8)),
+          const Icon(Icons.schedule_outlined, color: Color(0xFF027A48)),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               message,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: const Color(0xFF1E3A8A),
+                color: const Color(0xFF1E5E33),
                 height: 1.35,
               ),
             ),
@@ -1072,14 +1072,14 @@ class _RequestStepHeader extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F1FF),
+        color: const Color(0xFFEAF7EE),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFC7D7FE)),
+        border: Border.all(color: const Color(0xFFB7E4C7)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: const Color(0xFF1F6FEB)),
+          Icon(icon, color: const Color(0xFF027A48)),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

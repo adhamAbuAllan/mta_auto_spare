@@ -28,6 +28,7 @@ import '../common_widgets/user_avatar.dart';
 import '../profile/user_profile_page.dart';
 import 'chat_formatters.dart';
 import 'widgets/message_bubble.dart';
+import 'widgets/voice_message_playback_controller.dart';
 part 'chat_detail/chat_detail_request_access.dart';
 part 'chat_detail/chat_detail_message_actions.dart';
 part 'chat_detail/chat_detail_voice_and_media.dart';
@@ -56,6 +57,8 @@ abstract class _ChatDetailPageStateBase extends ConsumerState<ChatDetailPage> {
   final FocusNode _composerFocusNode = FocusNode();
   final ImagePicker _imagePicker = ImagePicker();
   final AudioRecorder _audioRecorder = AudioRecorder();
+  final VoiceMessagePlaybackController _voicePlaybackController =
+      VoiceMessagePlaybackController();
   late final LoadConversationsNotifier _conversationsNotifier;
   late final LoadMessagesNotifier _messagesNotifier;
 
@@ -69,6 +72,7 @@ abstract class _ChatDetailPageStateBase extends ConsumerState<ChatDetailPage> {
   MessageState _messageState = const MessageState(isLoading: true);
   ProviderSubscription<MessageState>? _messageSubscription;
   ProviderSubscription<SessionState>? _sessionSubscription;
+  StreamSubscription<RecordState>? _voiceRecorderStateSubscription;
   Timer? _voiceRecordingTicker;
   DateTime? _voiceRecordingStartedAt;
   Duration _voiceRecordingDuration = Duration.zero;
@@ -133,10 +137,16 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _voiceRecorderStateSubscription = _audioRecorder.onStateChanged().listen(
+      _handleVoiceRecorderState,
+    );
     _messageController.addListener(_handleComposerChanged);
     _composerFocusNode.addListener(_handleComposerChanged);
     _conversationsNotifier = ref.read(conversationsNotifierProvider.notifier);
     _messagesNotifier = ref.read(messagesNotifierProvider.notifier);
+    _voicePlaybackController.onPlaybackSequenceCompleted = () {
+      return ref.read(chatSoundEffectsProvider).playVoicePlaybackEnded();
+    };
     _messageState = _resolveDisplayedMessageState(
       ref.read(messagesNotifierProvider),
     );
@@ -210,9 +220,14 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive ||
         state == AppLifecycleState.detached) {
       unawaited(_cancelVoiceRecording(silent: true));
+      _messagesNotifier.pauseLiveSync();
+      return;
+    }
+    if (state == AppLifecycleState.inactive) {
+      // A heads-up notification briefly makes Android inactive. Keep the
+      // recorder alive so the resulting M4A is finalized correctly.
       _messagesNotifier.pauseLiveSync();
       return;
     }
@@ -252,6 +267,8 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
     _messageSubscription = null;
     _sessionSubscription?.close();
     _sessionSubscription = null;
+    _voiceRecorderStateSubscription?.cancel();
+    _voiceRecorderStateSubscription = null;
     _messageController.removeListener(_handleComposerChanged);
     _composerFocusNode.removeListener(_handleComposerChanged);
     _composerFocusNode.dispose();
@@ -493,6 +510,12 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
       );
     }
 
+    _voicePlaybackController.updatePlaybackOrder([
+      for (final message in messageState.messages)
+        for (var index = 0; index < message.media.length; index += 1)
+          if (message.media[index].isAudio) '${message.id}:$index',
+    ]);
+
     return Stack(
       children: [
         Positioned.fill(
@@ -515,9 +538,11 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
               }
               final message = messageState.messages[index];
               return MessageBubble(
+                key: ValueKey(message.id),
                 message: message,
                 currentUserId: currentUserId,
                 isMine: message.sender.id == currentUserId,
+                voicePlaybackController: _voicePlaybackController,
                 onReply: () => setState(() => _replyTarget = message),
                 onLongPress: () => _openMessageActions(message, currentUserId),
               );

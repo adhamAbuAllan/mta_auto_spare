@@ -95,7 +95,8 @@ NotificationStrings notificationStringsForLanguageCode(String languageCode) {
         supplierFallbackName: 'מוכר',
         requestCreatedFallbackBody: 'מוכר פרסם בקשה חדשה.',
         appUpdateTitle: 'עדכון חדש זמין',
-        appUpdateBody: 'עדכנו את האפליקציה עכשיו ותיהנו מהתכונות והשיפורים החדשים.',
+        appUpdateBody:
+            'עדכנו את האפליקציה עכשיו ותיהנו מהתכונות והשיפורים החדשים.',
         appUpdatesChannel: NotificationChannelStrings(
           name: 'עדכוני אפליקציה',
           description: 'התראות כאשר זמינה גרסה חדשה של האפליקציה',
@@ -107,6 +108,30 @@ NotificationStrings notificationStringsForLanguageCode(String languageCode) {
         chatActivityChannel: NotificationChannelStrings(
           name: 'עדכוני שוק',
           description: 'בקשות חדשות ועדכוני פעילות בשוק',
+        ),
+      );
+    case 'ru':
+      return const NotificationStrings(
+        appName: 'MTA Автозапчасти',
+        defaultChatMessageBody: 'Вам отправлено новое сообщение.',
+        newMessageTitle: 'Новое сообщение',
+        newSellerRequestTitle: 'Новый запрос продавца',
+        supplierFallbackName: 'Поставщик',
+        requestCreatedFallbackBody: 'Поставщик опубликовал новый запрос.',
+        appUpdateTitle: 'Доступно обновление',
+        appUpdateBody:
+            'Обновите приложение, чтобы получить новые функции и улучшения.',
+        appUpdatesChannel: NotificationChannelStrings(
+          name: 'Обновления приложения',
+          description: 'Уведомления о доступности новой версии приложения',
+        ),
+        chatMessagesChannel: NotificationChannelStrings(
+          name: 'Сообщения чата',
+          description: 'Новые сообщения из чатов приложения',
+        ),
+        chatActivityChannel: NotificationChannelStrings(
+          name: 'Обновления рынка',
+          description: 'Новые запросы и обновления активности на рынке',
         ),
       );
     default:

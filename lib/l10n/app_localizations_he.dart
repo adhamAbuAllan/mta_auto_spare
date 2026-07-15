@@ -136,6 +136,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get languageHebrew => 'עברית';
 
   @override
+  String get languageRussian => 'Русский';
+
+  @override
   String get languageSystemDefault => 'שפת המכשיר';
 
   @override

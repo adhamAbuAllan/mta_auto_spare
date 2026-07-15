@@ -6,12 +6,14 @@ enum AppLocaleMode {
   system,
   en,
   ar,
-  he;
+  he,
+  ru;
 
   static const supportedLocales = <Locale>[
     Locale('en'),
     Locale('ar'),
     Locale('he'),
+    Locale('ru'),
   ];
 
   Locale? get locale => switch (this) {
@@ -19,6 +21,7 @@ enum AppLocaleMode {
     AppLocaleMode.en => const Locale('en'),
     AppLocaleMode.ar => const Locale('ar'),
     AppLocaleMode.he => const Locale('he'),
+    AppLocaleMode.ru => const Locale('ru'),
   };
 
   String get storageValue => switch (this) {
@@ -26,6 +29,7 @@ enum AppLocaleMode {
     AppLocaleMode.en => 'en',
     AppLocaleMode.ar => 'ar',
     AppLocaleMode.he => 'he',
+    AppLocaleMode.ru => 'ru',
   };
 
   static AppLocaleMode fromStorage(String? rawValue) {
@@ -33,6 +37,7 @@ enum AppLocaleMode {
       'en' => AppLocaleMode.en,
       'ar' => AppLocaleMode.ar,
       'he' => AppLocaleMode.he,
+      'ru' => AppLocaleMode.ru,
       'system' => AppLocaleMode.system,
       _ => AppLocaleMode.system,
     };
@@ -45,10 +50,7 @@ Locale resolveSupportedLocale({
   Locale? preferredLocale,
   List<Locale>? preferredLocales,
 }) {
-  final candidates = <Locale>[
-    ?preferredLocale,
-    ...?preferredLocales,
-  ];
+  final candidates = <Locale>[?preferredLocale, ...?preferredLocales];
   for (final candidate in candidates) {
     final normalizedCode = candidate.languageCode.toLowerCase();
     for (final supportedLocale in AppLocaleMode.supportedLocales) {

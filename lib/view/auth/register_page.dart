@@ -387,7 +387,7 @@ class _SelectedMakeChip extends StatelessWidget {
           const Icon(
             Icons.directions_car_filled_rounded,
             size: 18,
-            color: Color(0xFF1F6FEB),
+            color: Color(0xFF027A48),
           ),
           const SizedBox(width: 8),
           Column(

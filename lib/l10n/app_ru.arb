@@ -1,0 +1,616 @@
+{
+  "@@locale": "ru",
+  "accountCreatedFor": "Аккаунт создан для {username}",
+  "@accountCreatedFor": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "accountRole": "Роль аккаунта",
+  "add": "Добавить",
+  "allAvailableCarNamesAlreadySelected": "Все доступные названия автомобилей уже выбраны.",
+  "appTitle": "МТА Автозапчасти",
+  "backend": "Бэкэнд",
+  "carCatalogCouldNotBeLoadedRightNow": "Не удалось загрузить каталог автомобилей.",
+  "carName": "Название автомобиля",
+  "carsIHavePartsFor": "Автомобили, для которых я поставляю запчасти",
+  "changeLanguage": "Изменить язык",
+  "chats": "Чаты",
+  "chooseAUsername": "Выберите имя пользователя",
+  "conversationNumber": "Разговор #{id}",
+  "@conversationNumber": {
+    "placeholders": {
+      "id": {
+        "type": "int"
+      }
+    }
+  },
+  "conversations": "Разговоры",
+  "createAccount": "Создать учетную запись",
+  "createNewAccount": "Создать новую учетную запись",
+  "creating": "Создание...",
+  "daysAgo": "{count} дней назад",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "editProfile": "Редактировать профиль",
+  "profileCouldNotBeLoadedRightNow": "Ваш профиль не может быть загружен прямо сейчас.",
+  "keepYourProfileUpToDate": "Поддерживайте свой профиль в актуальном состоянии",
+  "supplierProfileIntro": "Обновляйте сведения, которые видят клиенты, управляйте уведомлениями в чате и выбирайте автомобили, для которых вы можете поставлять запчасти.",
+  "buyerProfileIntro": "Обновите сведения, которые поставщики видят, когда вы создаете запросы или общаетесь с ними.",
+  "email": "электронная почта",
+  "emailHint": "имя@example.com",
+  "enterAValidEmailAddress": "Введите действительный адрес электронной почты",
+  "enterPassword": "Введите пароль",
+  "enterUsername": "Введите имя пользователя",
+  "enterYourEmail": "Введите адрес электронной почты",
+  "enterYourFullName": "Введите свое полное имя",
+  "fullName": "Полное имя",
+  "fullNameHint": "Введите свое полное имя",
+  "hoursAgo": "{count} часов назад",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "justNow": "только что",
+  "language": "Язык",
+  "languageArabic": "عربية",
+  "languageEnglish": "английский",
+  "languageHebrew": "עברית",
+  "languageRussian": "Русский",
+  "languageSystemDefault": "Система по умолчанию",
+  "lastSeenOn": "Последний раз видели на {time}",
+  "@lastSeenOn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "lastSeenRelative": "Последний раз был на связи {time}",
+  "@lastSeenRelative": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "loadMore": "Загрузить больше",
+  "loading": "Загрузка...",
+  "logout": "Выход из системы",
+  "minutesAgo": "{count} минут назад",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newMessage": "Новое сообщение",
+  "noCarNamesSelectedYet": "Названия автомобилей пока не выбраны.",
+  "noConversationsYet": "Пока нет разговоров",
+  "noConversationsYetMessage": "Вы еще не начали ни одного разговора.",
+  "noMessagesYet": "Сообщений пока нет",
+  "offline": "Оффлайн",
+  "online": "Онлайн",
+  "password": "Пароль",
+  "passwordHint": "Введите пароль",
+  "passwordMinHint": "Минимум 6 символов",
+  "pickTheCarNamesYouSupplyPartsFor": "Выберите автомобили, которые вы поддерживаете. Мы используем это, чтобы уведомлять вас о соответствующих запросах на запасные части.",
+  "registerUsernameHint": "Выберите имя пользователя",
+  "remove": "Удалить",
+  "requests": "Запросы",
+  "selectLanguage": "Выберите язык",
+  "setUpMarketplaceProfile": "Настройте свой профиль на торговой площадке",
+  "signIn": "Войти",
+  "signingIn": "Вход в систему...",
+  "signInToBrowseSellerRequests": "Войдите, чтобы запросить запасные части, пообщаться с поставщиками и управлять своими предложениями.",
+  "somethingWentWrong": "Что-то пошло не так",
+  "supplierRole": "Поставщик",
+  "suppliersCanPostRequests": "Клиенты запрашивают запасные части. Поставщики выбирают поддерживаемые автомобили и получают соответствующие возможности.",
+  "theCarCatalogCouldNotBeLoaded": "Не удалось загрузить каталог автомобилей.",
+  "thisMessageWasDeleted": "Это сообщение было удалено",
+  "tryAgain": "Попробуйте еще раз",
+  "useAtLeastSixCharacters": "Используйте не менее шести символов",
+  "username": "Имя пользователя",
+  "usernameHint": "Введите имя пользователя",
+  "userRole": "Клиент",
+  "attachment": "Приложение",
+  "attachedRequest": "Прикрепленный запрос",
+  "cancel": "Отмена",
+  "copyMessage": "Копировать сообщение",
+  "deleteForAll": "Удалить для всех",
+  "deleteMessage": "Удалить сообщение",
+  "deleteOnlyMe": "Удалить только для меня",
+  "deletedMessage": "Удаленное сообщение",
+  "discardVoiceMessage": "Отменить голосовое сообщение",
+  "editMessage": "Редактировать сообщение",
+  "editMessageTitle": "Редактировать сообщение",
+  "edited": "Отредактировано",
+  "fromPrice": "От {value}",
+  "@fromPrice": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "messageCopied": "Сообщение скопировано.",
+  "messageCouldNotBeDeleted": "Сообщение не удалось удалить.",
+  "messageCouldNotBeUpdated": "Сообщение не удалось обновить.",
+  "messageDeletedForEveryone": "Сообщение удалено для всех.",
+  "messageDeletedForYou": "Сообщение удалено для вас.",
+  "messageLabel": "Сообщение",
+  "messageUpdated": "Сообщение обновлено.",
+  "microphonePermissionRequiredForVoiceMessage": "Для записи голосового сообщения требуется разрешение микрофона.",
+  "noMessagesYetMessage": "Поздоровайтесь и начните разговор.",
+  "noPriceRange": "Нет ценового диапазона",
+  "noVoiceMessageCaptured": "Ни одно голосовое сообщение не было записано.",
+  "pauseVoiceMessage": "Приостановить голосовое сообщение",
+  "photo": "Фото",
+  "photosCount": "{count} фотографии",
+  "@photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "playVoiceMessage": "Воспроизвести голосовое сообщение",
+  "preparingRecorder": "Готовим магнитолу...",
+  "recordVoiceMessage": "Записать голосовое сообщение",
+  "replyingTo": "Ответ на {name}",
+  "@replyingTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "requestWithTitle": "Запрос: {title}",
+  "@requestWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "save": "Сохранить",
+  "sendMessage": "Отправить сообщение",
+  "sendOrClearDraftBeforeVoiceMessage": "Отправьте или очистите текущий черновик перед записью голосового сообщения.",
+  "sending": "Отправка...",
+  "sendVoiceMessage": "Отправить голосовое сообщение",
+  "sentAttachmentsCount": "Отправлены вложения {count}.",
+  "@sentAttachmentsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sharedRequest": "Поделился запросом",
+  "showOriginal": "Показать оригинал",
+  "showTranslation": "Показать перевод",
+  "typing": "Ввод...",
+  "unableToPlayVoiceMessage": "Невозможно воспроизвести голосовое сообщение",
+  "unableToSeekVoiceMessage": "Невозможно найти голосовое сообщение",
+  "updateYourMessage": "Обновите свое сообщение",
+  "upToPrice": "До {value}",
+  "@upToPrice": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "uploadImages": "Загрузить изображения",
+  "voiceMessage": "Голосовое сообщение",
+  "voiceMessageCouldNotBeSent": "Голосовое сообщение не может быть отправлено.",
+  "voiceMessageDiscarded": "Голосовое сообщение удалено.",
+  "voiceMessageDiscardFailed": "Голосовое сообщение не удалось полностью удалить.",
+  "voiceRecordingCouldNotStart": "Не удалось начать запись голоса на этом устройстве.",
+  "writeAMessage": "Напишите сообщение...",
+  "connecting": "Подключение...",
+  "liveUpdatesUnavailable": "Оперативные обновления недоступны.",
+  "reconnecting": "Повторное подключение...",
+  "marketplaceUser": "Пользователь торговой площадки",
+  "refreshRequests": "Обновить запросы",
+  "browseRequestPostsFromOtherSellers": "Просмотрите открытые запросы на запасные части от клиентов.",
+  "seeRequestPostsYouCreated": "Просмотрите созданные вами запросы на запасные части.",
+  "browseRequests": "Открытые запросы",
+  "myRequests": "Мои запросы",
+  "noRequestsYet": "Запросов пока нет",
+  "createFirstRequestPostMessage": "Создайте свой первый запрос на запасные части, и поставщики смогут связаться с вами.",
+  "noSellerRequestsYet": "Открытых запросов пока нет",
+  "noSellerRequestsYetMessage": "На данный момент открытых заявок на запасные части нет. Потяните, чтобы обновить позже.",
+  "createRequest": "Создать запрос",
+  "deleteRequest": "Удалить запрос",
+  "deleteRequestConfirmation": "Удалить \"{title}\"? Этот пост-запрос будет удален из вашего списка.",
+  "@deleteRequestConfirmation": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "Удалить",
+  "edit": "Редактировать",
+  "deleting": "Удаление...",
+  "chat": "Чат с клиентом",
+  "opening": "Открытие...",
+  "requestDeletedSuccessfully": "Запрос успешно удален.",
+  "couldNotDeleteRequest": "Не удалось удалить запрос.",
+  "couldNotOpenConversation": "Не удалось открыть разговор.",
+  "requestAttachedResendHint": "Запрос прикрепляется в композиторе чата, поэтому вы можете отправить его повторно.",
+  "initialRequestCouldNotBeSentAutomatically": "Чат открылся, но первоначальный запрос не удалось отправить автоматически.",
+  "welcomeBackUser": "С возвращением, {name}",
+  "@welcomeBackUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "browse": "Обзор",
+  "mine": "Мой",
+  "assigned": "Назначено",
+  "assignedRequests": "Обработка запросов",
+  "allStatuses": "Все статусы",
+  "cityNotSet": "Город не установлен",
+  "thisRequestBelongsToYou": "Ваш запрос открыт для предложений поставщиков.",
+  "openChatWithSellerBehindRequest": "Пообщайтесь с клиентом и предложите эту запчасть.",
+  "requestsYouCanManageNow": "Запросы клиентов, принятые вами для обработки.",
+  "noAssignedRequestsYet": "Принятых запросов пока нет",
+  "noAssignedRequestsYetMessage": "Когда клиент согласится обработать запрос, он появится здесь.",
+  "youCanManageThisRequestStatus": "Клиент принял вас для обработки этого запроса.",
+  "changeStatus": "Изменить статус",
+  "requestStatusUpdated": "Статус запроса обновлен.",
+  "couldNotUpdateRequestStatus": "Не удалось обновить статус запроса.",
+  "updatingStatus": "Обновление...",
+  "requestControl": "Приемка поставщика",
+  "thisChatCanManageRequestStatus": "Вы приняли этого поставщика. Запрос больше не является публичным.",
+  "thisRequestIsAssignedToAnotherSupplier": "Этот запрос уже обрабатывается другим поставщиком.",
+  "noAccessRequestForThisRequestYet": "Ни один поставщик еще не обратился с просьбой обработать этот запрос.",
+  "youCanChangeThisRequestStatusNow": "Клиент принял вас. Теперь вы можете управлять этим запросом.",
+  "waitingForOwnerApproval": "Ждем, пока клиент вас примет.",
+  "ownerRejectedYourAccessRequest": "Клиент отклонил этот запрос.",
+  "askOwnerForStatusAccess": "Хотите обработать этот запрос? Попросите клиента принять вас.",
+  "currentManager": "Принятый поставщик: {name}",
+  "@currentManager": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "approving": "Одобрение...",
+  "approveAccess": "Принять поставщика",
+  "rejectAccess": "Снижение",
+  "sendingRequest": "Отправка...",
+  "requestAccess": "Попросите клиента принять вас",
+  "accessRequestPending": "Ждем одобрения клиента.",
+  "openAssignedRequestsToUpdateStatus": "Откройте обработку запросов, чтобы обновить статус в любое время.",
+  "accessRequestSent": "Запрос отправлен заказчику.",
+  "couldNotSendAccessRequest": "Не удалось задать вопрос клиенту прямо сейчас.",
+  "accessRequestApproved": "Поставщик принял.",
+  "couldNotApproveAccessRequest": "Не удалось принять поставщика.",
+  "accessRequestRejected": "Поставщик отказался.",
+  "couldNotRejectAccessRequest": "Не удалось отклонить поставщика.",
+  "expandRequestControl": "Показать согласие поставщика",
+  "collapseRequestControl": "Скрыть приемку поставщика",
+  "adminPanel": "Панель администратора",
+  "adminAccessRequired": "Только учетные записи администратора могут открыть эту панель.",
+  "adminUsersTab": "Пользователи",
+  "adminReportsTab": "Отчеты",
+  "adminUsersCouldNotBeLoaded": "Список пользователей не может быть загружен прямо сейчас.",
+  "adminReportsCouldNotBeLoaded": "Не удалось загрузить отчеты прямо сейчас.",
+  "noUserReportsYet": "Пользовательских отчетов пока нет.",
+  "blockUserTitle": "Блок {name}",
+  "@blockUserTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "blockUserAction": "Заблокировать пользователя",
+  "blockReasonLabel": "Причина блокировки",
+  "blockReasonHint": "Добавьте необязательную причину этого действия.",
+  "unblockUserTitle": "Разблокировать {name}",
+  "@unblockUserTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unblockUserMessage": "Разрешить {name} снова получить доступ к приложению?",
+  "@unblockUserMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unblockUserAction": "Разблокировать пользователя",
+  "userBlocked": "Пользователь заблокирован.",
+  "userUnblocked": "Пользователь разблокирован.",
+  "couldNotBlockUser": "Не удалось заблокировать пользователя.",
+  "couldNotUnblockUser": "Не удалось разблокировать пользователя.",
+  "reviewReportTitle": "Обзор отчета",
+  "reviewReportAction": "Обзор",
+  "reportStatusLabel": "Статус отчета",
+  "reportStatusOpen": "Открыть",
+  "reportStatusReviewed": "Рассмотрено",
+  "reportStatusDismissed": "Уволен",
+  "reportStatusActioned": "Выполнено",
+  "reportUpdated": "Отчет обновлен.",
+  "couldNotUpdateReport": "Не удалось обновить отчет.",
+  "adminNotesLabel": "Заметки администратора",
+  "adminNotesHint": "Добавьте примечания к обзору для команды модераторов.",
+  "userBlockedStatus": "Заблокировано",
+  "userActiveStatus": "Активный",
+  "adminCurrentAccount": "Это ваш текущий аккаунт.",
+  "adminRole": "Админ",
+  "reportCardTitle": "Отчет о {name}",
+  "@reportCardTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reportedByLabel": "Об этом сообщил {name}.",
+  "@reportedByLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reportCreatedAt": "Создано {time}",
+  "@reportCreatedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reportReviewedAt": "Отзыв оставлен {time}",
+  "@reportReviewedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "profileTitle": "Профиль",
+  "profileLoadError": "Этот профиль не может быть загружен прямо сейчас.",
+  "contactDetails": "Контактная информация",
+  "accountActions": "Действия с аккаунтом",
+  "logoutDescription": "Выйдите из этого устройства. Вы можете войти снова, используя свой телефон и пароль.",
+  "phone": "Телефон",
+  "cityLabel": "Город",
+  "filterByCarMake": "Фильтровать по марке автомобиля",
+  "chatPushNotifications": "Push-уведомления в чате",
+  "chatPushNotificationsDescription": "Получайте уведомление, когда кто-то отправляет сообщение в чат.",
+  "showMessagePreview": "Показать предварительный просмотр сообщения",
+  "showMessagePreviewDescription": "Включите часть сообщения чата в уведомления.",
+  "profileUpdatedSuccessfully": "Профиль успешно обновлен.",
+  "profilePhoto": "Фото профиля",
+  "newPhotoReadyMessage": "Новое фото готово. Сохраните свой профиль, чтобы применить его.",
+  "choosePhotoForRequestsAndChats": "Выбирайте фото, чтобы ваше имя было легче узнать в запросах и чатах.",
+  "chooseAnotherPhoto": "Выбрать другое фото",
+  "changePhoto": "Изменить фото",
+  "undoPhotoChange": "Отменить изменение фотографии",
+  "noCarModelsSelectedYetMessage": "Модели автомобилей пока не выбраны. Выберите модели, которые вы поддерживаете, из каталога ниже.",
+  "deleteAccountTitle": "Удалить аккаунт",
+  "deleteAccountPermanentMessage": "При этом ваша учетная запись, ваши сообщения с запросами, история чата и зарегистрированные устройства будут удалены без возможности восстановления. Это действие невозможно отменить.",
+  "accountDeletedSuccessfully": "Ваш аккаунт был удален.",
+  "accountCouldNotBeDeletedRightNow": "Ваш аккаунт не может быть удален прямо сейчас.",
+  "deleteAccountDangerDescription": "Удалите свой профиль и навсегда удалите данные, принадлежащие вашей учетной записи, если вы больше не хотите использовать приложение.",
+  "pleaseWait": "Пожалуйста, подождите...",
+  "quickActions": "Быстрые действия",
+  "quickActionsDescription": "Начните прямой разговор или откройте WhatsApp, используя номер телефона поставщика.",
+  "openingChat": "Открытие чата...",
+  "chatAction": "Чат",
+  "openingWhatsApp": "Открываю WhatsApp...",
+  "whatsAppAction": "WhatsApp",
+  "supplierCarsTitle": "Автомобили, которые поддерживает этот поставщик",
+  "supplierCarsDescription": "Этот поставщик получает соответствующие запросы на эти марки автомобилей.",
+  "ratingLabel": "Рейтинг",
+  "@ratingLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedLabel": "Присоединился к {time}",
+  "@joinedLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reportUserSectionTitle": "Пожаловаться на аккаунт",
+  "reportUserSectionBody": "Отправьте отчет о безопасности, если этот аккаунт злоупотребляет чатом или приемом поставщика.",
+  "reportUserAction": "Пожаловаться на аккаунт",
+  "sendingReport": "Отправка отчета...",
+  "reportUserDialogTitle": "Отчет {name}",
+  "@reportUserDialogTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reportReasonLabel": "Причина",
+  "reportDetailsLabel": "Подробности",
+  "reportDetailsHint": "Добавьте любой контекст, который поможет администратору просмотреть этот отчет.",
+  "sendReport": "Отправить отчет",
+  "userReportSubmitted": "Отчет отправлен.",
+  "couldNotSendUserReport": "Не удалось отправить отчет.",
+  "reportReasonSpam": "Спам",
+  "reportReasonFraud": "Мошенничество",
+  "reportReasonHarassment": "Преследование",
+  "reportReasonImpersonation": "Олицетворение",
+  "reportReasonOther": "Другое",
+  "couldNotOpenChatRightNow": "Не удалось открыть чат прямо сейчас.",
+  "whatsAppPhoneNotReady": "Этот номер телефона не готов к использованию WhatsApp.",
+  "couldNotOpenWhatsApp": "Не удалось открыть WhatsApp прямо сейчас.",
+  "privacyPolicy": "Политика конфиденциальности",
+  "privacyPolicyDescription": "Узнайте, как это приложение собирает, использует и защищает ваши данные.",
+  "openPrivacyPolicy": "Открыть политику конфиденциальности",
+  "couldNotOpenPrivacyPolicy": "Политику конфиденциальности не удалось открыть прямо сейчас.",
+  "requestUpdatedSuccessfully": "Запрос успешно обновлен.",
+  "requestCreatedSuccessfully": "Запрос успешно создан.",
+  "editRequestTitle": "Редактировать запрос",
+  "createRequestTitle": "Создать запрос",
+  "updateYourRequest": "Обновите свой запрос",
+  "postNewRequest": "Запросить запасную часть",
+  "editRequestDescription": "Обновите сведения о запросе и фотографии, которые вы хотите видеть поставщикам.",
+  "createRequestDescription": "Сообщите поставщикам, какая запчасть вам нужна. Подходящие поставщики будут уведомлены и смогут связаться с вами в чате.",
+  "requestExpiresAfter48Hours": "Этот запрос будет автоматически удален серверной частью через 48 часов после его создания.",
+  "requestCreationBlocked": "Создание запроса заблокировано",
+  "currentStatus": "Текущий статус",
+  "initialStatus": "Исходный статус",
+  "currentStatusMessage": "В настоящее время этот запрос помечен как «{status}».",
+  "@currentStatusMessage": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "initialStatusMessage": "Новые запросы будут начинаться как «{status}».",
+  "@initialStatusMessage": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "requestTitleLabel": "Какая запчасть вам нужна?",
+  "requestTitleHint": "Бампер передний на Тойоту Камри 2022 г.в.",
+  "enterRequestTitle": "Введите заголовок запроса.",
+  "requestDescriptionLabel": "Описание",
+  "requestDescriptionHint": "Опишите состояние, предпочтения бренда или детали модели, которые поставщики должны знать.",
+  "addShortDescription": "Добавьте краткое описание.",
+  "carModelLabel": "Модель автомобиля",
+  "carModelDescription": "Выберите точную модель автомобиля, для которой предназначен этот запрос, чтобы уведомления получали только подходящие поставщики.",
+  "addCarManually": "Добавить машину вручную",
+  "addCarManuallyDescription": "Используйте это, если вы еще не можете найти марку или модель в каталоге.",
+  "carMakeLabel": "Марка автомобиля",
+  "carModelSearchLabel": "Поиск модели автомобиля",
+  "carModelSearchHint": "Ауди РС7",
+  "clearCarModelSearch": "Очистить поиск",
+  "carModelSearchFailed": "Поиск модели автомобиля не удался. Попробуйте еще раз.",
+  "noMatchingCarModelsFound": "Подходящих моделей автомобилей не найдено.",
+  "newCarMakeLabel": "Новая марка автомобиля",
+  "newCarMakeHint": "Тойота",
+  "newCarModelLabel": "Новая модель автомобиля",
+  "newCarModelHint": "Камри 2024",
+  "cityOptionalLabel": "Город (необязательно)",
+  "cityOptionalHint": "Эр-Рияд",
+  "addPhotos": "Добавить фотографии",
+  "addMorePhotos": "Добавить больше фотографий",
+  "minPriceLabel": "Минимальная цена",
+  "maxPriceLabel": "Максимальная цена",
+  "maxPriceMustBeGreaterThanMinPrice": "Максимальная цена должна быть больше минимальной.",
+  "saving": "Сохранение...",
+  "saveChanges": "Сохранить изменения",
+  "enterValidNumber": "Введите действительный номер.",
+  "enterCarMake": "Введите марку автомобиля.",
+  "enterCarModel": "Введите модель автомобиля.",
+  "enterCarMakeAndModelBeforeSaving": "Прежде чем сохранить этот запрос, введите марку и модель автомобиля.",
+  "chooseCarModelBeforeSaving": "Прежде чем сохранить запрос, выберите модель автомобиля.",
+  "viewMyRequests": "Посмотреть мои запросы",
+  "viewRequest": "Посмотреть запрос",
+  "dismiss": "Уволить",
+  "appUpdateAvailableMessage": "Обновите приложение прямо сейчас и наслаждайтесь новейшими функциями и улучшениями.",
+  "updateNow": "Обновить сейчас",
+  "later": "Позже",
+  "couldNotOpenAppStore": "Магазин приложений сейчас открыть невозможно.",
+  "whatsAppGreeting": "Привет {name}",
+  "@whatsAppGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "forgotPassword": "Забыли пароль?",
+  "resetPasswordTitle": "Сбросить пароль",
+  "passwordResetIntro": "Введите свой номер телефона, чтобы получить SMS-код.",
+  "newPassword": "Новый пароль",
+  "confirmNewPassword": "Подтвердите новый пароль",
+  "passwordsDoNotMatch": "Пароли не совпадают.",
+  "sendingSms": "Отправка СМС...",
+  "sendSmsCode": "Отправить СМС-код",
+  "smsCode": "СМС-код",
+  "changingPassword": "Изменение пароля...",
+  "verifyAndChangePassword": "Подтвердите и измените пароль",
+  "resendInSeconds": "Отправить повторно через {count} с.",
+  "@resendInSeconds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resendCode": "Отправить код повторно",
+  "sendingNewVerificationCode": "Отправка нового кода подтверждения...",
+  "sendingVerificationCodeToPhone": "Отправка кода подтверждения на {phone}...",
+  "@sendingVerificationCodeToPhone": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "phoneVerifiedAutomaticallyChangingPassword": "Телефон подтвержден автоматически. Изменение пароля...",
+  "checkPhoneNumberAndTryAgain": "Проверьте номер телефона и повторите попытку.",
+  "enterSmsCodeSentToPhone": "Введите код SMS, отправленный на {phone}.",
+  "@enterSmsCodeSentToPhone": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "automaticVerificationTimedOutEnterSmsCode": "Время автоматической проверки истекло. Введите СМС-код.",
+  "phoneVerificationCouldNotStart": "Не удалось начать проверку телефона.",
+  "waitForSmsCodeFirst": "Сначала дождитесь SMS-кода.",
+  "enterSixDigitSmsCode": "Введите шестизначный SMS-код.",
+  "passwordChangedSignInAgain": "Пароль изменен. Войдите снова.",
+  "passwordResetFailedTryCodeAgain": "Сбросить пароль не удалось. Попробуйте ввести код еще раз.",
+  "firebaseSmsBlocked": "Firebase блокирует этот SMS-запрос. Убедитесь, что для этого региона включен вход в систему с помощью телефона.",
+  "validPhoneNumberError": "Введите действительный номер телефона +970 или +972.",
+  "tooManySmsAttempts": "Слишком много попыток отправки SMS. Подождите, прежде чем запрашивать другой код.",
+  "smsCodeIncorrect": "SMS-код неправильный.",
+  "smsCodeExpired": "Срок действия SMS-кода истек. Запросите новый код.",
+  "firebaseNetworkError": "Нет подключения к Интернету. Проверьте подключение и повторите попытку.",
+  "firebasePhoneVerificationFailed": "Не удалось подтвердить телефон Firebase ({code}): {message}.",
+  "@firebasePhoneVerificationFailed": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "phoneVerificationFailed": "Проверка телефона не удалась."
+}

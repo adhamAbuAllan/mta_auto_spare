@@ -430,7 +430,7 @@ class _RequestPostContent extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0C4A63),
+                      color: const Color(0xFF1E5E33),
                     ),
                   ),
                 ),
@@ -640,7 +640,7 @@ class _MetaChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF0C4A63)),
+          Icon(icon, size: 16, color: const Color(0xFF1E5E33)),
           const SizedBox(width: 6),
           Text(
             label,

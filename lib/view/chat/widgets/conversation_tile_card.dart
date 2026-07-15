@@ -208,7 +208,7 @@ class _ConversationReceiptIcon extends StatelessWidget {
       ),
       MessageReceiptState.seen => (
         Icons.done_all_rounded,
-        const Color(0xFF2B9CC3),
+        const Color(0xFF027A48),
       ),
       MessageReceiptState.failed => (
         Icons.error_outline_rounded,

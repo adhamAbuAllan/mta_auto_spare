@@ -8,6 +8,7 @@ import '../../../localization/app_localizations_x.dart';
 import '../../../models/models.dart';
 import '../../common_widgets/time_formatter.dart';
 import 'voice_message_card.dart';
+import 'voice_message_playback_controller.dart';
 
 class MessageBubble extends StatefulWidget {
   const MessageBubble({
@@ -15,6 +16,7 @@ class MessageBubble extends StatefulWidget {
     required this.message,
     required this.currentUserId,
     required this.isMine,
+    required this.voicePlaybackController,
     this.onReply,
     this.onLongPress,
   });
@@ -22,6 +24,7 @@ class MessageBubble extends StatefulWidget {
   final MessageModel message;
   final int currentUserId;
   final bool isMine;
+  final VoiceMessagePlaybackController voicePlaybackController;
   final VoidCallback? onReply;
   final VoidCallback? onLongPress;
 
@@ -48,10 +51,12 @@ class _MessageBubbleState extends State<MessageBubble> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    // Match sent messages with the light-green request-status panel used in
+    // this chat, so the conversation has one consistent status theme.
     final bubbleColor = widget.isMine
-        ? const Color(0xFF1F6FEB)
+        ? const Color(0xFFEAF7EE)
         : const Color(0xFFFFFFFF);
-    final foreground = widget.isMine ? Colors.white : const Color(0xFF1C1B18);
+    final foreground = const Color(0xFF1C1B18);
     final receiptState = widget.message.receiptStateFor(widget.currentUserId);
     final hasTranslatedContent = widget.message.hasTranslatedContent;
     final showOriginalText = _showOriginal && hasTranslatedContent;
@@ -98,7 +103,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                           shape: BoxShape.circle,
                           border: Border.all(color: const Color(0xFFC2DDD4)),
                         ),
-                        child:  Icon(
+                        child: Icon(
                           Icons.reply_rounded,
                           size: 18,
                           color: Theme.of(context).primaryColor,
@@ -133,7 +138,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                           color: widget.message.hasSendError
                               ? const Color(0xFFF59E0B)
                               : widget.isMine
-                              ? const Color(0xFF1F6FEB)
+                              ? const Color(0xFFB7E4C7)
                               : const Color(0xFFE4E7EC),
                         ),
                         borderRadius: BorderRadius.only(
@@ -199,6 +204,8 @@ class _MessageBubbleState extends State<MessageBubble> {
                             _MessageMediaGallery(
                               attachments: widget.message.media,
                               isMine: widget.isMine,
+                              message: widget.message,
+                              voicePlaybackController: widget.voicePlaybackController,
                             ),
                           ],
                           if (!showDeletedPlaceholder &&
@@ -412,10 +419,17 @@ class _MessageBubbleState extends State<MessageBubble> {
 }
 
 class _MessageMediaGallery extends StatelessWidget {
-  const _MessageMediaGallery({required this.attachments, required this.isMine});
+  const _MessageMediaGallery({
+    required this.attachments,
+    required this.isMine,
+    required this.message,
+    required this.voicePlaybackController,
+  });
 
   final List<MessageAttachmentModel> attachments;
   final bool isMine;
+  final MessageModel message;
+  final VoiceMessagePlaybackController voicePlaybackController;
 
   @override
   Widget build(BuildContext context) {
@@ -475,7 +489,13 @@ class _MessageMediaGallery extends StatelessWidget {
     MessageAttachmentModel attachment,
   ) {
     if (attachment.isAudio) {
-      return VoiceMessageCard(attachment: attachment, isMine: isMine);
+      final attachmentIndex = message.media.indexOf(attachment);
+      return VoiceMessageCard(
+        attachment: attachment,
+        isMine: isMine,
+        playbackId: '${message.id}:$attachmentIndex',
+        playbackController: voicePlaybackController,
+      );
     }
 
     return Container(
@@ -628,7 +648,7 @@ class _MessageReceiptIcon extends StatelessWidget {
       ),
       MessageReceiptState.seen => (
         Icons.done_all_rounded,
-        const Color(0xFF93E8FF),
+        const Color(0xFF20A05A),
       ),
       MessageReceiptState.failed => (
         Icons.error_outline_rounded,

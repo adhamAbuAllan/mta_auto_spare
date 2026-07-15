@@ -25,7 +25,7 @@ class EmptyStateCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 42, color: const Color(0xFF0C4A63)),
+          Icon(icon, size: 42, color: const Color(0xFF1E5E33)),
           const SizedBox(height: 16),
           Text(
             title,

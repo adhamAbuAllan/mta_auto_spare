@@ -140,8 +140,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                                                 .textTheme
                                                 .titleMedium
                                                 ?.copyWith(
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).primaryColor,
                                                   fontWeight: FontWeight.w800,
                                                 ),
                                           ),
@@ -761,7 +762,7 @@ class _ProfileInfoRow extends StatelessWidget {
             color: const Color(0xFFF6F1EA),
             borderRadius: BorderRadius.circular(14),
           ),
-          child: Icon(icon, color: const Color(0xFF0C4A63)),
+          child: Icon(icon, color: const Color(0xFF1E5E33)),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -807,7 +808,7 @@ class _ProfileMetaChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF0C4A63)),
+          Icon(icon, size: 16, color: const Color(0xFF1E5E33)),
           const SizedBox(width: 6),
           Text(
             label,
@@ -838,7 +839,7 @@ class _CarMakeChip extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color:  Theme.of(context).primaryColor,
+          color: Theme.of(context).primaryColor,
           fontWeight: FontWeight.w800,
         ),
       ),
