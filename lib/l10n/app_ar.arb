@@ -15,6 +15,8 @@
   "conversationNumber": "المحادثة رقم {id}",
   "conversations": "المحادثات",
   "createAccount": "إنشاء حساب",
+  "phoneAlreadyRegistered": "رقم الهاتف هذا مرتبط بحساب بالفعل. يرجى تسجيل الدخول بدلًا من ذلك.",
+  "registrationPhoneCheckFailed": "تعذر التحقق من رقم الهاتف الآن. حاول مرة أخرى.",
   "createNewAccount": "إنشاء حساب جديد",
   "creating": "جارٍ الإنشاء...",
   "daysAgo": "منذ {count} يوم",
@@ -66,6 +68,13 @@
   "signingIn": "جارٍ تسجيل الدخول...",
   "signInToBrowseSellerRequests": "سجّل الدخول لطلب قطع الغيار، ومحادثة المورّدين، ومتابعة العروض.",
   "somethingWentWrong": "حدث خطأ ما",
+  "errorNetwork": "تعذر الاتصال بالخادم. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
+  "errorNotFound": "تعذر العثور على المعلومات المطلوبة.",
+  "errorUnauthorized": "انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.",
+  "errorForbidden": "لا تملك صلاحية تنفيذ هذا الإجراء.",
+  "errorServer": "الخادم غير متاح مؤقتًا. حاول مرة أخرى لاحقًا.",
+  "errorInvalidRequest": "تحقق من المعلومات وحاول مرة أخرى.",
+  "errorUnexpected": "حدث خطأ ما. حاول مرة أخرى.",
   "supplierRole": "مورد",
   "suppliersCanPostRequests": "العملاء يطلبون قطع الغيار. المورّدون يختارون السيارات المدعومة وتصلهم الفرص المطابقة.",
   "theCarCatalogCouldNotBeLoaded": "تعذر تحميل دليل السيارات.",
@@ -151,6 +160,7 @@
   "sharedRequest": "تمت مشاركة طلب",
   "showOriginal": "إظهار الأصل",
   "showTranslation": "إظهار الترجمة",
+  "realTimeTranslationFeatureAnnouncement": "ميزة جديدة: الترجمة الفورية متاحة الآن. تُترجم الرسائل تلقائيًا بين المشاركين في الدردشة الذين يستخدمون لغات مختلفة.",
   "typing": "يكتب...",
   "unableToPlayVoiceMessage": "تعذر تشغيل الرسالة الصوتية",
   "unableToSeekVoiceMessage": "تعذر التقديم داخل الرسالة الصوتية",
@@ -563,5 +573,37 @@
       }
     }
   },
-  "phoneVerificationFailed": "فشل التحقق من الهاتف."
+  "phoneVerificationFailed": "فشل التحقق من الهاتف.",
+  "adminDashboardTab": "لوحة المعلومات",
+  "adminDashboardCouldNotLoad": "تعذر تحميل لوحة المعلومات الآن.",
+  "adminUsersTotal": "إجمالي المستخدمين",
+  "adminAccountsTotal": "الحسابات",
+  "adminActiveUsers": "المستخدمون النشطون",
+  "adminBlockedUsers": "المستخدمون المحظورون",
+  "adminSuppliers": "المورّدون",
+  "adminOpenReports": "البلاغات المفتوحة",
+  "adminRequests": "طلبات القطع",
+  "adminConversations": "المحادثات",
+  "adminMessages": "الرسائل",
+  "adminCatalogItems": "عناصر الكتالوج",
+  "adminActiveSubscriptions": "الاشتراكات النشطة",
+  "adminPendingPayments": "المدفوعات المعلّقة"
+  ,"adminSearchUsers": "البحث عن المستخدمين"
+  ,"adminUserStatusAll": "كل المستخدمين"
+  ,"adminManageUser": "إدارة المستخدم"
+  ,"adminChangeRole": "تغيير الدور"
+  ,"adminResetPassword": "إعادة تعيين كلمة المرور"
+  ,"adminVerifyPhone": "التحقق من الهاتف"
+  ,"adminPhoneVerified": "تم التحقق من الهاتف"
+  ,"adminCatalog": "الكتالوج"
+  ,"adminCatalogCouldNotLoad": "تعذر تحميل الكتالوج الآن."
+  ,"adminAddSparePart": "إضافة قطعة غيار"
+  ,"adminSpareParts": "قطع الغيار"
+  ,"adminItemName": "اسم العنصر"
+  ,"adminItemDescription": "الوصف"
+  ,"adminItemPrice": "السعر"
+  ,"adminNoModels": "لا توجد موديلات"
+  ,"adminAddMake": "إضافة شركة مصنّعة"
+  ,"adminAddModel": "إضافة موديل"
+  ,"adminNoSupplierResponses": "لا توجد ردود من المورّدين بعد"
 }

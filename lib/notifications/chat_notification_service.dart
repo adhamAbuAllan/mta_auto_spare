@@ -131,6 +131,8 @@ abstract class PushMessagingClient {
 
   Future<void> requestPermission();
 
+  Future<String?> getAppleToken();
+
   Future<String?> getToken();
 
   Stream<String> get onTokenRefresh;
@@ -165,6 +167,9 @@ class NoopPushMessagingClient implements PushMessagingClient {
 
   @override
   Future<String?> getToken() async => null;
+
+  @override
+  Future<String?> getAppleToken() async => null;
 
   @override
   Stream<String> get onTokenRefresh => const Stream<String>.empty();
@@ -224,6 +229,11 @@ class FirebasePushMessagingClient implements PushMessagingClient {
   @override
   Future<String?> getToken() {
     return _resolvedMessaging.getToken();
+  }
+
+  @override
+  Future<String?> getAppleToken() {
+    return _resolvedMessaging.getAPNSToken();
   }
 
   @override
@@ -789,6 +799,15 @@ class ChatNotificationService {
     for (var attempt = 0; attempt < 3; attempt += 1) {
       String? token;
       try {
+        if (defaultTargetPlatform == TargetPlatform.iOS) {
+          final appleToken = (await _messagingClient.getAppleToken())?.trim();
+          if (appleToken == null || appleToken.isEmpty) {
+            if (attempt < 2) {
+              await Future<void>.delayed(_tokenRequestRetryDelay);
+            }
+            continue;
+          }
+        }
         token = (await _messagingClient.getToken())?.trim();
       } catch (error) {
         _lastPushTokenUnavailableAt = DateTime.now();

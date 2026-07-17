@@ -222,12 +222,18 @@ class PartImage {
     this.id,
     required this.partRequest,
     required this.image,
+    this.thumbnail,
+    this.width,
+    this.height,
     this.createdAt,
   });
 
   final int? id;
   final int partRequest;
   final String image;
+  final String? thumbnail;
+  final int? width;
+  final int? height;
   final DateTime? createdAt;
 
   factory PartImage.fromJson(JsonMap json) {
@@ -235,6 +241,9 @@ class PartImage {
       id: intFromJson(json['id']),
       partRequest: intFromJson(json['part_request']) ?? 0,
       image: stringFromJson(json['image']) ?? '',
+      thumbnail: stringFromJson(json['thumbnail']),
+      width: intFromJson(json['width']),
+      height: intFromJson(json['height']),
       createdAt: dateTimeFromJson(json['created_at']),
     );
   }
@@ -244,6 +253,9 @@ class PartImage {
       'id': id,
       'part_request': partRequest,
       'image': image,
+      'thumbnail': thumbnail,
+      'width': width,
+      'height': height,
       'created_at': createdAt?.toIso8601String(),
     };
   }

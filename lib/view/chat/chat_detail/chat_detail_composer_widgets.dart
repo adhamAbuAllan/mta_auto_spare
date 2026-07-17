@@ -440,7 +440,7 @@ class _ProductPreviewCard extends StatelessWidget {
                 if (product.carModel != null) ...[
                   const SizedBox(height: 2),
                   Text(
-                    product.carModel!.displayName,
+                    product.carModel?.displayName??"",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(

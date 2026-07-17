@@ -246,7 +246,14 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
 
     try {
       await widget.playbackController.requestPlay(widget.playbackId);
-    } catch (_) {
+    } catch (error, stackTrace) {
+      debugPrint(
+        '[VOICE DEBUG] playback failed '
+        'attachment=${widget.attachment.id} '
+        'url=${widget.attachment.fileUrl} '
+        'error=$error',
+      );
+      debugPrintStack(stackTrace: stackTrace);
       if (!mounted) {
         return;
       }
@@ -322,7 +329,12 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
       if (fileUrl == null || fileUrl.isEmpty) {
         throw StateError('No audio source available.');
       }
-      await _player.setUrl(ApiConstants.resolveUrl(fileUrl));
+      final resolvedUrl = ApiConstants.resolveUrl(fileUrl);
+      debugPrint(
+        '[VOICE DEBUG] audio playback source '
+        'attachment=${widget.attachment.id} original=$fileUrl resolved=$resolvedUrl',
+      );
+      await _player.setUrl(resolvedUrl);
     }
 
     if (!mounted) {

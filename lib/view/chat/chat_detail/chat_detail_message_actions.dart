@@ -74,9 +74,9 @@ abstract class _ChatDetailPageStateMessageActions
   }
 
   Future<void> _openMessageActions(
-      MessageModel message,
-      int currentUserId,
-      ) async {
+    MessageModel message,
+    int currentUserId,
+  ) async {
     final l10n = context.l10n;
     final canCopy = _canCopyMessage(message);
     final canEdit = _canEditMessage(message, currentUserId);
@@ -147,49 +147,16 @@ abstract class _ChatDetailPageStateMessageActions
 
   Future<void> _editMessage(MessageModel message) async {
     final l10n = context.l10n;
-    final controller = TextEditingController(text: message.text);
-    String draft = message.text;
-
     final updatedText = await showDialog<String>(
       context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            final trimmedDraft = draft.trim();
-            final canSave =
-                trimmedDraft.isNotEmpty && trimmedDraft != message.text.trim();
-            return AlertDialog(
-              title: Text(l10n.editMessageTitle),
-              content: TextField(
-                controller: controller,
-                autofocus: true,
-                minLines: 1,
-                maxLines: 5,
-                onChanged: (value) {
-                  setModalState(() {
-                    draft = value;
-                  });
-                },
-                decoration: InputDecoration(hintText: l10n.updateYourMessage),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(l10n.cancel),
-                ),
-                FilledButton(
-                  onPressed: canSave
-                      ? () => Navigator.of(context).pop(trimmedDraft)
-                      : null,
-                  child: Text(l10n.save),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      builder: (_) => _EditMessageDialog(
+        initialText: message.text,
+        title: l10n.editMessageTitle,
+        hintText: l10n.updateYourMessage,
+        cancelLabel: l10n.cancel,
+        saveLabel: l10n.save,
+      ),
     );
-    controller.dispose();
 
     if (!mounted || updatedText == null) {
       return;
@@ -216,9 +183,9 @@ abstract class _ChatDetailPageStateMessageActions
   }
 
   Future<void> _confirmDeleteMessage(
-      MessageModel message,
-      int currentUserId,
-      ) async {
+    MessageModel message,
+    int currentUserId,
+  ) async {
     final l10n = context.l10n;
     final canDeleteForAll = _canDeleteForAll(message, currentUserId);
     final scope = await showModalBottomSheet<_ChatMessageDeleteScope>(
@@ -339,6 +306,74 @@ abstract class _ChatDetailPageStateMessageActions
       serverTimestamp: message.serverTimestamp,
       editedAt: message.editedAt,
       isDeleted: message.isDeleted,
+    );
+  }
+}
+
+class _EditMessageDialog extends StatefulWidget {
+  const _EditMessageDialog({
+    required this.initialText,
+    required this.title,
+    required this.hintText,
+    required this.cancelLabel,
+    required this.saveLabel,
+  });
+
+  final String initialText;
+  final String title;
+  final String hintText;
+  final String cancelLabel;
+  final String saveLabel;
+
+  @override
+  State<_EditMessageDialog> createState() => _EditMessageDialogState();
+}
+
+class _EditMessageDialogState extends State<_EditMessageDialog> {
+  late final TextEditingController _controller;
+  late String _draft;
+
+  @override
+  void initState() {
+    super.initState();
+    _draft = widget.initialText;
+    _controller = TextEditingController(text: _draft);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final trimmedDraft = _draft.trim();
+    final canSave =
+        trimmedDraft.isNotEmpty && trimmedDraft != widget.initialText.trim();
+
+    return AlertDialog(
+      title: Text(widget.title),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        minLines: 1,
+        maxLines: 5,
+        onChanged: (value) => setState(() => _draft = value),
+        decoration: InputDecoration(hintText: widget.hintText),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(widget.cancelLabel),
+        ),
+        FilledButton(
+          onPressed: canSave
+              ? () => Navigator.of(context).pop(trimmedDraft)
+              : null,
+          child: Text(widget.saveLabel),
+        ),
+      ],
     );
   }
 }

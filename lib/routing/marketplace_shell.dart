@@ -28,6 +28,9 @@ class MarketplaceShellPage extends ConsumerStatefulWidget {
 
 class _MarketplaceShellPageState extends ConsumerState<MarketplaceShellPage> {
   int _mobileIndex = 0;
+  bool _isRequestsTabRefreshing = false;
+  final RequestsViewController _requestsViewController =
+      RequestsViewController();
   ProviderSubscription<ChatNotificationNavigationRequest?>?
   _notificationSubscription;
 
@@ -128,14 +131,34 @@ class _MarketplaceShellPageState extends ConsumerState<MarketplaceShellPage> {
               )
             : _MobileMarketplaceLayout(
                 index: _mobileIndex,
+                isRequestsTabRefreshing: _isRequestsTabRefreshing,
+                requestsViewController: _requestsViewController,
                 userName: session.profile?.name ?? context.l10n.userRole,
                 isAdmin: isAdmin,
-                onDestinationSelected: (index) {
-                  setState(() => _mobileIndex = index);
-                },
+                onDestinationSelected: _handleMobileDestinationSelected,
               );
       },
     );
+  }
+
+  Future<void> _handleMobileDestinationSelected(int index) async {
+    if (index == 0 && _mobileIndex == 0) {
+      if (_isRequestsTabRefreshing) {
+        return;
+      }
+
+      setState(() => _isRequestsTabRefreshing = true);
+      try {
+        await _requestsViewController.scrollToTopAndRefresh();
+      } finally {
+        if (mounted) {
+          setState(() => _isRequestsTabRefreshing = false);
+        }
+      }
+      return;
+    }
+
+    setState(() => _mobileIndex = index);
   }
 }
 
@@ -253,12 +276,16 @@ class _WideMarketplaceLayout extends ConsumerWidget {
 class _MobileMarketplaceLayout extends ConsumerWidget {
   const _MobileMarketplaceLayout({
     required this.index,
+    required this.isRequestsTabRefreshing,
+    required this.requestsViewController,
     required this.userName,
     required this.isAdmin,
     required this.onDestinationSelected,
   });
 
   final int index;
+  final bool isRequestsTabRefreshing;
+  final RequestsViewController requestsViewController;
   final String userName;
   final bool isAdmin;
   final ValueChanged<int> onDestinationSelected;
@@ -300,6 +327,7 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
           children: [
             RequestsView(
               wideMode: false,
+              controller: requestsViewController,
               onOpenConversation: (conversationId) {
                 Navigator.of(context).push(
                   MaterialPageRoute<void>(
@@ -336,13 +364,17 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
         onDestinationSelected: onDestinationSelected,
         destinations: [
           NavigationDestination(
-            icon: Icon(Icons.inventory_2_outlined),
-            selectedIcon: Icon(Icons.inventory_2_rounded),
+            icon: isRequestsTabRefreshing
+                ? const _NavigationLoadingIcon()
+                : const Icon(Icons.inventory_2_outlined),
+            selectedIcon: isRequestsTabRefreshing
+                ? const _NavigationLoadingIcon()
+                : const Icon(Icons.inventory_2_rounded),
             label: context.l10n.requests,
           ),
           NavigationDestination(
-            icon: Icon(Icons.add_circle_outline_rounded),
-            selectedIcon: Icon(Icons.add_circle_rounded),
+            icon: const _CreateRequestNavigationIcon(),
+            selectedIcon: const _CreateRequestNavigationIcon(selected: true),
             label: context.l10n.createRequest,
           ),
           NavigationDestination(
@@ -366,5 +398,66 @@ class _MobileMarketplaceLayout extends ConsumerWidget {
     Navigator.of(
       context,
     ).push(MaterialPageRoute<void>(builder: (_) => const AdminPanelPage()));
+  }
+}
+
+class _CreateRequestNavigationIcon extends StatelessWidget {
+  const _CreateRequestNavigationIcon({this.selected = false});
+
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final backgroundColor = selected
+        ? colorScheme.primary
+        : colorScheme.primaryContainer;
+    final foregroundColor = selected
+        ? colorScheme.onPrimary
+        : colorScheme.onPrimaryContainer;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOutCubic,
+      width: selected ? 48 : 44,
+      height: selected ? 48 : 44,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: selected ? colorScheme.primary : colorScheme.primary,
+          width: selected ? 0 : 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.primary.withValues(
+              alpha: selected ? 0.28 : 0.18,
+            ),
+            blurRadius: selected ? 14 : 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Icon(
+        Icons.add_rounded,
+        color: foregroundColor,
+        size: selected ? 30 : 28,
+      ),
+    );
+  }
+}
+
+class _NavigationLoadingIcon extends StatelessWidget {
+  const _NavigationLoadingIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox.square(
+      dimension: 24,
+      child: Padding(
+        padding: EdgeInsets.all(2),
+        child: CircularProgressIndicator(strokeWidth: 2.5),
+      ),
+    );
   }
 }

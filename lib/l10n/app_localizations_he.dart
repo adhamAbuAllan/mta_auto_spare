@@ -60,6 +60,14 @@ class AppLocalizationsHe extends AppLocalizations {
   String get createAccount => 'יצירת חשבון';
 
   @override
+  String get phoneAlreadyRegistered =>
+      'למספר הטלפון הזה כבר יש חשבון. יש להתחבר במקום זאת.';
+
+  @override
+  String get registrationPhoneCheckFailed =>
+      'לא ניתן לבדוק את מספר הטלפון כעת. נסה שוב.';
+
+  @override
   String get createNewAccount => 'יצירת חשבון חדש';
 
   @override
@@ -228,6 +236,28 @@ class AppLocalizationsHe extends AppLocalizations {
   String get somethingWentWrong => 'משהו השתבש';
 
   @override
+  String get errorNetwork =>
+      'לא ניתן להתחבר לשרת. בדוק את חיבור האינטרנט ונסה שוב.';
+
+  @override
+  String get errorNotFound => 'לא ניתן למצוא את המידע המבוקש.';
+
+  @override
+  String get errorUnauthorized => 'פג תוקף ההתחברות. יש להתחבר שוב.';
+
+  @override
+  String get errorForbidden => 'אין לך הרשאה לבצע פעולה זו.';
+
+  @override
+  String get errorServer => 'השרת אינו זמין באופן זמני. נסה שוב מאוחר יותר.';
+
+  @override
+  String get errorInvalidRequest => 'בדוק את הפרטים ונסה שוב.';
+
+  @override
+  String get errorUnexpected => 'משהו השתבש. נסה שוב.';
+
+  @override
   String get supplierRole => 'ספק';
 
   @override
@@ -390,6 +420,10 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get showTranslation => 'הצג תרגום';
+
+  @override
+  String get realTimeTranslationFeatureAnnouncement =>
+      'תכונה חדשה: תרגום בזמן אמת זמין כעת. הודעות מתורגמות אוטומטית בין משתתפי צ\'אט המשתמשים בשפות שונות.';
 
   @override
   String get typing => 'מקליד...';
@@ -1267,4 +1301,100 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get phoneVerificationFailed => 'אימות הטלפון נכשל.';
+
+  @override
+  String get adminDashboardTab => 'לוח בקרה';
+
+  @override
+  String get adminDashboardCouldNotLoad => 'לא ניתן לטעון את לוח הבקרה כעת.';
+
+  @override
+  String get adminUsersTotal => 'סך המשתמשים';
+
+  @override
+  String get adminAccountsTotal => 'חשבונות';
+
+  @override
+  String get adminActiveUsers => 'משתמשים פעילים';
+
+  @override
+  String get adminBlockedUsers => 'משתמשים חסומים';
+
+  @override
+  String get adminSuppliers => 'ספקים';
+
+  @override
+  String get adminOpenReports => 'דיווחים פתוחים';
+
+  @override
+  String get adminRequests => 'בקשות לחלקים';
+
+  @override
+  String get adminConversations => 'שיחות';
+
+  @override
+  String get adminMessages => 'הודעות';
+
+  @override
+  String get adminCatalogItems => 'פריטי קטלוג';
+
+  @override
+  String get adminActiveSubscriptions => 'מנויים פעילים';
+
+  @override
+  String get adminPendingPayments => 'תשלומים ממתינים';
+
+  @override
+  String get adminSearchUsers => 'חיפוש משתמשים';
+
+  @override
+  String get adminUserStatusAll => 'כל המשתמשים';
+
+  @override
+  String get adminManageUser => 'ניהול משתמש';
+
+  @override
+  String get adminChangeRole => 'שינוי תפקיד';
+
+  @override
+  String get adminResetPassword => 'איפוס סיסמה';
+
+  @override
+  String get adminVerifyPhone => 'אימות טלפון';
+
+  @override
+  String get adminPhoneVerified => 'הטלפון אומת';
+
+  @override
+  String get adminCatalog => 'קטלוג';
+
+  @override
+  String get adminCatalogCouldNotLoad => 'לא ניתן לטעון את הקטלוג כעת.';
+
+  @override
+  String get adminAddSparePart => 'הוספת חלק חילוף';
+
+  @override
+  String get adminSpareParts => 'חלקי חילוף';
+
+  @override
+  String get adminItemName => 'שם פריט';
+
+  @override
+  String get adminItemDescription => 'תיאור';
+
+  @override
+  String get adminItemPrice => 'מחיר';
+
+  @override
+  String get adminNoModels => 'אין דגמים';
+
+  @override
+  String get adminAddMake => 'הוספת יצרן';
+
+  @override
+  String get adminAddModel => 'הוספת דגם';
+
+  @override
+  String get adminNoSupplierResponses => 'עדיין אין תגובות מספקים';
 }

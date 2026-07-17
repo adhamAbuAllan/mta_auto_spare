@@ -81,6 +81,20 @@ class AuthApi {
     }
   }
 
+  Future<bool> isPhoneAvailableForRegistration({required String phone}) async {
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.registrationPhoneCheck,
+        data: {'phone': phone.trim()},
+        options: Options(extra: {'skipAuth': true, 'skipRefresh': true}),
+      );
+      final payload = _asMap(response.data);
+      return payload['available'] == true;
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
   Future<void> resetPasswordWithVerifiedPhone({
     required String firebaseIdToken,
     required String phone,

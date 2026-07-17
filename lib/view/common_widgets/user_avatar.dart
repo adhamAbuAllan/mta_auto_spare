@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../constants/api_constants.dart';
 
-class UserAvatar extends StatelessWidget {
+class UserAvatar extends StatefulWidget {
   const UserAvatar({
     super.key,
-    required this.label,
+    this.label,
     this.imageUrl,
     this.imageProvider,
     this.radius = 22,
@@ -15,7 +15,7 @@ class UserAvatar extends StatelessWidget {
     this.onTap,
   });
 
-  final String label;
+  final String? label;
   final String? imageUrl;
   final ImageProvider<Object>? imageProvider;
   final double radius;
@@ -25,42 +25,48 @@ class UserAvatar extends StatelessWidget {
   final VoidCallback? onTap;
 
   @override
+  State<UserAvatar> createState() => _UserAvatarState();
+}
+
+class _UserAvatarState extends State<UserAvatar> {
+  @override
   Widget build(BuildContext context) {
-    final initial = label.trim().isEmpty ? '?' : label.trim()[0].toUpperCase();
-    final resolvedImageProvider = imageProvider ?? _networkImageProvider();
+    final initial = widget.label?.trim()[0].toUpperCase() ?? "?";
+    final resolvedImageProvider =
+        widget.imageProvider ?? _networkImageProvider(context);
 
     final avatar = SizedBox(
-      width: radius * 2,
-      height: radius * 2,
+      width: widget.radius * 2,
+      height: widget.radius * 2,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           Positioned.fill(
             child: CircleAvatar(
-              radius: radius,
-              backgroundColor: backgroundColor,
-              foregroundColor: foregroundColor,
+              radius: widget.radius,
+              backgroundColor: widget.backgroundColor,
+              foregroundColor: widget.foregroundColor,
               backgroundImage: resolvedImageProvider,
               child: resolvedImageProvider == null
                   ? Text(
                       initial,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
-                        color: foregroundColor,
+                        color: widget.foregroundColor,
                       ),
                     )
                   : null,
             ),
           ),
-          if (presenceColor != null)
+          if (widget.presenceColor != null)
             Positioned(
               right: -1,
               bottom: -1,
               child: Container(
-                width: radius < 18 ? 10 : 12,
-                height: radius < 18 ? 10 : 12,
+                width: widget.radius < 18 ? 10 : 12,
+                height: widget.radius < 18 ? 10 : 12,
                 decoration: BoxDecoration(
-                  color: presenceColor,
+                  color: widget.presenceColor,
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2),
                 ),
@@ -70,7 +76,7 @@ class UserAvatar extends StatelessWidget {
       ),
     );
 
-    if (onTap == null) {
+    if (widget.onTap == null) {
       return avatar;
     }
 
@@ -78,23 +84,29 @@ class UserAvatar extends StatelessWidget {
       color: Colors.transparent,
       shape: const CircleBorder(),
       child: InkWell(
-        onTap: onTap,
+        onTap: widget.onTap,
         customBorder: const CircleBorder(),
         child: avatar,
       ),
     );
   }
 
-  ImageProvider<Object>? _networkImageProvider() {
-    final trimmedImageUrl = imageUrl?.trim() ?? '';
+  ImageProvider<Object>? _networkImageProvider(BuildContext context) {
+    final trimmedImageUrl = widget.imageUrl?.trim() ?? '';
     if (trimmedImageUrl.isEmpty) {
       return null;
     }
-    return NetworkImage(
-      ApiConstants.resolveUrl(trimmedImageUrl),
-      headers: const {
-        ApiConstants.ngrokHeaderKey: ApiConstants.ngrokHeaderValue,
-      },
+    final diameter =
+        (widget.radius * 2 * MediaQuery.devicePixelRatioOf(context)).ceil();
+    return ResizeImage(
+      NetworkImage(
+        ApiConstants.resolveUrl(trimmedImageUrl),
+        headers: const {
+          ApiConstants.ngrokHeaderKey: ApiConstants.ngrokHeaderValue,
+        },
+      ),
+      width: diameter,
+      height: diameter,
     );
   }
 }

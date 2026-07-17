@@ -29,6 +29,8 @@
   },
   "conversations": "Conversations",
   "createAccount": "Create account",
+  "phoneAlreadyRegistered": "This phone number already has an account. Please sign in instead.",
+  "registrationPhoneCheckFailed": "We could not check this phone number right now. Please try again.",
   "createNewAccount": "Create new account",
   "creating": "Creating...",
   "daysAgo": "{count} days ago",
@@ -115,6 +117,13 @@
   "signingIn": "Signing in...",
   "signInToBrowseSellerRequests": "Sign in to request spare parts, chat with suppliers, and manage your offers.",
   "somethingWentWrong": "Something went wrong",
+  "errorNetwork": "Could not connect to the server. Check your internet connection and try again.",
+  "errorNotFound": "The requested information could not be found.",
+  "errorUnauthorized": "Your session has expired. Please sign in again.",
+  "errorForbidden": "You do not have permission to perform this action.",
+  "errorServer": "The server is temporarily unavailable. Please try again later.",
+  "errorInvalidRequest": "Please check the information and try again.",
+  "errorUnexpected": "Something went wrong. Please try again.",
   "supplierRole": "Supplier",
   "suppliersCanPostRequests": "Customers request spare parts. Suppliers choose supported cars and receive matching opportunities.",
   "theCarCatalogCouldNotBeLoaded": "The car catalog could not be loaded.",
@@ -200,6 +209,7 @@
   "sharedRequest": "Shared a request",
   "showOriginal": "Show original",
   "showTranslation": "Show translation",
+  "realTimeTranslationFeatureAnnouncement": "New feature: real-time translation is now available. Messages are automatically translated between chat participants who use different languages.",
   "typing": "Typing...",
   "unableToPlayVoiceMessage": "Unable to play voice message",
   "unableToSeekVoiceMessage": "Unable to seek voice message",
@@ -612,5 +622,37 @@
       }
     }
   },
-  "phoneVerificationFailed": "Phone verification failed."
+  "phoneVerificationFailed": "Phone verification failed.",
+  "adminDashboardTab": "Dashboard",
+  "adminDashboardCouldNotLoad": "The dashboard could not be loaded right now.",
+  "adminUsersTotal": "Total users",
+  "adminAccountsTotal": "Accounts",
+  "adminActiveUsers": "Active users",
+  "adminBlockedUsers": "Blocked users",
+  "adminSuppliers": "Suppliers",
+  "adminOpenReports": "Open reports",
+  "adminRequests": "Part requests",
+  "adminConversations": "Conversations",
+  "adminMessages": "Messages",
+  "adminCatalogItems": "Catalog items",
+  "adminActiveSubscriptions": "Active subscriptions",
+  "adminPendingPayments": "Pending payments"
+  ,"adminSearchUsers": "Search users"
+  ,"adminUserStatusAll": "All users"
+  ,"adminManageUser": "Manage user"
+  ,"adminChangeRole": "Change role"
+  ,"adminResetPassword": "Reset password"
+  ,"adminVerifyPhone": "Verify phone"
+  ,"adminPhoneVerified": "Phone verified"
+  ,"adminCatalog": "Catalog"
+  ,"adminCatalogCouldNotLoad": "The catalog could not be loaded right now."
+  ,"adminAddSparePart": "Add spare part"
+  ,"adminSpareParts": "Spare parts"
+  ,"adminItemName": "Item name"
+  ,"adminItemDescription": "Description"
+  ,"adminItemPrice": "Price"
+  ,"adminNoModels": "No models"
+  ,"adminAddMake": "Add make"
+  ,"adminAddModel": "Add model"
+  ,"adminNoSupplierResponses": "No supplier responses yet"
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../../../constants/api_constants.dart';
@@ -5,11 +7,12 @@ import '../../../localization/app_localizations_x.dart';
 import '../../../models/models.dart';
 import '../../common_widgets/app_panel.dart';
 import '../../common_widgets/car_model_card.dart';
+import '../../common_widgets/debug_performance_probe.dart';
 import '../../common_widgets/time_formatter.dart';
 import '../../common_widgets/user_avatar.dart';
 import '../../common_widgets/zoomable_network_gallery_page.dart';
 
-class RequestCard extends StatelessWidget {
+class RequestCard extends StatefulWidget {
   const RequestCard({
     super.key,
     required this.request,
@@ -40,229 +43,274 @@ class RequestCard extends StatelessWidget {
   final bool isDeleteLoading;
 
   @override
+  State<RequestCard> createState() => _RequestCardState();
+}
+
+class _RequestCardState extends State<RequestCard> {
+  @override
   Widget build(BuildContext context) {
-    final resolvedImageUrls = request.images
+    final resolvedImageUrls = widget.request.images
         .map((image) => ApiConstants.resolveUrl(image.image))
         .toList(growable: false);
+    final resolvedThumbnailUrls = widget.request.images
+        .map((image) => ApiConstants.resolveUrl(image.thumbnail ?? image.image))
+        .toList(growable: false);
 
-    return AppPanel(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (request.images.isNotEmpty) ...[
-            SizedBox(
-              height: 176,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: request.images.length,
-                separatorBuilder: (context, index) => const SizedBox(width: 10),
-                itemBuilder: (context, index) {
-                  final resolvedImageUrl = resolvedImageUrls[index];
+    return DebugPerformanceProbe(
+      label: 'request#${widget.request.id ?? 'new'}/card',
+      child: AppPanel(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (widget.request.images.isNotEmpty) ...[
+              DebugPerformanceProbe(
+                label: 'request#${widget.request.id ?? 'new'}/images',
+                child: SizedBox(
+                  height: 176,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemExtent: 204,
+                    cacheExtent: 0,
+                    itemCount: widget.request.images.length,
+                    itemBuilder: (context, index) {
+                      final resolvedImageUrl = resolvedImageUrls[index];
+                      final resolvedThumbnailUrl = resolvedThumbnailUrls[index];
 
-                  return GestureDetector(
-                    key: ValueKey(
-                      'request-image-thumbnail-${request.id ?? 0}-$index',
-                    ),
-                    onTap: () => _openImageGallery(
-                      context,
-                      resolvedImageUrls: resolvedImageUrls,
-                      initialIndex: index,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: AspectRatio(
-                        aspectRatio: 1.1,
-                        child: Hero(
-                          tag: _heroTagForIndex(index),
-                          child: _RequestCardImageThumbnail(
-                            imageUrl: resolvedImageUrl,
-                            requestId: request.id ?? 0,
-                            imageIndex: index,
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: GestureDetector(
+                          key: ValueKey(
+                            'request-image-thumbnail-${widget.request.id ?? 0}-$index',
+                          ),
+                          onTap: () {
+                            final image = widget.request.images[index];
+                            debugPrint(
+                              'Request image data: ${jsonEncode({...image.toJson(), 'image': resolvedImageUrl})}',
+                            );
+                            _openImageGallery(
+                              context,
+                              resolvedImageUrls: resolvedImageUrls,
+                              initialIndex: index,
+                            );
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: AspectRatio(
+                              aspectRatio: 1.1,
+                              child: Hero(
+                                tag: _heroTagForIndex(index),
+                                child: _RequestCardImageThumbnail(
+                                  imageUrl: resolvedThumbnailUrl,
+                                  requestId: widget.request.id ?? 0,
+                                  imageIndex: index,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                },
+                      );
+                    },
+                  ),
+                ),
               ),
+              const SizedBox(height: 16),
+            ],
+            if (widget.request.carModel != null) ...[
+              DebugPerformanceProbe(
+                label: 'request#${widget.request.id ?? 'new'}/car-model',
+                child: CarModelCard(
+                  carModel: widget.request.carModel ?? CarModelOption(),
+                  compact: true,
+                ),
+              ),
+              const SizedBox(height: 14),
+            ],
+            DebugPerformanceProbe(
+              label: 'request#${widget.request.id ?? 'new'}/requester',
+              child: _RequesterSummary(
+                name: widget.request.requesterDetails?.name,
+                avatarUrl: widget.request.requesterDetails?.avatar,
+                fallbackLabel: 'User #${widget.request.requester}',
+                onTap: widget.onRequesterTap,
+              ),
+            ),
+            const SizedBox(height: 14),
+            if (widget.isMine || widget.canChangeStatus) ...[
+              _RequestOwnershipBanner(
+                icon: widget.isMine
+                    ? Icons.person_pin_circle_outlined
+                    : Icons.assignment_turned_in_outlined,
+                label: widget.isMine
+                    ? context.l10n.thisRequestBelongsToYou
+                    : context.l10n.youCanManageThisRequestStatus,
+                tone: const Color(0xFFEAF7EE),
+                foreground: const Color(0xFF027A48),
+              ),
+              const SizedBox(height: 12),
+            ],
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.spaceBetween,
+              children: [
+                if (widget.showStatus && widget.request.statusDetails != null)
+                  _MetaChip(
+                    icon: Icons.flag_outlined,
+                    label: widget.request.statusDetails?.label ?? "",
+                  ),
+                _MetaChip(
+                  icon: Icons.location_on_outlined,
+                  label: widget.request.city?.trim().isNotEmpty == true
+                      ? widget.request.city
+                      : context.l10n.cityNotSet,
+                ),
+                _MetaChip(
+                  icon: Icons.schedule_outlined,
+                  label: formatRelativeTime(
+                    widget.request.createdAt,
+                    context.l10n,
+                  ),
+                ),
+
+                /// where you want to enable the preice widget on this widget.
+                /// just uncommit the following lines.
+                // if (widget.request.minPrice != null || widget.request.maxPrice !=
+                //     null)
+                //   _MetaChip(
+                //     icon: Icons.sell_outlined,
+                //     label: _priceLabel(widget.request, context),
+                //   ),
+              ],
             ),
             const SizedBox(height: 16),
-          ],
-          if (request.carModel != null) ...[
-            CarModelCard(carModel: request.carModel!, compact: true),
-            const SizedBox(height: 14),
-          ],
-          _RequesterSummary(
-            name: request.requesterDetails?.name,
-            avatarUrl: request.requesterDetails?.avatar,
-            fallbackLabel: 'User #${request.requester}',
-            onTap: onRequesterTap,
-          ),
-          const SizedBox(height: 14),
-          if (isMine || canChangeStatus) ...[
-            _RequestOwnershipBanner(
-              icon: isMine
-                  ? Icons.person_pin_circle_outlined
-                  : Icons.assignment_turned_in_outlined,
-              label: isMine
-                  ? context.l10n.thisRequestBelongsToYou
-                  : context.l10n.youCanManageThisRequestStatus,
-              tone: const Color(0xFFEAF7EE),
-              foreground: const Color(0xFF027A48),
-            ),
-            const SizedBox(height: 12),
-          ],
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            alignment: WrapAlignment.spaceBetween,
-            children: [
-              if (showStatus && request.statusDetails != null)
-                _MetaChip(
-                  icon: Icons.flag_outlined,
-                  label: request.statusDetails!.label,
-                ),
-              _MetaChip(
-                icon: Icons.location_on_outlined,
-                label: request.city?.trim().isNotEmpty == true
-                    ? request.city!
-                    : context.l10n.cityNotSet,
-              ),
-              _MetaChip(
-                icon: Icons.schedule_outlined,
-                label: formatRelativeTime(request.createdAt, context.l10n),
-              ),
-              if (request.minPrice != null || request.maxPrice != null)
-                _MetaChip(
-                  icon: Icons.sell_outlined,
-                  label: _priceLabel(request, context),
-                ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            request.displayTitle,
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            request.displayDescription,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: const Color(0xFF5F5A54),
-              height: 1.35,
-            ),
-          ),
-          if (!isMine && !canChangeStatus) ...[
-            const SizedBox(height: 14),
             Text(
-              context.l10n.openChatWithSellerBehindRequest,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: const Color(0xFF667085),
-                fontWeight: FontWeight.w600,
+              widget.request.displayTitle,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              widget.request.displayDescription,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: const Color(0xFF5F5A54),
+                height: 1.35,
               ),
             ),
-          ],
-          const SizedBox(height: 12),
-          if (isMine)
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                OutlinedButton.icon(
-                  onPressed: onViewTap,
-                  icon: const Icon(Icons.visibility_outlined),
-                  label: Text(context.l10n.viewRequest),
+            if (!widget.isMine && !widget.canChangeStatus) ...[
+              const SizedBox(height: 14),
+              Text(
+                context.l10n.openChatWithSellerBehindRequest,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: const Color(0xFF667085),
+                  fontWeight: FontWeight.w600,
                 ),
-                FilledButton.tonalIcon(
-                  onPressed: onChangeStatusTap,
-                  icon: const Icon(Icons.flag_circle_outlined),
-                  label: Text(context.l10n.changeStatus),
-                ),
-                OutlinedButton.icon(
-                  onPressed: onEditTap,
-                  icon: const Icon(Icons.edit_outlined),
-                  label: Text(context.l10n.edit),
-                ),
-                FilledButton.tonalIcon(
-                  onPressed: isDeleteLoading ? null : onDeleteTap,
-                  style: FilledButton.styleFrom(
-                    //   foregroundColor: const Color(0xFF9F2D2D),
+              ),
+            ],
+            const SizedBox(height: 12),
+            if (widget.isMine)
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: widget.onViewTap,
+                    icon: const Icon(Icons.visibility_outlined),
+                    label: Text(context.l10n.viewRequest),
                   ),
-                  icon: Icon(
-                    isDeleteLoading
-                        ? Icons.hourglass_top_rounded
-                        : Icons.delete_outline_rounded,
+                  FilledButton.tonalIcon(
+                    onPressed: widget.onChangeStatusTap,
+                    icon: const Icon(Icons.flag_circle_outlined),
+                    label: Text(context.l10n.changeStatus),
                   ),
-                  label: Text(
-                    isDeleteLoading
-                        ? context.l10n.deleting
-                        : context.l10n.delete,
+                  OutlinedButton.icon(
+                    onPressed: widget.onEditTap,
+                    icon: const Icon(Icons.edit_outlined),
+                    label: Text(context.l10n.edit),
                   ),
-                ),
-              ],
-            )
-          else if (canChangeStatus)
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              alignment: WrapAlignment.end,
-              children: [
-                OutlinedButton.icon(
-                  onPressed: onViewTap,
-                  icon: const Icon(Icons.visibility_outlined),
-                  label: Text(context.l10n.viewRequest),
-                ),
-                FilledButton.tonalIcon(
-                  onPressed: onChangeStatusTap,
-                  icon: const Icon(Icons.flag_circle_outlined),
-                  label: Text(context.l10n.changeStatus),
-                ),
-                FilledButton.icon(
-                  onPressed: isChatLoading ? null : onChatTap,
-                  icon: Icon(
-                    isChatLoading
-                        ? Icons.hourglass_top_rounded
-                        : Icons.chat_bubble_outline_rounded,
+                  FilledButton.tonalIcon(
+                    onPressed: widget.isDeleteLoading ? null :
+                    widget.onDeleteTap,
+                    style: FilledButton.styleFrom(
+                      //   foregroundColor: const Color(0xFF9F2D2D),
+                    ),
+                    icon: Icon(
+                      widget.isDeleteLoading
+                          ? Icons.hourglass_top_rounded
+                          : Icons.delete_outline_rounded,
+                    ),
+                    label: Text(
+                      widget.isDeleteLoading
+                          ? context.l10n.deleting
+                          : context.l10n.delete,
+                    ),
                   ),
-                  label: Text(
-                    isChatLoading ? context.l10n.opening : context.l10n.chat,
-                  ),
-                ),
-              ],
-            )
-          else
-            Align(
-              alignment: Alignment.centerRight,
-              child: Wrap(
+                ],
+              )
+            else if (widget.canChangeStatus)
+              Wrap(
                 spacing: 12,
                 runSpacing: 12,
                 alignment: WrapAlignment.end,
                 children: [
                   OutlinedButton.icon(
-                    onPressed: onViewTap,
+                    onPressed: widget.onViewTap,
                     icon: const Icon(Icons.visibility_outlined),
                     label: Text(context.l10n.viewRequest),
                   ),
+                  FilledButton.tonalIcon(
+                    onPressed: widget.onChangeStatusTap,
+                    icon: const Icon(Icons.flag_circle_outlined),
+                    label: Text(context.l10n.changeStatus),
+                  ),
                   FilledButton.icon(
-                    onPressed: isChatLoading ? null : onChatTap,
+                    onPressed: widget.isChatLoading ? null : widget.onChatTap,
                     icon: Icon(
-                      isChatLoading
+                      widget.isChatLoading
                           ? Icons.hourglass_top_rounded
                           : Icons.chat_bubble_outline_rounded,
                     ),
                     label: Text(
-                      isChatLoading ? context.l10n.opening : context.l10n.chat,
+                      widget.isChatLoading ? context.l10n.opening : context.l10n
+                          .chat,
                     ),
                   ),
                 ],
+              )
+            else
+              Align(
+                alignment: Alignment.centerRight,
+                child: Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  alignment: WrapAlignment.end,
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: widget.onViewTap,
+                      icon: const Icon(Icons.visibility_outlined),
+                      label: Text(context.l10n.viewRequest),
+                    ),
+                    FilledButton.icon(
+                      onPressed: widget.isChatLoading ? null : widget.onChatTap,
+                      icon: Icon(
+                        widget.isChatLoading
+                            ? Icons.hourglass_top_rounded
+                            : Icons.chat_bubble_outline_rounded,
+                      ),
+                      label: Text(
+                        widget.isChatLoading ? context.l10n.opening : context
+                            .l10n
+                            .chat,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -287,7 +335,7 @@ class RequestCard extends StatelessWidget {
   }
 
   Object _heroTagForIndex(int index) {
-    return 'request-image-${request.id ?? 'new'}-$index';
+    return 'request-image-${widget.request.id ?? 'new'}-$index';
   }
 
   void _openImageGallery(
@@ -326,7 +374,7 @@ class _RequestOwnershipBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      //width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: tone,
@@ -351,52 +399,54 @@ class _RequestOwnershipBanner extends StatelessWidget {
   }
 }
 
-class _RequesterSummary extends StatelessWidget {
+class _RequesterSummary extends StatefulWidget {
   const _RequesterSummary({
-    required this.name,
-    required this.avatarUrl,
-    required this.fallbackLabel,
+    this.name,
+    this.avatarUrl,
+    this.fallbackLabel,
     this.onTap,
   });
 
   final String? name;
   final String? avatarUrl;
-  final String fallbackLabel;
+  final String? fallbackLabel;
   final VoidCallback? onTap;
 
   @override
+  State<_RequesterSummary> createState() => _RequesterSummaryState();
+}
+
+class _RequesterSummaryState extends State<_RequesterSummary> {
+  @override
   Widget build(BuildContext context) {
-    final displayName = name?.trim().isNotEmpty == true
-        ? name!.trim()
-        : fallbackLabel;
+    final displayName = widget.name?.trim().isNotEmpty == true
+        ? widget.name?.trim()
+        : widget.fallbackLabel;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         UserAvatar(
-          label: displayName,
-          imageUrl: avatarUrl,
+          label: displayName ?? "",
+          imageUrl: widget.avatarUrl,
           radius: 20,
-          onTap: onTap,
+          onTap: widget.onTap,
         ),
         const SizedBox(width: 10),
         Padding(
           padding: const EdgeInsets.only(top: 5.0),
-          child: TextButton(
-            onPressed: onTap,
-            style: TextButton.styleFrom(
-              alignment: Alignment.centerLeft,
-              padding: EdgeInsets.zero,
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Text(
-              displayName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF1E5E33),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: GestureDetector(
+              onTap: widget.onTap,
+              child: Text(
+                displayName ?? "",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF1E5E33),
+                ),
               ),
             ),
           ),
@@ -419,6 +469,7 @@ class _RequestCardImageThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -427,6 +478,8 @@ class _RequestCardImageThumbnail extends StatelessWidget {
         ),
         Image.network(
           imageUrl,
+          cacheWidth: (194 * devicePixelRatio).ceil(),
+          cacheHeight: (176 * devicePixelRatio).ceil(),
           fit: BoxFit.cover,
           headers: const {
             ApiConstants.ngrokHeaderKey: ApiConstants.ngrokHeaderValue,
@@ -487,10 +540,10 @@ class _RequestImageSkeleton extends StatelessWidget {
 }
 
 class _MetaChip extends StatelessWidget {
-  const _MetaChip({required this.icon, required this.label});
+  const _MetaChip({this.icon, this.label});
 
-  final IconData icon;
-  final String label;
+  final IconData? icon;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -506,7 +559,7 @@ class _MetaChip extends StatelessWidget {
           Icon(icon, size: 16, color: const Color(0xFF1E5E33)),
           const SizedBox(width: 6),
           Text(
-            label,
+            label ?? "",
             style: Theme.of(
               context,
             ).textTheme.labelLarge?.copyWith(color: const Color(0xFF5F5A54)),

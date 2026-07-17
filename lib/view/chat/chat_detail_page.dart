@@ -11,7 +11,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
 import '../../api/api_exception.dart';
-import '../../api/chat_socket_service.dart';
 import '../../controllers/methods/api_methods/load_conversations_notifier.dart';
 import '../../controllers/methods/api_methods/load_messages_notifier.dart';
 import '../../controllers/providers/api_provider.dart';
@@ -21,9 +20,11 @@ import '../../controllers/providers/request_provider.dart';
 import '../../controllers/statuses/message_state.dart';
 import '../../localization/app_localizations_x.dart';
 import '../../models/models.dart';
+import '../../session/session_notifier.dart';
 import '../../session/session_state.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/empty_state_card.dart';
+import '../common_widgets/async_error_message.dart';
 import '../common_widgets/user_avatar.dart';
 import '../profile/user_profile_page.dart';
 import 'chat_formatters.dart';
@@ -65,6 +66,7 @@ abstract class _ChatDetailPageStateBase extends ConsumerState<ChatDetailPage> {
   List<ChatUploadImage> _selectedImages = const [];
   MessageModel? _replyTarget;
   PartRequestBrief? _selectedProduct;
+  bool _hasPositionedInitialMessages = false;
   int _lastKnownMessageCount = 0;
   double _lastKeyboardInset = 0;
   bool _lastKnownOtherTyping = false;
@@ -79,9 +81,9 @@ abstract class _ChatDetailPageStateBase extends ConsumerState<ChatDetailPage> {
   bool _isVoiceRecording = false;
   bool _isVoiceRecorderBusy = false;
   int? _selectedSharedRequestId;
-  bool _isRequestAccessPanelExpanded = true;
-  bool _isLoadingSharedRequestState = false;
+  bool _isRequestAccessPanelExpanded = false;
   bool _isUpdatingSharedRequestState = false;
+  bool _showTranslationFeatureAnnouncement = false;
   final Map<int, PartRequest> _sharedRequestsById = {};
   final Map<int, List<PartRequestAccess>> _sharedAccessesByRequestId = {};
 
@@ -115,24 +117,38 @@ abstract class _ChatDetailPageStateBase extends ConsumerState<ChatDetailPage> {
   }
 
   void _keepLatestMessageVisible() {
-    _scheduleScrollToBottom(animated: true);
-    _scheduleDeferredBottomSync(const Duration(milliseconds: 120));
-    _scheduleDeferredBottomSync(const Duration(milliseconds: 260));
-    _scheduleDeferredBottomSync(const Duration(milliseconds: 420));
+    final animate = _hasPositionedInitialMessages;
+    _hasPositionedInitialMessages = true;
+    _scheduleScrollToBottom(animated: animate);
+    _scheduleDeferredBottomSync(
+      const Duration(milliseconds: 120),
+      animate: animate,
+    );
+    _scheduleDeferredBottomSync(
+      const Duration(milliseconds: 260),
+      animate: animate,
+    );
+    _scheduleDeferredBottomSync(
+      const Duration(milliseconds: 420),
+      animate: animate,
+    );
   }
 
-  void _scheduleDeferredBottomSync(Duration delay) {
+  void _scheduleDeferredBottomSync(Duration delay, {required bool animate}) {
     Future<void>.delayed(delay, () {
       if (!mounted) {
         return;
       }
-      _scheduleScrollToBottom(animated: true);
+      _scheduleScrollToBottom(animated: animate);
     });
   }
 }
 
 class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
     with WidgetsBindingObserver {
+  static const _translationFeatureAnnouncementKeyPrefix =
+      'chat_translation_feature_announcement_v1_seen';
+
   @override
   void initState() {
     super.initState();
@@ -147,22 +163,85 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
     _voicePlaybackController.onPlaybackSequenceCompleted = () {
       return ref.read(chatSoundEffectsProvider).playVoicePlaybackEnded();
     };
-    _messageState = _resolveDisplayedMessageState(
-      ref.read(messagesNotifierProvider),
-    );
+    _messageState =
+        _resolveDisplayedMessageState(
+          ref.read(messagesNotifierProvider),
+        ).copyWith(
+          connectedUserIds: const [],
+          onlineUserIds: const [],
+          presenceLastSeenByUserId: const {},
+          hasCurrentPresence: false,
+        );
     _messageSubscription = ref.listenManual<MessageState>(
       messagesNotifierProvider,
       (previous, next) {
+        debugPrint(
+          '[CHAT DEBUG] STATE UPDATE\n'
+          'previous conversation=${previous?.conversationId}\n'
+          'previous messages=${previous?.messages.length}\n'
+          'next conversation=${next.conversationId}\n'
+          'next messages=${next.messages.length}\n'
+          'loading=${next.isLoading}\n'
+          'connection=${next.connectionStatus}',
+        );
+
+        // Print audio messages in previous state
+        if (previous != null) {
+          final previousAudioMessages = previous.messages
+              .expand((message) => message.media)
+              .where((media) => media.isAudio)
+              .toList();
+
+          debugPrint(
+            '[VOICE DEBUG] previous audio count=${previousAudioMessages.length}',
+          );
+        }
+
+        // Print audio messages in next state
+        final nextAudioMessages = next.messages
+            .expand((message) => message.media)
+            .where((media) => media.isAudio)
+            .toList();
+
+        debugPrint(
+          '[VOICE DEBUG] next audio count=${nextAudioMessages.length}',
+        );
+
+        for (final media in nextAudioMessages) {
+          debugPrint('[VOICE DEBUG] next audio file=${media.fileUrl}');
+        }
+
         if (!mounted) {
           return;
         }
+
         final displayedState = _resolveDisplayedMessageState(next);
+
+        debugPrint(
+          '[CHAT DEBUG] displayed messages=${displayedState.messages.length}',
+        );
+
+        final displayedAudioMessages = displayedState.messages
+            .expand((message) => message.media)
+            .where((media) => media.isAudio)
+            .toList();
+
+        debugPrint(
+          '[VOICE DEBUG] displayed audio count=${displayedAudioMessages.length}',
+        );
+
+        for (final media in displayedAudioMessages) {
+          debugPrint('[VOICE DEBUG] displayed audio file=${media.fileUrl}');
+        }
+
         setState(() {
           _messageState = displayedState;
         });
+
         unawaited(_refreshSharedRequestContext(displayedState.messages));
       },
     );
+    unawaited(_loadTranslationFeatureAnnouncement());
     _sessionSubscription = ref.listenManual<SessionState>(
       currentSessionProvider,
       (previous, next) {
@@ -199,15 +278,21 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
           _selectedImages = const [];
           _replyTarget = null;
           _selectedProduct = null;
+          _hasPositionedInitialMessages = false;
           _selectedSharedRequestId = null;
-          _isRequestAccessPanelExpanded = true;
+          _isRequestAccessPanelExpanded = false;
           _sharedRequestsById.clear();
           _sharedAccessesByRequestId.clear();
-          _isLoadingSharedRequestState = false;
           _isUpdatingSharedRequestState = false;
-          _messageState = _resolveDisplayedMessageState(
-            ref.read(messagesNotifierProvider),
-          );
+          _messageState =
+              _resolveDisplayedMessageState(
+                ref.read(messagesNotifierProvider),
+              ).copyWith(
+                connectedUserIds: const [],
+                onlineUserIds: const [],
+                presenceLastSeenByUserId: const {},
+                hasCurrentPresence: false,
+              );
         });
         await _startConversationSession(
           forceRefresh: true,
@@ -328,17 +413,20 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
         ? null
         : otherParticipant(conversation, currentUserId);
     final otherUserId = participant?.user.id;
+    final hasCurrentPresence =
+        participant != null && messageState.hasCurrentPresence;
     final isOtherOnline =
+        hasCurrentPresence &&
         otherUserId != null &&
         (messageState.onlineUserIds.contains(otherUserId) ||
-            participant?.user.isOnline == true);
+            participant.user.isOnline == true);
     final isOtherTyping =
         otherUserId != null && messageState.typingUserIds.contains(otherUserId);
     final otherLastSeenAt = otherUserId == null
         ? null
         : messageState.presenceLastSeenByUserId[otherUserId] ??
               participant?.user.lastSeenAt;
-    final presenceColor = participant == null
+    final presenceColor = !hasCurrentPresence
         ? null
         : isOtherOnline
         ? const Color(0xFF20A05A)
@@ -377,8 +465,9 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
       children: [
         _ChatHeader(
           title: title,
-          connectionStatus: messageState.connectionStatus,
-          statusLabel: isOtherTyping
+          statusLabel: !hasCurrentPresence
+              ? null
+              : isOtherTyping
               ? context.l10n.typing
               : conversationPresenceLabel(
                   isOnline: isOtherOnline,
@@ -404,7 +493,6 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
             accesses: selectedSharedAccesses,
             currentUserId: currentUserId,
             otherUserId: otherUserId,
-            isLoading: _isLoadingSharedRequestState,
             isUpdating: _isUpdatingSharedRequestState,
             isExpanded: _isRequestAccessPanelExpanded,
             onToggleExpanded: () {
@@ -472,14 +560,33 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
       ],
     );
 
-    if (widget.wideMode) {
-      return content;
-    }
+    final chatPage = widget.wideMode
+        ? content
+        : Scaffold(
+            // Apply the keyboard inset ourselves so the composer follows the
+            // real keyboard height without combining Scaffold resize and
+            // SafeArea space.
+            resizeToAvoidBottomInset: false,
+            body: AnimatedPadding(
+              padding: EdgeInsets.only(bottom: keyboardInset),
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOut,
+              child: SafeArea(
+                bottom: !isKeyboardVisible,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: content,
+                ),
+              ),
+            ),
+          );
 
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(padding: const EdgeInsets.all(16), child: content),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: Colors.transparent,
+        statusBarBrightness: Brightness.light,
       ),
+      child: chatPage,
     );
   }
 
@@ -502,20 +609,42 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
 
     if (messageState.messages.isEmpty) {
       return SingleChildScrollView(
-        child: EmptyStateCard(
-          title: context.l10n.noMessagesYet,
-          message: context.l10n.noMessagesYetMessage,
-          icon: Icons.forum_outlined,
+        child: Column(
+          children: [
+            if (_showTranslationFeatureAnnouncement)
+              _TranslationFeatureSystemMessage(
+                onDismiss: _hideTranslationFeatureAnnouncement,
+              ),
+            EmptyStateCard(
+              title: context.l10n.noMessagesYet,
+              message: context.l10n.noMessagesYetMessage,
+              icon: Icons.forum_outlined,
+            ),
+          ],
         ),
       );
     }
 
     _voicePlaybackController.updatePlaybackOrder([
       for (final message in messageState.messages)
-        for (var index = 0; index < message.media.length; index += 1)
-          if (message.media[index].isAudio) '${message.id}:$index',
+        for (final attachment in message.media)
+          if (attachment.isAudio)
+            '${message.id}:${attachment.id != 0 ? attachment.id : (attachment.fileUrl ?? attachment.localPath ?? 'unknown')}',
     ]);
+    debugPrint(
+      '[VOICE DEBUG] total messages=${messageState.messages.length}, '
+      'audio messages=${messageState.messages.where((m) => m.media.any((media) => media.isAudio)).length}',
+    );
 
+    for (final message in messageState.messages) {
+      if (message.media.any((media) => media.isAudio)) {
+        debugPrint(
+          '[VOICE DEBUG] audio message id=${message.id}, '
+          'media count=${message.media.length}, '
+          'media=${message.media.map((e) => {'fileUrl': e.fileUrl, 'localPath': e.localPath}).toList()}',
+        );
+      }
+    }
     return Stack(
       children: [
         Positioned.fill(
@@ -533,10 +662,19 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
             itemCount:
                 messageState.messages.length + (showTypingIndicator ? 1 : 0),
             itemBuilder: (context, index) {
-              if (index == messageState.messages.length) {
+              final messageCount = messageState.messages.length;
+              if (index == messageCount) {
                 return const _TypingIndicatorBubble();
               }
               final message = messageState.messages[index];
+
+              if (message.media.any((media) => media.isAudio)) {
+                debugPrint(
+                  '[VOICE DEBUG] Building audio MessageBubble '
+                  'id=${message.id}, '
+                  'media=${message.media.map((e) => {'fileUrl': e.fileUrl, 'localPath': e.localPath}).toList()}',
+                );
+              }
               return MessageBubble(
                 key: ValueKey(message.id),
                 message: message,
@@ -549,6 +687,13 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
             },
           ),
         ),
+        if (_showTranslationFeatureAnnouncement)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: _TranslationFeatureSystemMessage(
+              onDismiss: _hideTranslationFeatureAnnouncement,
+            ),
+          ),
         // Align(
         //   alignment: Alignment.bottomCenter,
         //   child: Padding(
@@ -594,6 +739,29 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
     }
 
     await _activateLiveSync(conversationId);
+  }
+
+  Future<void> _loadTranslationFeatureAnnouncement() async {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) {
+      return;
+    }
+    final preferences = ref.read(sharedPreferencesProvider);
+    final key = '$_translationFeatureAnnouncementKeyPrefix:$userId';
+    if (preferences.getBool(key) ?? false) {
+      return;
+    }
+    await preferences.setBool(key, true);
+    if (!mounted) {
+      return;
+    }
+    setState(() => _showTranslationFeatureAnnouncement = true);
+  }
+
+  void _hideTranslationFeatureAnnouncement() {
+    if (mounted) {
+      setState(() => _showTranslationFeatureAnnouncement = false);
+    }
   }
 
   Future<void> _loadMessages(
@@ -660,5 +828,56 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
     }
     return _messagesNotifier.peek(widget.conversationId) ??
         MessageState(conversationId: widget.conversationId, isLoading: true);
+  }
+}
+
+class _TranslationFeatureSystemMessage extends StatelessWidget {
+  const _TranslationFeatureSystemMessage({required this.onDismiss});
+
+  final VoidCallback onDismiss;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 10, 24, 12),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.translate_rounded,
+                size: 18,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  context.l10n.realTimeTranslationFeatureAnnouncement,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    height: 1.35,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              IconButton(
+                onPressed: onDismiss,
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                icon: const Icon(Icons.close_rounded),
+                iconSize: 18,
+                visualDensity: VisualDensity.compact,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

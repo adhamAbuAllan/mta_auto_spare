@@ -2,22 +2,22 @@ import 'json_utils.dart';
 
 class CarModelOption {
   const CarModelOption({
-    required this.id,
-    required this.makeId,
-    required this.makeName,
-    required this.name,
-    required this.displayName,
+     this.id,
+     this.makeId,
+     this.makeName,
+     this.name,
+     this.displayName,
     this.imageUrl,
     this.isActive = true,
   });
 
-  final int id;
-  final int makeId;
-  final String makeName;
-  final String name;
-  final String displayName;
+  final int ?id;
+  final int ?makeId;
+  final String ?makeName;
+  final String? name;
+  final String ?displayName;
   final String? imageUrl;
-  final bool isActive;
+  final bool ?isActive;
 
   factory CarModelOption.fromJson(JsonMap json) {
     final makeName = stringFromJson(json['make_name']) ?? '';

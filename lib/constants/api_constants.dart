@@ -4,7 +4,7 @@ abstract final class ApiConstants {
   static const String baseUrl = render;
   static const String acceptHeader = 'application/json';
   static const String ngrokHeaderKey = 'ngrok-skip-browser-warning';
-  static const String ngrokHeaderValue = 'true';
+  static const String ngrokHeaderValue = 'false';
   static const Duration connectTimeout = Duration(seconds: 20);
   static const Duration receiveTimeout = Duration(seconds: 20);
   static const Duration sendTimeout = Duration(seconds: 20);
@@ -24,7 +24,7 @@ abstract final class ApiConstants {
 
     final parsed = Uri.tryParse(trimmed);
     if (parsed != null && parsed.hasScheme) {
-      if (_shouldReplaceWithBaseHost(parsed)) {
+      if (_shouldResolveAgainstBaseUrl(parsed)) {
         return _rebuildAgainstBaseUrl(parsed);
       }
       return trimmed;
@@ -52,9 +52,17 @@ abstract final class ApiConstants {
     return trimmed;
   }
 
-  static bool _shouldReplaceWithBaseHost(Uri uri) {
+  /// Media URLs from the API can contain an old absolute HTTP URL even when
+  /// the app itself is configured to use HTTPS. Treat URLs for this backend
+  /// (and development loopback URLs) as paths on [baseUrl], so every media
+  /// consumer gets the configured scheme and host.
+  static bool _shouldResolveAgainstBaseUrl(Uri uri) {
     final host = uri.host.trim().toLowerCase();
-    return host == '127.0.0.1' || host == 'localhost' || host == '0.0.0.0';
+    final baseHost = Uri.parse(baseUrl).host.trim().toLowerCase();
+    return host == baseHost ||
+        host == '127.0.0.1' ||
+        host == 'localhost' ||
+        host == '0.0.0.0';
   }
 
   static String _rebuildAgainstBaseUrl(Uri original) {
@@ -119,13 +127,16 @@ abstract final class ApiEndpoints {
   static const String login = '/api/token/';
   static const String refresh = '/api/token/refresh/';
   static const String register = '/api/register/';
+  static const String registrationPhoneCheck = '/api/register/check-phone/';
   static const String passwordReset = '/api/password-reset/';
   static const String me = '/api/me/';
+  static const String adminDashboard = '/api/admin/dashboard/';
   static const String mobileDevices = '/api/mobile-devices/';
   static const String users = '/api/users/';
   static const String userReports = '/api/user-reports/';
   static const String carMakes = '/api/car-makes/';
   static const String carModels = '/api/car-models/';
+  static const String spareParts = '/api/spare-parts/';
   static const String partRequests = '/api/part-requests/';
   static const String partRequestStatuses = '/api/part-request-statuses/';
   static const String partRequestAccesses = '/api/part-request-accesses/';

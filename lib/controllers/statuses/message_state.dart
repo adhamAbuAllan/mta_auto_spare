@@ -16,6 +16,7 @@ class MessageState {
     this.onlineUserIds = const [],
     this.lastSeenByUserId = const {},
     this.presenceLastSeenByUserId = const {},
+    this.hasCurrentPresence = false,
   });
 
   final bool isLoading;
@@ -31,6 +32,7 @@ class MessageState {
   final List<int> onlineUserIds;
   final Map<int, DateTime?> lastSeenByUserId;
   final Map<int, DateTime?> presenceLastSeenByUserId;
+  final bool hasCurrentPresence;
 
   //  bool get hasMore => nextPageUrl != null && nextPageUrl!.isNotEmpty;
   bool get isSending => pendingMessageCount > 0;
@@ -50,6 +52,7 @@ class MessageState {
     List<int>? onlineUserIds,
     Map<int, DateTime?>? lastSeenByUserId,
     Map<int, DateTime?>? presenceLastSeenByUserId,
+    bool? hasCurrentPresence,
   }) {
     return MessageState(
       isLoading: isLoading ?? this.isLoading,
@@ -72,6 +75,7 @@ class MessageState {
       lastSeenByUserId: lastSeenByUserId ?? this.lastSeenByUserId,
       presenceLastSeenByUserId:
           presenceLastSeenByUserId ?? this.presenceLastSeenByUserId,
+      hasCurrentPresence: hasCurrentPresence ?? this.hasCurrentPresence,
     );
   }
 }

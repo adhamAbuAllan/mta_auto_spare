@@ -166,6 +166,7 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
     final currentUserId = ref.watch(currentUserIdProvider);
     final carCatalogErrorMessage = asyncErrorMessage(
       carCatalog.error,
+      l10n: l10n,
       fallback: l10n.carCatalogCouldNotBeLoadedRightNow,
     );
     return Scaffold(
@@ -175,482 +176,500 @@ class _CreateRequestPageState extends ConsumerState<CreateRequestPage> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 680),
-              child: AppPanel(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        widget.isEditing
-                            ? l10n.updateYourRequest
-                            : l10n.postNewRequest,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: FocusManager.instance.primaryFocus?.unfocus,
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 680),
+                child: AppPanel(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          widget.isEditing
+                              ? l10n.updateYourRequest
+                              : l10n.postNewRequest,
 
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFF111827),
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                color: const Color(0xFF111827),
+                              ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          widget.isEditing
+                              ? l10n.editRequestDescription
+                              : l10n.createRequestDescription,
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
+                                color: const Color(0xFF667085),
+                                height: 1.35,
+                              ),
+                        ),
+                        if (!widget.isEditing) ...[
+                          const SizedBox(height: 16),
+                          _RequestExpiryNotice(
+                            message: l10n.requestExpiresAfter48Hours,
+                          ),
+                        ],
+                        const SizedBox(height: 16),
+                        _RequestStepHeader(
+                          icon: Icons.build_circle_outlined,
+                          title: l10n.requestTitleLabel,
+                          message: l10n.createRequestDescription,
+                        ),
+                        const SizedBox(height: 16),
+                        if (createState.errorMessage != null) ...[
+                          AppErrorCard(message: createState.errorMessage!),
+                          const SizedBox(height: 16),
+                        ],
+                        TextFormField(
+                          controller: _titleController,
+                          textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(
+                            labelText: l10n.requestTitleLabel,
+                            hintText: l10n.requestTitleHint,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.enterRequestTitle;
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: _descriptionController,
+                          textInputAction: TextInputAction.newline,
+                          minLines: 4,
+                          maxLines: 6,
+                          decoration: InputDecoration(
+                            labelText: l10n.requestDescriptionLabel,
+                            hintText: l10n.requestDescriptionHint,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.addShortDescription;
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          l10n.carModelLabel,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w900),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.carModelDescription,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: const Color(0xFF667085),
+                                height: 1.35,
+                              ),
+                        ),
+                        const SizedBox(height: 10),
+                        if (!_useCustomCarEntry &&
+                            !carCatalog.isLoading &&
+                            !carCatalog.hasError) ...[
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEAF7EE),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Theme.of(context).primaryColor,
+                                width: 1.4,
+                              ),
                             ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        widget.isEditing
-                            ? l10n.editRequestDescription
-                            : l10n.createRequestDescription,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: const Color(0xFF667085),
-                          height: 1.35,
-                        ),
-                      ),
-                      if (!widget.isEditing) ...[
-                        const SizedBox(height: 16),
-                        _RequestExpiryNotice(
-                          message: l10n.requestExpiresAfter48Hours,
-                        ),
-                      ],
-                      const SizedBox(height: 16),
-                      _RequestStepHeader(
-                        icon: Icons.build_circle_outlined,
-                        title: l10n.requestTitleLabel,
-                        message: l10n.createRequestDescription,
-                      ),
-                      const SizedBox(height: 16),
-                      if (createState.errorMessage != null) ...[
-                        AppErrorCard(message: createState.errorMessage!),
-                        const SizedBox(height: 16),
-                      ],
-                      TextFormField(
-                        controller: _titleController,
-                        textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                          labelText: l10n.requestTitleLabel,
-                          hintText: l10n.requestTitleHint,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return l10n.enterRequestTitle;
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 14),
-                      TextFormField(
-                        controller: _descriptionController,
-                        textInputAction: TextInputAction.newline,
-                        minLines: 4,
-                        maxLines: 6,
-                        decoration: InputDecoration(
-                          labelText: l10n.requestDescriptionLabel,
-                          hintText: l10n.requestDescriptionHint,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return l10n.addShortDescription;
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 18),
-                      Text(
-                        l10n.carModelLabel,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w900),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.carModelDescription,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF667085),
-                          height: 1.35,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      if (!_useCustomCarEntry &&
-                          !carCatalog.isLoading &&
-                          !carCatalog.hasError) ...[
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.manage_search_rounded,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      l10n.carModelSearchLabel,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                TextFormField(
+                                  controller: _carModelSearchController,
+                                  textInputAction: TextInputAction.search,
+                                  decoration: InputDecoration(
+                                    labelText: l10n.carModelSearchLabel,
+                                    hintText: l10n.carModelSearchHint,
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    prefixIcon: const Icon(
+                                      Icons.search_rounded,
+                                    ),
+                                    suffixIcon: carModelSearchQuery.isEmpty
+                                        ? null
+                                        : IconButton(
+                                            tooltip: l10n.clearCarModelSearch,
+                                            onPressed: _clearCarModelSearch,
+                                            icon: const Icon(
+                                              Icons.close_rounded,
+                                            ),
+                                          ),
+                                  ),
+                                  onChanged: _scheduleCarModelSearch,
+                                  onFieldSubmitted: (value) =>
+                                      _runCarModelSearch(value.trim()),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(14),
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEAF7EE),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Theme.of(context).primaryColor,
-                              width: 1.4,
-                            ),
+                            color: const Color(0xFFFFF3E7),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFF1C38B)),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.manage_search_rounded,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    l10n.carModelSearchLabel,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleSmall
-                                        ?.copyWith(fontWeight: FontWeight.w900),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              TextFormField(
-                                controller: _carModelSearchController,
-                                textInputAction: TextInputAction.search,
-                                decoration: InputDecoration(
-                                  labelText: l10n.carModelSearchLabel,
-                                  hintText: l10n.carModelSearchHint,
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  prefixIcon: const Icon(Icons.search_rounded),
-                                  suffixIcon: carModelSearchQuery.isEmpty
-                                      ? null
-                                      : IconButton(
-                                          tooltip: l10n.clearCarModelSearch,
-                                          onPressed: _clearCarModelSearch,
-                                          icon: const Icon(Icons.close_rounded),
-                                        ),
-                                ),
-                                onChanged: _scheduleCarModelSearch,
-                                onFieldSubmitted: (value) =>
-                                    _runCarModelSearch(value.trim()),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF3E7),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFF1C38B)),
-                        ),
-                        child: SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          value: _useCustomCarEntry,
-                          title: Text(l10n.addCarManually),
-                          subtitle: Text(l10n.addCarManuallyDescription),
-                          onChanged: (value) {
-                            setState(() {
-                              _useCustomCarEntry = value;
-                              _carSelectionError = null;
-                              if (value) {
-                                _selectedCarMakeId = null;
-                                _selectedCarModelId = null;
-                                _carModelSearchController.clear();
-                                _carModelSearchResults = const [];
-                                _isCarModelSearchLoading = false;
-                                _carModelSearchError = null;
-                              } else {
-                                _customCarMakeController.clear();
-                                _customCarModelController.clear();
-                              }
-                            });
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      if (!_useCustomCarEntry && selectedCarModel != null) ...[
-                        CarModelCard(
-                          carModel: selectedCarModel,
-                          compact: true,
-                          isSelected: true,
-                          showImage: false,
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-                      if (_carSelectionError != null) ...[
-                        AppErrorCard(message: _carSelectionError!),
-                        const SizedBox(height: 12),
-                      ],
-                      if (_useCustomCarEntry) ...[
-                        TextFormField(
-                          controller: _customCarMakeController,
-                          textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            labelText: l10n.newCarMakeLabel,
-                            hintText: l10n.newCarMakeHint,
-                          ),
-                          validator: (value) {
-                            if (!_useCustomCarEntry) {
-                              return null;
-                            }
-                            if (value == null || value.trim().isEmpty) {
-                              return l10n.enterCarMake;
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 14),
-                        TextFormField(
-                          controller: _customCarModelController,
-                          textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            labelText: l10n.newCarModelLabel,
-                            hintText: l10n.newCarModelHint,
-                          ),
-                          validator: (value) {
-                            if (!_useCustomCarEntry) {
-                              return null;
-                            }
-                            if (value == null || value.trim().isEmpty) {
-                              return l10n.enterCarModel;
-                            }
-                            return null;
-                          },
-                        ),
-                      ] else if (carCatalog.isLoading)
-                        const LinearProgressIndicator()
-                      else if (carCatalog.hasError)
-                        AppErrorCard(
-                          message:
-                              '${l10n.theCarCatalogCouldNotBeLoaded}\n$carCatalogErrorMessage',
-                          onRetry: () => ref.invalidate(carCatalogProvider),
-                        )
-                      else ...[
-                        if (_isCarModelSearchLoading) ...[
-                          const LinearProgressIndicator(),
-                          const SizedBox(height: 10),
-                        ],
-                        if (_carModelSearchError != null) ...[
-                          const SizedBox(height: 10),
-                          AppErrorCard(message: _carModelSearchError!),
-                        ],
-                        const SizedBox(height: 14),
-                        DropdownButtonFormField<int>(
-                          initialValue: selectedMake?.id,
-                          isExpanded: true,
-                          itemHeight: _dropdownItemHeight(context),
-                          decoration: InputDecoration(
-                            labelText: l10n.carMakeLabel,
-                            contentPadding: _dropdownContentPadding(context),
-                          ),
-                          items: [
-                            for (final make in availableMakes)
-                              DropdownMenuItem<int>(
-                                value: make.id,
-                                child: Text(
-                                  make.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                          ],
-                          onChanged: (value) {
-                            final nextMake = value == null
-                                ? null
-                                : _findMakeById(availableMakes, value);
-                            setState(() {
-                              _selectedCarMakeId = value;
-                              _carSelectionError = null;
-                              if (nextMake == null ||
-                                  !nextMake.models.any(
-                                    (model) => model.id == _selectedCarModelId,
-                                  )) {
-                                _selectedCarModelId = null;
-                              }
-                            });
-                            if (_carModelSearchController.text.trim().length >=
-                                2) {
-                              _scheduleCarModelSearch(
-                                _carModelSearchController.text,
-                              );
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 14),
-                        if (isSearchingCarModels &&
-                            !_isCarModelSearchLoading &&
-                            visibleModels.isEmpty)
-                          const _CarModelSearchEmptyState()
-                        else
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              final crossAxisCount = _carGridCrossAxisCount();
-                              final cardWidth =
-                                  (constraints.maxWidth -
-                                      ((crossAxisCount - 1) * 12)) /
-                                  crossAxisCount;
-
-                              return GridView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: visibleModels.length,
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: crossAxisCount,
-                                      crossAxisSpacing: 12,
-                                      mainAxisSpacing: 12,
-                                      mainAxisExtent: _carCardMainAxisExtent(
-                                        context,
-                                        cardWidth,
-                                        showImage: false,
-                                      ),
-                                    ),
-                                itemBuilder: (context, index) {
-                                  final carModel = visibleModels[index];
-                                  return CarModelCard(
-                                    carModel: carModel,
-                                    isSelected:
-                                        carModel.id == _selectedCarModelId,
-                                    showImage: false,
-                                    onTap: () => _selectCarModel(carModel),
-                                  );
-                                },
-                              );
+                          child: SwitchListTile.adaptive(
+                            contentPadding: EdgeInsets.zero,
+                            value: _useCustomCarEntry,
+                            title: Text(l10n.addCarManually),
+                            subtitle: Text(l10n.addCarManuallyDescription),
+                            onChanged: (value) {
+                              setState(() {
+                                _useCustomCarEntry = value;
+                                _carSelectionError = null;
+                                if (value) {
+                                  _selectedCarMakeId = null;
+                                  _selectedCarModelId = null;
+                                  _carModelSearchController.clear();
+                                  _carModelSearchResults = const [];
+                                  _isCarModelSearchLoading = false;
+                                  _carModelSearchError = null;
+                                } else {
+                                  _customCarMakeController.clear();
+                                  _customCarModelController.clear();
+                                }
+                              });
                             },
                           ),
-                      ],
-                      const SizedBox(height: 14),
-                      TextFormField(
-                        controller: _cityController,
-                        textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                          labelText: l10n.cityOptionalLabel,
-                          hintText: l10n.cityOptionalHint,
                         ),
-                      ),
-                      const SizedBox(height: 14),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: createState.isSubmitting
-                                  ? null
-                                  : _pickImages,
-                              icon: const Icon(Icons.photo_library_outlined),
-                              label: Text(
-                                _selectedImages.isEmpty
-                                    ? l10n.addPhotos
-                                    : l10n.addMorePhotos,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (_existingImages.isNotEmpty ||
-                          _selectedImages.isNotEmpty) ...[
                         const SizedBox(height: 14),
-                        SizedBox(
-                          height: 92,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount:
-                                _existingImages.length + _selectedImages.length,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(width: 10),
-                            itemBuilder: (context, index) {
-                              if (index < _existingImages.length) {
-                                final image = _existingImages[index];
-                                return _ExistingRequestImageCard(
-                                  image: image,
-                                  onRemove: () => _removeExistingImage(image),
+                        if (!_useCustomCarEntry &&
+                            selectedCarModel != null) ...[
+                          CarModelCard(
+                            carModel: selectedCarModel,
+                            compact: true,
+                            isSelected: true,
+                            showImage: false,
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        if (_carSelectionError != null) ...[
+                          AppErrorCard(message: _carSelectionError!),
+                          const SizedBox(height: 12),
+                        ],
+                        if (_useCustomCarEntry) ...[
+                          TextFormField(
+                            controller: _customCarMakeController,
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(
+                              labelText: l10n.newCarMakeLabel,
+                              hintText: l10n.newCarMakeHint,
+                            ),
+                            validator: (value) {
+                              if (!_useCustomCarEntry) {
+                                return null;
+                              }
+                              if (value == null || value.trim().isEmpty) {
+                                return l10n.enterCarMake;
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 14),
+                          TextFormField(
+                            controller: _customCarModelController,
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(
+                              labelText: l10n.newCarModelLabel,
+                              hintText: l10n.newCarModelHint,
+                            ),
+                            validator: (value) {
+                              if (!_useCustomCarEntry) {
+                                return null;
+                              }
+                              if (value == null || value.trim().isEmpty) {
+                                return l10n.enterCarModel;
+                              }
+                              return null;
+                            },
+                          ),
+                        ] else if (carCatalog.isLoading)
+                          const LinearProgressIndicator()
+                        else if (carCatalog.hasError)
+                          AppErrorCard(
+                            message:
+                                '${l10n.theCarCatalogCouldNotBeLoaded}\n$carCatalogErrorMessage',
+                            onRetry: () => ref.invalidate(carCatalogProvider),
+                          )
+                        else ...[
+                          if (_isCarModelSearchLoading) ...[
+                            const LinearProgressIndicator(),
+                            const SizedBox(height: 10),
+                          ],
+                          if (_carModelSearchError != null) ...[
+                            const SizedBox(height: 10),
+                            AppErrorCard(message: _carModelSearchError!),
+                          ],
+                          const SizedBox(height: 14),
+                          DropdownButtonFormField<int>(
+                            initialValue: selectedMake?.id,
+                            isExpanded: true,
+                            itemHeight: _dropdownItemHeight(context),
+                            decoration: InputDecoration(
+                              labelText: l10n.carMakeLabel,
+                              contentPadding: _dropdownContentPadding(context),
+                            ),
+                            items: [
+                              for (final make in availableMakes)
+                                DropdownMenuItem<int>(
+                                  value: make.id,
+                                  child: Text(
+                                    make.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                            ],
+                            onChanged: (value) {
+                              final nextMake = value == null
+                                  ? null
+                                  : _findMakeById(availableMakes, value);
+                              setState(() {
+                                _selectedCarMakeId = value;
+                                _carSelectionError = null;
+                                if (nextMake == null ||
+                                    !nextMake.models.any(
+                                      (model) =>
+                                          model.id == _selectedCarModelId,
+                                    )) {
+                                  _selectedCarModelId = null;
+                                }
+                              });
+                              if (_carModelSearchController.text
+                                      .trim()
+                                      .length >=
+                                  2) {
+                                _scheduleCarModelSearch(
+                                  _carModelSearchController.text,
                                 );
                               }
-
-                              final image =
-                                  _selectedImages[index -
-                                      _existingImages.length];
-                              return _SelectedRequestImageCard(
-                                image: image,
-                                onRemove: () => _removeSelectedImage(image),
-                              );
                             },
                           ),
+                          const SizedBox(height: 14),
+                          if (isSearchingCarModels &&
+                              !_isCarModelSearchLoading &&
+                              visibleModels.isEmpty)
+                            const _CarModelSearchEmptyState()
+                          else
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                final crossAxisCount = _carGridCrossAxisCount();
+                                final cardWidth =
+                                    (constraints.maxWidth -
+                                        ((crossAxisCount - 1) * 12)) /
+                                    crossAxisCount;
+
+                                return GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: visibleModels.length,
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: crossAxisCount,
+                                        crossAxisSpacing: 12,
+                                        mainAxisSpacing: 12,
+                                        mainAxisExtent: _carCardMainAxisExtent(
+                                          context,
+                                          cardWidth,
+                                          showImage: false,
+                                        ),
+                                      ),
+                                  itemBuilder: (context, index) {
+                                    final carModel = visibleModels[index];
+                                    return CarModelCard(
+                                      carModel: carModel,
+                                      isSelected:
+                                          carModel.id == _selectedCarModelId,
+                                      showImage: false,
+                                      onTap: () => _selectCarModel(carModel),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                        ],
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: _cityController,
+                          textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(
+                            labelText: l10n.cityOptionalLabel,
+                            hintText: l10n.cityOptionalHint,
+                          ),
                         ),
-                      ],
-                      const SizedBox(height: 14),
-                      // Row(
-                      //   children: [
-                      //     Expanded(
-                      //       child: TextFormField(
-                      //         controller: _minPriceController,
-                      //         keyboardType:
-                      //             const TextInputType.numberWithOptions(
-                      //               decimal: true,
-                      //             ),
-                      //         decoration: InputDecoration(
-                      //           labelText: l10n.minPriceLabel,
-                      //           hintText: '150',
-                      //         ),
-                      //         validator: _validateOptionalNumber,
-                      //       ),
-                      //     ),
-                      //     const SizedBox(width: 14),
-                      //     Expanded(
-                      //       child: TextFormField(
-                      //         controller: _maxPriceController,
-                      //         keyboardType:
-                      //             const TextInputType.numberWithOptions(
-                      //               decimal: true,
-                      //             ),
-                      //         decoration: InputDecoration(
-                      //           labelText: l10n.maxPriceLabel,
-                      //           hintText: '350',
-                      //         ),
-                      //         validator: (value) {
-                      //           final numberError = _validateOptionalNumber(
-                      //             value,
-                      //           );
-                      //           if (numberError != null) {
-                      //             return numberError;
-                      //           }
-                      //
-                      //           final minValue = double.tryParse(
-                      //             _minPriceController.text.trim(),
-                      //           );
-                      //           final maxValue = double.tryParse(
-                      //             value?.trim() ?? '',
-                      //           );
-                      //           if (minValue != null &&
-                      //               maxValue != null &&
-                      //               maxValue < minValue) {
-                      //             return l10n.maxPriceMustBeGreaterThanMinPrice;
-                      //           }
-                      //           return null;
-                      //         },
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
-                      const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: FilledButton(
-                              onPressed:
-                                  createState.canSubmit &&
-                                      currentUserId != null &&
-                                      !createState.isSubmitting
-                                  ? _submit
-                                  : null,
-                              child: Text(
-                                createState.isSubmitting
-                                    ? widget.isEditing
-                                          ? l10n.saving
-                                          : l10n.creating
-                                    : widget.isEditing
-                                    ? l10n.saveChanges
-                                    : l10n.createRequest,
+                        const SizedBox(height: 14),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: createState.isSubmitting
+                                    ? null
+                                    : _pickImages,
+                                icon: const Icon(Icons.photo_library_outlined),
+                                label: Text(
+                                  _selectedImages.isEmpty
+                                      ? l10n.addPhotos
+                                      : l10n.addMorePhotos,
+                                ),
                               ),
+                            ),
+                          ],
+                        ),
+                        if (_existingImages.isNotEmpty ||
+                            _selectedImages.isNotEmpty) ...[
+                          const SizedBox(height: 14),
+                          SizedBox(
+                            height: 92,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount:
+                                  _existingImages.length +
+                                  _selectedImages.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(width: 10),
+                              itemBuilder: (context, index) {
+                                if (index < _existingImages.length) {
+                                  final image = _existingImages[index];
+                                  return _ExistingRequestImageCard(
+                                    image: image,
+                                    onRemove: () => _removeExistingImage(image),
+                                  );
+                                }
+
+                                final image =
+                                    _selectedImages[index -
+                                        _existingImages.length];
+                                return _SelectedRequestImageCard(
+                                  image: image,
+                                  onRemove: () => _removeSelectedImage(image),
+                                );
+                              },
                             ),
                           ),
                         ],
-                      ),
-                    ],
+                        const SizedBox(height: 14),
+                        // Row(
+                        //   children: [
+                        //     Expanded(
+                        //       child: TextFormField(
+                        //         controller: _minPriceController,
+                        //         keyboardType:
+                        //             const TextInputType.numberWithOptions(
+                        //               decimal: true,
+                        //             ),
+                        //         decoration: InputDecoration(
+                        //           labelText: l10n.minPriceLabel,
+                        //           hintText: '150',
+                        //         ),
+                        //         validator: _validateOptionalNumber,
+                        //       ),
+                        //     ),
+                        //     const SizedBox(width: 14),
+                        //     Expanded(
+                        //       child: TextFormField(
+                        //         controller: _maxPriceController,
+                        //         keyboardType:
+                        //             const TextInputType.numberWithOptions(
+                        //               decimal: true,
+                        //             ),
+                        //         decoration: InputDecoration(
+                        //           labelText: l10n.maxPriceLabel,
+                        //           hintText: '350',
+                        //         ),
+                        //         validator: (value) {
+                        //           final numberError = _validateOptionalNumber(
+                        //             value,
+                        //           );
+                        //           if (numberError != null) {
+                        //             return numberError;
+                        //           }
+                        //
+                        //           final minValue = double.tryParse(
+                        //             _minPriceController.text.trim(),
+                        //           );
+                        //           final maxValue = double.tryParse(
+                        //             value?.trim() ?? '',
+                        //           );
+                        //           if (minValue != null &&
+                        //               maxValue != null &&
+                        //               maxValue < minValue) {
+                        //             return l10n.maxPriceMustBeGreaterThanMinPrice;
+                        //           }
+                        //           return null;
+                        //         },
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: FilledButton(
+                                onPressed:
+                                    createState.canSubmit &&
+                                        currentUserId != null &&
+                                        !createState.isSubmitting
+                                    ? _submit
+                                    : null,
+                                child: Text(
+                                  createState.isSubmitting
+                                      ? widget.isEditing
+                                            ? l10n.saving
+                                            : l10n.creating
+                                      : widget.isEditing
+                                      ? l10n.saveChanges
+                                      : l10n.createRequest,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

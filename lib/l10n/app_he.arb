@@ -15,6 +15,8 @@
   "conversationNumber": "שיחה מספר {id}",
   "conversations": "שיחות",
   "createAccount": "יצירת חשבון",
+  "phoneAlreadyRegistered": "למספר הטלפון הזה כבר יש חשבון. יש להתחבר במקום זאת.",
+  "registrationPhoneCheckFailed": "לא ניתן לבדוק את מספר הטלפון כעת. נסה שוב.",
   "createNewAccount": "יצירת חשבון חדש",
   "creating": "יוצר...",
   "daysAgo": "לפני {count} ימים",
@@ -66,6 +68,13 @@
   "signingIn": "מתחבר...",
   "signInToBrowseSellerRequests": "התחבר כדי לבקש חלקי חילוף, לשוחח עם ספקים ולנהל הצעות.",
   "somethingWentWrong": "משהו השתבש",
+  "errorNetwork": "לא ניתן להתחבר לשרת. בדוק את חיבור האינטרנט ונסה שוב.",
+  "errorNotFound": "לא ניתן למצוא את המידע המבוקש.",
+  "errorUnauthorized": "פג תוקף ההתחברות. יש להתחבר שוב.",
+  "errorForbidden": "אין לך הרשאה לבצע פעולה זו.",
+  "errorServer": "השרת אינו זמין באופן זמני. נסה שוב מאוחר יותר.",
+  "errorInvalidRequest": "בדוק את הפרטים ונסה שוב.",
+  "errorUnexpected": "משהו השתבש. נסה שוב.",
   "supplierRole": "ספק",
   "suppliersCanPostRequests": "לקוחות מבקשים חלקי חילוף. ספקים בוחרים רכבים נתמכים ומקבלים הזדמנויות מתאימות.",
   "theCarCatalogCouldNotBeLoaded": "לא ניתן היה לטעון את קטלוג הרכבים.",
@@ -151,6 +160,7 @@
   "sharedRequest": "שיתף בקשה",
   "showOriginal": "הצג מקור",
   "showTranslation": "הצג תרגום",
+  "realTimeTranslationFeatureAnnouncement": "תכונה חדשה: תרגום בזמן אמת זמין כעת. הודעות מתורגמות אוטומטית בין משתתפי צ'אט המשתמשים בשפות שונות.",
   "typing": "מקליד...",
   "unableToPlayVoiceMessage": "לא ניתן לנגן את ההודעה הקולית",
   "unableToSeekVoiceMessage": "לא ניתן לדלג בתוך ההודעה הקולית",
@@ -563,5 +573,37 @@
       }
     }
   },
-  "phoneVerificationFailed": "אימות הטלפון נכשל."
+  "phoneVerificationFailed": "אימות הטלפון נכשל.",
+  "adminDashboardTab": "לוח בקרה",
+  "adminDashboardCouldNotLoad": "לא ניתן לטעון את לוח הבקרה כעת.",
+  "adminUsersTotal": "סך המשתמשים",
+  "adminAccountsTotal": "חשבונות",
+  "adminActiveUsers": "משתמשים פעילים",
+  "adminBlockedUsers": "משתמשים חסומים",
+  "adminSuppliers": "ספקים",
+  "adminOpenReports": "דיווחים פתוחים",
+  "adminRequests": "בקשות לחלקים",
+  "adminConversations": "שיחות",
+  "adminMessages": "הודעות",
+  "adminCatalogItems": "פריטי קטלוג",
+  "adminActiveSubscriptions": "מנויים פעילים",
+  "adminPendingPayments": "תשלומים ממתינים"
+  ,"adminSearchUsers": "חיפוש משתמשים"
+  ,"adminUserStatusAll": "כל המשתמשים"
+  ,"adminManageUser": "ניהול משתמש"
+  ,"adminChangeRole": "שינוי תפקיד"
+  ,"adminResetPassword": "איפוס סיסמה"
+  ,"adminVerifyPhone": "אימות טלפון"
+  ,"adminPhoneVerified": "הטלפון אומת"
+  ,"adminCatalog": "קטלוג"
+  ,"adminCatalogCouldNotLoad": "לא ניתן לטעון את הקטלוג כעת."
+  ,"adminAddSparePart": "הוספת חלק חילוף"
+  ,"adminSpareParts": "חלקי חילוף"
+  ,"adminItemName": "שם פריט"
+  ,"adminItemDescription": "תיאור"
+  ,"adminItemPrice": "מחיר"
+  ,"adminNoModels": "אין דגמים"
+  ,"adminAddMake": "הוספת יצרן"
+  ,"adminAddModel": "הוספת דגם"
+  ,"adminNoSupplierResponses": "עדיין אין תגובות מספקים"
 }

@@ -96,7 +96,6 @@ class _ChatHeader extends StatelessWidget {
   const _ChatHeader({
     required this.title,
     required this.statusLabel,
-    required this.connectionStatus,
     required this.avatarName,
     required this.avatarUrl,
     required this.presenceColor,
@@ -106,8 +105,7 @@ class _ChatHeader extends StatelessWidget {
   });
 
   final String title;
-  final String statusLabel;
-  final ChatConnectionStatus connectionStatus;
+  final String? statusLabel;
   final String avatarName;
   final String? avatarUrl;
   final Color? presenceColor;
@@ -146,48 +144,39 @@ class _ChatHeader extends StatelessWidget {
                     context,
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    if (presenceColor != null) ...[
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: presenceColor,
-                          shape: BoxShape.circle,
+                if (statusLabel != null) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      if (presenceColor != null) ...[
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: presenceColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      Expanded(
+                        child: Text(
+                          statusLabel!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: const Color(0xFF6F6A63)),
                         ),
                       ),
-                      const SizedBox(width: 8),
                     ],
-                    Expanded(
-                      child: Text(
-                        _connectionLabel(context, statusLabel),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF6F6A63),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ],
             ),
           ),
         ),
       ],
     );
-  }
-
-  String _connectionLabel(BuildContext context, String fallbackStatus) {
-    return switch (connectionStatus) {
-      ChatConnectionStatus.connecting => context.l10n.connecting,
-      ChatConnectionStatus.reconnecting => context.l10n.reconnecting,
-      ChatConnectionStatus.failed => context.l10n.liveUpdatesUnavailable,
-      ChatConnectionStatus.connected => fallbackStatus,
-      ChatConnectionStatus.disconnected => fallbackStatus,
-    };
   }
 }
 
@@ -200,7 +189,6 @@ class _RequestAccessPanel extends StatelessWidget {
     required this.accesses,
     required this.currentUserId,
     required this.otherUserId,
-    required this.isLoading,
     required this.isUpdating,
     required this.isExpanded,
     required this.onToggleExpanded,
@@ -217,7 +205,6 @@ class _RequestAccessPanel extends StatelessWidget {
   final List<PartRequestAccess> accesses;
   final int currentUserId;
   final int? otherUserId;
-  final bool isLoading;
   final bool isUpdating;
   final bool isExpanded;
   final VoidCallback onToggleExpanded;
@@ -231,6 +218,8 @@ class _RequestAccessPanel extends StatelessWidget {
     final request = selectedRequest;
     final statusLabel =
         request?.statusDetails?.label ?? selectedProduct.statusDetails?.label;
+    final statusCode =
+        request?.statusDetails?.code ?? selectedProduct.statusDetails?.code;
     final isOwner = request?.isOwner ?? false;
     final hasManageAccess = request?.canUpdateStatus == true;
 
@@ -283,6 +272,12 @@ class _RequestAccessPanel extends StatelessWidget {
         : hasManageAccess || acceptedAccess != null
         ? const Color(0xFFB7E4C7)
         : const Color(0xFFE4E7EC);
+    final statusColor = switch (statusCode) {
+      'completed' || 'closed' => const Color(0xFF087443),
+      'rejected' || 'cancelled' => const Color(0xFFB42318),
+      'in_progress' || 'in-progress' => const Color(0xFF175CD3),
+      _ => const Color(0xFFB54708),
+    };
 
     return Container(
       width: double.infinity,
@@ -365,24 +360,24 @@ class _RequestAccessPanel extends StatelessWidget {
               ],
             ),
             if (statusLabel != null && statusLabel.trim().isNotEmpty) ...[
-              // const SizedBox(height: 10),
-              // Container(
-              //   padding: const EdgeInsets.symmetric(
-              //     horizontal: 10,
-              //     vertical: 6,
-              //   ),
-              //   decoration: BoxDecoration(
-              //     color: const Color(0xFFE3EEF1),
-              //     borderRadius: BorderRadius.circular(999),
-              //   ),
-              //   child: Text(
-              //     statusLabel,
-              //     style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              //       color: const Color(0xFF0C4A63),
-              //       fontWeight: FontWeight.w800,
-              //     ),
-              //   ),
-              // ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  statusLabel,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: statusColor,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
             ],
             if (isExpanded) ...[
               const SizedBox(height: 12),
@@ -400,30 +395,27 @@ class _RequestAccessPanel extends StatelessWidget {
                   ],
                 ),
               if (sharedProducts.length > 1) const SizedBox(height: 12),
-              if (isLoading && request == null)
-                const LinearProgressIndicator()
-              else
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: panelBorderColor),
-                  ),
-                  child: Text(
-                    pendingSupplierName != null &&
-                            isOwner &&
-                            pendingOtherAccess != null
-                        ? '$pendingSupplierName: $infoText'
-                        : infoText,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: const Color(0xFF344054),
-                      height: 1.35,
-                      fontWeight: FontWeight.w600,
-                    ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: panelBorderColor),
+                ),
+                child: Text(
+                  pendingSupplierName != null &&
+                          isOwner &&
+                          pendingOtherAccess != null
+                      ? '$pendingSupplierName: $infoText'
+                      : infoText,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: const Color(0xFF344054),
+                    height: 1.35,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
+              ),
               if (request?.grantedUser != null) ...[
                 const SizedBox(height: 8),
                 Text(

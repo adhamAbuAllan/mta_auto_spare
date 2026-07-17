@@ -29,6 +29,8 @@
   },
   "conversations": "Разговоры",
   "createAccount": "Создать учетную запись",
+  "phoneAlreadyRegistered": "Для этого номера телефона уже есть аккаунт. Войдите вместо этого.",
+  "registrationPhoneCheckFailed": "Не удалось проверить этот номер телефона. Повторите попытку.",
   "createNewAccount": "Создать новую учетную запись",
   "creating": "Создание...",
   "daysAgo": "{count} дней назад",
@@ -115,6 +117,13 @@
   "signingIn": "Вход в систему...",
   "signInToBrowseSellerRequests": "Войдите, чтобы запросить запасные части, пообщаться с поставщиками и управлять своими предложениями.",
   "somethingWentWrong": "Что-то пошло не так",
+  "errorNetwork": "Не удалось подключиться к серверу. Проверьте интернет и повторите попытку.",
+  "errorNotFound": "Не удалось найти запрошенную информацию.",
+  "errorUnauthorized": "Срок действия сеанса истек. Войдите снова.",
+  "errorForbidden": "У вас нет разрешения выполнить это действие.",
+  "errorServer": "Сервер временно недоступен. Повторите попытку позже.",
+  "errorInvalidRequest": "Проверьте данные и повторите попытку.",
+  "errorUnexpected": "Что-то пошло не так. Повторите попытку.",
   "supplierRole": "Поставщик",
   "suppliersCanPostRequests": "Клиенты запрашивают запасные части. Поставщики выбирают поддерживаемые автомобили и получают соответствующие возможности.",
   "theCarCatalogCouldNotBeLoaded": "Не удалось загрузить каталог автомобилей.",
@@ -200,6 +209,7 @@
   "sharedRequest": "Поделился запросом",
   "showOriginal": "Показать оригинал",
   "showTranslation": "Показать перевод",
+  "realTimeTranslationFeatureAnnouncement": "Новая функция: теперь доступен перевод в реальном времени. Сообщения автоматически переводятся между участниками чата, использующими разные языки.",
   "typing": "Ввод...",
   "unableToPlayVoiceMessage": "Невозможно воспроизвести голосовое сообщение",
   "unableToSeekVoiceMessage": "Невозможно найти голосовое сообщение",
@@ -612,5 +622,37 @@
       }
     }
   },
-  "phoneVerificationFailed": "Проверка телефона не удалась."
+  "phoneVerificationFailed": "Проверка телефона не удалась.",
+  "adminDashboardTab": "Панель",
+  "adminDashboardCouldNotLoad": "Не удалось загрузить панель сейчас.",
+  "adminUsersTotal": "Всего пользователей",
+  "adminAccountsTotal": "Аккаунты",
+  "adminActiveUsers": "Активные пользователи",
+  "adminBlockedUsers": "Заблокированные пользователи",
+  "adminSuppliers": "Поставщики",
+  "adminOpenReports": "Открытые жалобы",
+  "adminRequests": "Запросы запчастей",
+  "adminConversations": "Диалоги",
+  "adminMessages": "Сообщения",
+  "adminCatalogItems": "Элементы каталога",
+  "adminActiveSubscriptions": "Активные подписки",
+  "adminPendingPayments": "Ожидающие платежи"
+  ,"adminSearchUsers": "Поиск пользователей"
+  ,"adminUserStatusAll": "Все пользователи"
+  ,"adminManageUser": "Управление пользователем"
+  ,"adminChangeRole": "Изменить роль"
+  ,"adminResetPassword": "Сбросить пароль"
+  ,"adminVerifyPhone": "Подтвердить телефон"
+  ,"adminPhoneVerified": "Телефон подтверждён"
+  ,"adminCatalog": "Каталог"
+  ,"adminCatalogCouldNotLoad": "Не удалось загрузить каталог сейчас."
+  ,"adminAddSparePart": "Добавить запчасть"
+  ,"adminSpareParts": "Запчасти"
+  ,"adminItemName": "Название элемента"
+  ,"adminItemDescription": "Описание"
+  ,"adminItemPrice": "Цена"
+  ,"adminNoModels": "Нет моделей"
+  ,"adminAddMake": "Добавить марку"
+  ,"adminAddModel": "Добавить модель"
+  ,"adminNoSupplierResponses": "Ответов поставщиков пока нет"
 }

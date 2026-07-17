@@ -61,6 +61,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get createAccount => 'Создать учетную запись';
 
   @override
+  String get phoneAlreadyRegistered =>
+      'Для этого номера телефона уже есть аккаунт. Войдите вместо этого.';
+
+  @override
+  String get registrationPhoneCheckFailed =>
+      'Не удалось проверить этот номер телефона. Повторите попытку.';
+
+  @override
   String get createNewAccount => 'Создать новую учетную запись';
 
   @override
@@ -233,6 +241,29 @@ class AppLocalizationsRu extends AppLocalizations {
   String get somethingWentWrong => 'Что-то пошло не так';
 
   @override
+  String get errorNetwork =>
+      'Не удалось подключиться к серверу. Проверьте интернет и повторите попытку.';
+
+  @override
+  String get errorNotFound => 'Не удалось найти запрошенную информацию.';
+
+  @override
+  String get errorUnauthorized => 'Срок действия сеанса истек. Войдите снова.';
+
+  @override
+  String get errorForbidden => 'У вас нет разрешения выполнить это действие.';
+
+  @override
+  String get errorServer =>
+      'Сервер временно недоступен. Повторите попытку позже.';
+
+  @override
+  String get errorInvalidRequest => 'Проверьте данные и повторите попытку.';
+
+  @override
+  String get errorUnexpected => 'Что-то пошло не так. Повторите попытку.';
+
+  @override
   String get supplierRole => 'Поставщик';
 
   @override
@@ -396,6 +427,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get showTranslation => 'Показать перевод';
+
+  @override
+  String get realTimeTranslationFeatureAnnouncement =>
+      'Новая функция: теперь доступен перевод в реальном времени. Сообщения автоматически переводятся между участниками чата, использующими разные языки.';
 
   @override
   String get typing => 'Ввод...';
@@ -1300,4 +1335,101 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get phoneVerificationFailed => 'Проверка телефона не удалась.';
+
+  @override
+  String get adminDashboardTab => 'Панель';
+
+  @override
+  String get adminDashboardCouldNotLoad =>
+      'Не удалось загрузить панель сейчас.';
+
+  @override
+  String get adminUsersTotal => 'Всего пользователей';
+
+  @override
+  String get adminAccountsTotal => 'Аккаунты';
+
+  @override
+  String get adminActiveUsers => 'Активные пользователи';
+
+  @override
+  String get adminBlockedUsers => 'Заблокированные пользователи';
+
+  @override
+  String get adminSuppliers => 'Поставщики';
+
+  @override
+  String get adminOpenReports => 'Открытые жалобы';
+
+  @override
+  String get adminRequests => 'Запросы запчастей';
+
+  @override
+  String get adminConversations => 'Диалоги';
+
+  @override
+  String get adminMessages => 'Сообщения';
+
+  @override
+  String get adminCatalogItems => 'Элементы каталога';
+
+  @override
+  String get adminActiveSubscriptions => 'Активные подписки';
+
+  @override
+  String get adminPendingPayments => 'Ожидающие платежи';
+
+  @override
+  String get adminSearchUsers => 'Поиск пользователей';
+
+  @override
+  String get adminUserStatusAll => 'Все пользователи';
+
+  @override
+  String get adminManageUser => 'Управление пользователем';
+
+  @override
+  String get adminChangeRole => 'Изменить роль';
+
+  @override
+  String get adminResetPassword => 'Сбросить пароль';
+
+  @override
+  String get adminVerifyPhone => 'Подтвердить телефон';
+
+  @override
+  String get adminPhoneVerified => 'Телефон подтверждён';
+
+  @override
+  String get adminCatalog => 'Каталог';
+
+  @override
+  String get adminCatalogCouldNotLoad => 'Не удалось загрузить каталог сейчас.';
+
+  @override
+  String get adminAddSparePart => 'Добавить запчасть';
+
+  @override
+  String get adminSpareParts => 'Запчасти';
+
+  @override
+  String get adminItemName => 'Название элемента';
+
+  @override
+  String get adminItemDescription => 'Описание';
+
+  @override
+  String get adminItemPrice => 'Цена';
+
+  @override
+  String get adminNoModels => 'Нет моделей';
+
+  @override
+  String get adminAddMake => 'Добавить марку';
+
+  @override
+  String get adminAddModel => 'Добавить модель';
+
+  @override
+  String get adminNoSupplierResponses => 'Ответов поставщиков пока нет';
 }

@@ -9,6 +9,7 @@ class ApiUser {
     required this.name,
     this.avatar,
     this.phone,
+    this.phoneVerifiedAt,
     this.city,
     required this.role,
     this.rating,
@@ -27,6 +28,7 @@ class ApiUser {
   final String name;
   final String? avatar;
   final String? phone;
+  final DateTime? phoneVerifiedAt;
   final String? city;
   final String role;
   final String? rating;
@@ -46,6 +48,7 @@ class ApiUser {
       name: stringFromJson(json['name']) ?? '',
       avatar: stringFromJson(json['avatar']),
       phone: stringFromJson(json['phone']),
+      phoneVerifiedAt: dateTimeFromJson(json['phone_verified_at']),
       city: stringFromJson(json['city']),
       role: stringFromJson(json['role']) ?? '',
       rating: stringFromJson(json['rating']),
@@ -68,6 +71,9 @@ class ApiUser {
     }
     if (phone != null && phone!.isNotEmpty) {
       json['phone'] = phone;
+    }
+    if (phoneVerifiedAt != null) {
+      json['phone_verified_at'] = phoneVerifiedAt!.toIso8601String();
     }
     if (city != null) {
       json['city'] = city;

@@ -178,7 +178,7 @@ class _FullCarModelCard extends StatelessWidget {
                   ),
                 const SizedBox(height: 4),
                 Text(
-                  carModel.makeName,
+                  carModel.makeName ?? "",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
@@ -188,7 +188,7 @@ class _FullCarModelCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  carModel.name,
+                  carModel.name ?? "",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -252,7 +252,7 @@ class _CompactCarModelCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    carModel.makeName,
+                    carModel.makeName ?? "",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -262,7 +262,7 @@ class _CompactCarModelCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    carModel.name,
+                    carModel.name ?? "",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -309,6 +309,7 @@ class _CarModelImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final normalizedUrl = ApiConstants.resolveUrl(imageUrl ?? '');
+    final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
     if (normalizedUrl.trim().isEmpty) {
       return _CarImagePlaceholder(height: height, width: width);
     }
@@ -317,6 +318,8 @@ class _CarModelImage extends StatelessWidget {
       normalizedUrl,
       width: width,
       height: height,
+      cacheWidth: width.isFinite ? (width * devicePixelRatio).ceil() : null,
+      cacheHeight: height.isFinite ? (height * devicePixelRatio).ceil() : null,
       fit: BoxFit.cover,
       headers: const {
         ApiConstants.ngrokHeaderKey: ApiConstants.ngrokHeaderValue,

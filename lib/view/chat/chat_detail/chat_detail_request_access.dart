@@ -30,7 +30,6 @@ abstract class _ChatDetailPageStateRequestAccess
       }
       setState(() {
         _selectedSharedRequestId = null;
-        _isLoadingSharedRequestState = false;
         _sharedRequestsById.clear();
         _sharedAccessesByRequestId.clear();
       });
@@ -70,10 +69,6 @@ abstract class _ChatDetailPageStateRequestAccess
       return;
     }
 
-    if (mounted) {
-      setState(() => _isLoadingSharedRequestState = true);
-    }
-
     try {
       final requestApi = ref.read(requestApiProvider);
       final request = forceReload || !hasRequest
@@ -96,10 +91,6 @@ abstract class _ChatDetailPageStateRequestAccess
     } catch (_) {
       if (!mounted) {
         return;
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoadingSharedRequestState = false);
       }
     }
   }
@@ -138,9 +129,9 @@ abstract class _ChatDetailPageStateRequestAccess
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error.message)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(localizeErrorText(error.message, context.l10n))),
+      );
     } catch (_) {
       if (!mounted) {
         return;
@@ -175,9 +166,9 @@ abstract class _ChatDetailPageStateRequestAccess
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error.message)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(localizeErrorText(error.message, context.l10n))),
+      );
     } catch (_) {
       if (!mounted) {
         return;
@@ -212,9 +203,9 @@ abstract class _ChatDetailPageStateRequestAccess
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error.message)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(localizeErrorText(error.message, context.l10n))),
+      );
     } catch (_) {
       if (!mounted) {
         return;

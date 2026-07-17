@@ -9,10 +9,34 @@ class UserApi {
 
   final Dio _dio;
 
-  Future<ApiPage<ApiUser>> getUsers({String? pageUrl}) async {
+  Future<AdminDashboardSummary> getAdminDashboard() async {
     try {
+      final response = await _dio.get(ApiEndpoints.adminDashboard);
+      return AdminDashboardSummary.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
+  Future<ApiPage<ApiUser>> getUsers({
+    String? pageUrl,
+    String? search,
+    String? role,
+    String? status,
+  }) async {
+    try {
+      final queryParameters = <String, dynamic>{};
+      if (search?.trim().isNotEmpty == true) {
+        queryParameters['search'] = search!.trim();
+      }
+      if (role?.trim().isNotEmpty == true) {
+        queryParameters['role'] = role!.trim();
+      }
+      if (status?.trim().isNotEmpty == true) {
+        queryParameters['status'] = status!.trim();
+      }
       final response = pageUrl == null
-          ? await _dio.get(ApiEndpoints.users)
+          ? await _dio.get(ApiEndpoints.users, queryParameters: queryParameters)
           : await _dio.get(ApiConstants.resolveBackendUrl(pageUrl));
       return ApiPage<ApiUser>.fromJson(_asMap(response.data), ApiUser.fromJson);
     } on DioException catch (error) {
@@ -117,6 +141,47 @@ class UserApi {
   Future<ApiUser> unblockUser(int userId) async {
     try {
       final response = await _dio.post('${ApiEndpoints.users}$userId/unblock/');
+      return ApiUser.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
+  Future<ApiUser> setUserRole({
+    required int userId,
+    required String role,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '${ApiEndpoints.users}$userId/set-role/',
+        data: {'role': role.trim()},
+      );
+      return ApiUser.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
+  Future<ApiUser> resetUserPassword({
+    required int userId,
+    required String password,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '${ApiEndpoints.users}$userId/reset-password/',
+        data: {'password': password},
+      );
+      return ApiUser.fromJson(_asMap(response.data));
+    } on DioException catch (error) {
+      throw ApiException.fromDioException(error);
+    }
+  }
+
+  Future<ApiUser> verifyUserPhone(int userId) async {
+    try {
+      final response = await _dio.post(
+        '${ApiEndpoints.users}$userId/verify-phone/',
+      );
       return ApiUser.fromJson(_asMap(response.data));
     } on DioException catch (error) {
       throw ApiException.fromDioException(error);

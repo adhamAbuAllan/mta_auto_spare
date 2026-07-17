@@ -192,6 +192,18 @@ abstract class AppLocalizations {
   /// **'Create account'**
   String get createAccount;
 
+  /// No description provided for @phoneAlreadyRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'This phone number already has an account. Please sign in instead.'**
+  String get phoneAlreadyRegistered;
+
+  /// No description provided for @registrationPhoneCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not check this phone number right now. Please try again.'**
+  String get registrationPhoneCheckFailed;
+
   /// No description provided for @createNewAccount.
   ///
   /// In en, this message translates to:
@@ -498,6 +510,48 @@ abstract class AppLocalizations {
   /// **'Something went wrong'**
   String get somethingWentWrong;
 
+  /// No description provided for @errorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect to the server. Check your internet connection and try again.'**
+  String get errorNetwork;
+
+  /// No description provided for @errorNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested information could not be found.'**
+  String get errorNotFound;
+
+  /// No description provided for @errorUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please sign in again.'**
+  String get errorUnauthorized;
+
+  /// No description provided for @errorForbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to perform this action.'**
+  String get errorForbidden;
+
+  /// No description provided for @errorServer.
+  ///
+  /// In en, this message translates to:
+  /// **'The server is temporarily unavailable. Please try again later.'**
+  String get errorServer;
+
+  /// No description provided for @errorInvalidRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check the information and try again.'**
+  String get errorInvalidRequest;
+
+  /// No description provided for @errorUnexpected.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get errorUnexpected;
+
   /// No description provided for @supplierRole.
   ///
   /// In en, this message translates to:
@@ -797,6 +851,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show translation'**
   String get showTranslation;
+
+  /// No description provided for @realTimeTranslationFeatureAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'New feature: real-time translation is now available. Messages are automatically translated between chat participants who use different languages.'**
+  String get realTimeTranslationFeatureAnnouncement;
 
   /// No description provided for @typing.
   ///
@@ -2375,6 +2435,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Phone verification failed.'**
   String get phoneVerificationFailed;
+
+  /// No description provided for @adminDashboardTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get adminDashboardTab;
+
+  /// No description provided for @adminDashboardCouldNotLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'The dashboard could not be loaded right now.'**
+  String get adminDashboardCouldNotLoad;
+
+  /// No description provided for @adminUsersTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total users'**
+  String get adminUsersTotal;
+
+  /// No description provided for @adminAccountsTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts'**
+  String get adminAccountsTotal;
+
+  /// No description provided for @adminActiveUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Active users'**
+  String get adminActiveUsers;
+
+  /// No description provided for @adminBlockedUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked users'**
+  String get adminBlockedUsers;
+
+  /// No description provided for @adminSuppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppliers'**
+  String get adminSuppliers;
+
+  /// No description provided for @adminOpenReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Open reports'**
+  String get adminOpenReports;
+
+  /// No description provided for @adminRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Part requests'**
+  String get adminRequests;
+
+  /// No description provided for @adminConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations'**
+  String get adminConversations;
+
+  /// No description provided for @adminMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get adminMessages;
+
+  /// No description provided for @adminCatalogItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog items'**
+  String get adminCatalogItems;
+
+  /// No description provided for @adminActiveSubscriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Active subscriptions'**
+  String get adminActiveSubscriptions;
+
+  /// No description provided for @adminPendingPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending payments'**
+  String get adminPendingPayments;
+
+  /// No description provided for @adminSearchUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search users'**
+  String get adminSearchUsers;
+
+  /// No description provided for @adminUserStatusAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All users'**
+  String get adminUserStatusAll;
+
+  /// No description provided for @adminManageUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage user'**
+  String get adminManageUser;
+
+  /// No description provided for @adminChangeRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Change role'**
+  String get adminChangeRole;
+
+  /// No description provided for @adminResetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get adminResetPassword;
+
+  /// No description provided for @adminVerifyPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify phone'**
+  String get adminVerifyPhone;
+
+  /// No description provided for @adminPhoneVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone verified'**
+  String get adminPhoneVerified;
+
+  /// No description provided for @adminCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog'**
+  String get adminCatalog;
+
+  /// No description provided for @adminCatalogCouldNotLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'The catalog could not be loaded right now.'**
+  String get adminCatalogCouldNotLoad;
+
+  /// No description provided for @adminAddSparePart.
+  ///
+  /// In en, this message translates to:
+  /// **'Add spare part'**
+  String get adminAddSparePart;
+
+  /// No description provided for @adminSpareParts.
+  ///
+  /// In en, this message translates to:
+  /// **'Spare parts'**
+  String get adminSpareParts;
+
+  /// No description provided for @adminItemName.
+  ///
+  /// In en, this message translates to:
+  /// **'Item name'**
+  String get adminItemName;
+
+  /// No description provided for @adminItemDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get adminItemDescription;
+
+  /// No description provided for @adminItemPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get adminItemPrice;
+
+  /// No description provided for @adminNoModels.
+  ///
+  /// In en, this message translates to:
+  /// **'No models'**
+  String get adminNoModels;
+
+  /// No description provided for @adminAddMake.
+  ///
+  /// In en, this message translates to:
+  /// **'Add make'**
+  String get adminAddMake;
+
+  /// No description provided for @adminAddModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add model'**
+  String get adminAddModel;
+
+  /// No description provided for @adminNoSupplierResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'No supplier responses yet'**
+  String get adminNoSupplierResponses;
 }
 
 class _AppLocalizationsDelegate

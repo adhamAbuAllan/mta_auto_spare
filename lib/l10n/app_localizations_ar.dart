@@ -60,6 +60,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get createAccount => 'إنشاء حساب';
 
   @override
+  String get phoneAlreadyRegistered =>
+      'رقم الهاتف هذا مرتبط بحساب بالفعل. يرجى تسجيل الدخول بدلًا من ذلك.';
+
+  @override
+  String get registrationPhoneCheckFailed =>
+      'تعذر التحقق من رقم الهاتف الآن. حاول مرة أخرى.';
+
+  @override
   String get createNewAccount => 'إنشاء حساب جديد';
 
   @override
@@ -227,6 +235,28 @@ class AppLocalizationsAr extends AppLocalizations {
   String get somethingWentWrong => 'حدث خطأ ما';
 
   @override
+  String get errorNetwork =>
+      'تعذر الاتصال بالخادم. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.';
+
+  @override
+  String get errorNotFound => 'تعذر العثور على المعلومات المطلوبة.';
+
+  @override
+  String get errorUnauthorized => 'انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.';
+
+  @override
+  String get errorForbidden => 'لا تملك صلاحية تنفيذ هذا الإجراء.';
+
+  @override
+  String get errorServer => 'الخادم غير متاح مؤقتًا. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get errorInvalidRequest => 'تحقق من المعلومات وحاول مرة أخرى.';
+
+  @override
+  String get errorUnexpected => 'حدث خطأ ما. حاول مرة أخرى.';
+
+  @override
   String get supplierRole => 'مورد';
 
   @override
@@ -388,6 +418,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get showTranslation => 'إظهار الترجمة';
+
+  @override
+  String get realTimeTranslationFeatureAnnouncement =>
+      'ميزة جديدة: الترجمة الفورية متاحة الآن. تُترجم الرسائل تلقائيًا بين المشاركين في الدردشة الذين يستخدمون لغات مختلفة.';
 
   @override
   String get typing => 'يكتب...';
@@ -1270,4 +1304,100 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get phoneVerificationFailed => 'فشل التحقق من الهاتف.';
+
+  @override
+  String get adminDashboardTab => 'لوحة المعلومات';
+
+  @override
+  String get adminDashboardCouldNotLoad => 'تعذر تحميل لوحة المعلومات الآن.';
+
+  @override
+  String get adminUsersTotal => 'إجمالي المستخدمين';
+
+  @override
+  String get adminAccountsTotal => 'الحسابات';
+
+  @override
+  String get adminActiveUsers => 'المستخدمون النشطون';
+
+  @override
+  String get adminBlockedUsers => 'المستخدمون المحظورون';
+
+  @override
+  String get adminSuppliers => 'المورّدون';
+
+  @override
+  String get adminOpenReports => 'البلاغات المفتوحة';
+
+  @override
+  String get adminRequests => 'طلبات القطع';
+
+  @override
+  String get adminConversations => 'المحادثات';
+
+  @override
+  String get adminMessages => 'الرسائل';
+
+  @override
+  String get adminCatalogItems => 'عناصر الكتالوج';
+
+  @override
+  String get adminActiveSubscriptions => 'الاشتراكات النشطة';
+
+  @override
+  String get adminPendingPayments => 'المدفوعات المعلّقة';
+
+  @override
+  String get adminSearchUsers => 'البحث عن المستخدمين';
+
+  @override
+  String get adminUserStatusAll => 'كل المستخدمين';
+
+  @override
+  String get adminManageUser => 'إدارة المستخدم';
+
+  @override
+  String get adminChangeRole => 'تغيير الدور';
+
+  @override
+  String get adminResetPassword => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get adminVerifyPhone => 'التحقق من الهاتف';
+
+  @override
+  String get adminPhoneVerified => 'تم التحقق من الهاتف';
+
+  @override
+  String get adminCatalog => 'الكتالوج';
+
+  @override
+  String get adminCatalogCouldNotLoad => 'تعذر تحميل الكتالوج الآن.';
+
+  @override
+  String get adminAddSparePart => 'إضافة قطعة غيار';
+
+  @override
+  String get adminSpareParts => 'قطع الغيار';
+
+  @override
+  String get adminItemName => 'اسم العنصر';
+
+  @override
+  String get adminItemDescription => 'الوصف';
+
+  @override
+  String get adminItemPrice => 'السعر';
+
+  @override
+  String get adminNoModels => 'لا توجد موديلات';
+
+  @override
+  String get adminAddMake => 'إضافة شركة مصنّعة';
+
+  @override
+  String get adminAddModel => 'إضافة موديل';
+
+  @override
+  String get adminNoSupplierResponses => 'لا توجد ردود من المورّدين بعد';
 }

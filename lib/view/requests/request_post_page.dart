@@ -11,6 +11,7 @@ import '../../models/models.dart';
 import '../chat/chat_detail_page.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/app_panel.dart';
+import '../common_widgets/async_error_message.dart';
 import '../common_widgets/car_model_card.dart';
 import '../common_widgets/time_formatter.dart';
 import '../common_widgets/user_avatar.dart';
@@ -305,9 +306,9 @@ class _RequestPostPageState extends ConsumerState<RequestPostPage> {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error.message)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(localizeErrorText(error.message, context.l10n))),
+      );
     } catch (_) {
       if (!mounted) {
         return;

@@ -97,6 +97,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final isSupplierProfile = profile.role == 'supplier';
     final carCatalogErrorMessage = asyncErrorMessage(
       carCatalog.error,
+      l10n: context.l10n,
       fallback: context.l10n.carCatalogCouldNotBeLoadedRightNow,
     );
 
@@ -111,250 +112,258 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 680),
-              child: AppPanel(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.l10n.keepYourProfileUpToDate,
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.w900),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        isSupplierProfile
-                            ? context.l10n.supplierProfileIntro
-                            : context.l10n.buyerProfileIntro,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: const Color(0xFF6F6A63),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      _AvatarEditorSection(
-                        profile: profile,
-                        selectedAvatarImage: _selectedAvatarImage,
-                        onPickAvatar: isBusy ? null : _pickAvatar,
-                        onClearSelection: _selectedAvatarImage == null || isBusy
-                            ? null
-                            : () {
-                                setState(() => _selectedAvatarImage = null);
-                              },
-                      ),
-                      const SizedBox(height: 16),
-                      _ReadOnlyProfileMeta(profile: profile),
-                      const SizedBox(height: 16),
-                      if (updateState.errorMessage != null) ...[
-                        AppErrorCard(message: updateState.errorMessage!),
-                        const SizedBox(height: 16),
-                      ],
-                      if (_deleteAccountError != null) ...[
-                        AppErrorCard(message: _deleteAccountError!),
-                        const SizedBox(height: 16),
-                      ],
-                      TextFormField(
-                        controller: _nameController,
-                        textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                          labelText: context.l10n.fullName,
-                          hintText: context.l10n.fullNameHint,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return context.l10n.enterYourFullName;
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 14),
-                      TextFormField(
-                        controller: _phoneController,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          labelText: context.l10n.phone,
-                          hintText: authPhoneHintText,
-                        ),
-                        validator: (value) {
-                          return authPhoneInputError(value ?? '');
-                        },
-                      ),
-                      const SizedBox(height: 14),
-                      TextFormField(
-                        controller: _cityController,
-                        textInputAction: TextInputAction.done,
-                        decoration: InputDecoration(
-                          labelText: context.l10n.cityLabel,
-                          hintText: context.l10n.cityOptionalHint,
-                        ),
-                      ),
-                      if (isSupplierProfile) ...[
-                        const SizedBox(height: 22),
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: FocusManager.instance.primaryFocus?.unfocus,
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.all(20),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 680),
+                child: AppPanel(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          context.l10n.carsIHavePartsFor,
-                          style: Theme.of(context).textTheme.titleMedium
+                          context.l10n.keepYourProfileUpToDate,
+                          style: Theme.of(context).textTheme.headlineSmall
                               ?.copyWith(fontWeight: FontWeight.w900),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 10),
                         Text(
-                          context.l10n.pickTheCarNamesYouSupplyPartsFor,
-                          style: Theme.of(context).textTheme.bodyMedium
+                          isSupplierProfile
+                              ? context.l10n.supplierProfileIntro
+                              : context.l10n.buyerProfileIntro,
+                          style: Theme.of(context).textTheme.bodyLarge
                               ?.copyWith(color: const Color(0xFF6F6A63)),
                         ),
-                        const SizedBox(height: 14),
-                        if (selectedMakes.isEmpty)
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF8F3EC),
-                              borderRadius: BorderRadius.circular(18),
-                              border: Border.all(
-                                color: const Color(0xFFE7DCCE),
-                              ),
-                            ),
-                            child: Text(
-                              context.l10n.noCarNamesSelectedYet,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: const Color(0xFF6F6A63)),
-                            ),
-                          )
-                        else
-                          Wrap(
-                            spacing: 12,
-                            runSpacing: 12,
-                            children: [
-                              for (final make in selectedMakes)
-                                _SelectedMakeChip(
-                                  make: make,
-                                  onRemove: () {
-                                    setState(() {
-                                      _selectedCarMakeIds.remove(make.id);
-                                      if (_selectedCarMakeId == make.id) {
-                                        _selectedCarMakeId = null;
-                                      }
-                                    });
-                                  },
-                                ),
-                            ],
-                          ),
+                        const SizedBox(height: 20),
+                        _AvatarEditorSection(
+                          profile: profile,
+                          selectedAvatarImage: _selectedAvatarImage,
+                          onPickAvatar: isBusy ? null : _pickAvatar,
+                          onClearSelection:
+                              _selectedAvatarImage == null || isBusy
+                              ? null
+                              : () {
+                                  setState(() => _selectedAvatarImage = null);
+                                },
+                        ),
                         const SizedBox(height: 16),
-                        if (carCatalog.isLoading)
-                          const LinearProgressIndicator()
-                        else if (carCatalog.hasError)
-                          AppErrorCard(
-                            message:
-                                '${context.l10n.theCarCatalogCouldNotBeLoaded}\n$carCatalogErrorMessage',
-                            onRetry: () => ref.invalidate(carCatalogProvider),
-                          )
-                        else ...[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: DropdownButtonFormField<int>(
-                                  key: ValueKey(
-                                    'profile-make-picker-${selectedPickerMakeId ?? 'none'}-${selectableMakes.length}',
-                                  ),
-                                  initialValue: selectedPickerMakeId,
-                                  decoration: InputDecoration(
-                                    labelText: context.l10n.carName,
-                                  ),
-                                  items: [
-                                    for (final make in selectableMakes)
-                                      DropdownMenuItem<int>(
-                                        value: make.id,
-                                        child: Text(make.name),
-                                      ),
-                                  ],
-                                  onChanged: selectableMakes.isEmpty
-                                      ? null
-                                      : (value) {
-                                          setState(() {
-                                            _selectedCarMakeId = value;
-                                          });
-                                        },
+                        _ReadOnlyProfileMeta(profile: profile),
+                        const SizedBox(height: 16),
+                        if (updateState.errorMessage != null) ...[
+                          AppErrorCard(message: updateState.errorMessage!),
+                          const SizedBox(height: 16),
+                        ],
+                        if (_deleteAccountError != null) ...[
+                          AppErrorCard(message: _deleteAccountError!),
+                          const SizedBox(height: 16),
+                        ],
+                        TextFormField(
+                          controller: _nameController,
+                          textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.fullName,
+                            hintText: context.l10n.fullNameHint,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return context.l10n.enterYourFullName;
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: _phoneController,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.phone,
+                            hintText: authPhoneHintText,
+                          ),
+                          validator: (value) {
+                            return authPhoneInputError(value ?? '');
+                          },
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: _cityController,
+                          textInputAction: TextInputAction.done,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.cityLabel,
+                            hintText: context.l10n.cityOptionalHint,
+                          ),
+                        ),
+                        if (isSupplierProfile) ...[
+                          const SizedBox(height: 22),
+                          Text(
+                            context.l10n.carsIHavePartsFor,
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.w900),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            context.l10n.pickTheCarNamesYouSupplyPartsFor,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: const Color(0xFF6F6A63)),
+                          ),
+                          const SizedBox(height: 14),
+                          if (selectedMakes.isEmpty)
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF8F3EC),
+                                borderRadius: BorderRadius.circular(18),
+                                border: Border.all(
+                                  color: const Color(0xFFE7DCCE),
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              FilledButton.tonalIcon(
-                                onPressed: selectedPickerMakeId == null
-                                    ? null
-                                    : () {
-                                        final selectedMakeId =
-                                            selectedPickerMakeId;
-                                        setState(() {
-                                          _selectedCarMakeIds.add(
-                                            selectedMakeId,
-                                          );
-                                          _selectedCarMakeId = null;
-                                        });
-                                      },
-                                icon: const Icon(Icons.add_rounded),
-                                label: Text(context.l10n.add),
-                              ),
-                            ],
-                          ),
-                          if (selectableMakes.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 12),
                               child: Text(
-                                context
-                                    .l10n
-                                    .allAvailableCarNamesAlreadySelected,
-                                style: Theme.of(context).textTheme.bodySmall
+                                context.l10n.noCarNamesSelectedYet,
+                                style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(color: const Color(0xFF6F6A63)),
                               ),
+                            )
+                          else
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 12,
+                              children: [
+                                for (final make in selectedMakes)
+                                  _SelectedMakeChip(
+                                    make: make,
+                                    onRemove: () {
+                                      setState(() {
+                                        _selectedCarMakeIds.remove(make.id);
+                                        if (_selectedCarMakeId == make.id) {
+                                          _selectedCarMakeId = null;
+                                        }
+                                      });
+                                    },
+                                  ),
+                              ],
                             ),
+                          const SizedBox(height: 16),
+                          if (carCatalog.isLoading)
+                            const LinearProgressIndicator()
+                          else if (carCatalog.hasError)
+                            AppErrorCard(
+                              message:
+                                  '${context.l10n.theCarCatalogCouldNotBeLoaded}\n$carCatalogErrorMessage',
+                              onRetry: () => ref.invalidate(carCatalogProvider),
+                            )
+                          else ...[
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: DropdownButtonFormField<int>(
+                                    key: ValueKey(
+                                      'profile-make-picker-${selectedPickerMakeId ?? 'none'}-${selectableMakes.length}',
+                                    ),
+                                    initialValue: selectedPickerMakeId,
+                                    decoration: InputDecoration(
+                                      labelText: context.l10n.carName,
+                                    ),
+                                    items: [
+                                      for (final make in selectableMakes)
+                                        DropdownMenuItem<int>(
+                                          value: make.id,
+                                          child: Text(make.name),
+                                        ),
+                                    ],
+                                    onChanged: selectableMakes.isEmpty
+                                        ? null
+                                        : (value) {
+                                            setState(() {
+                                              _selectedCarMakeId = value;
+                                            });
+                                          },
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                FilledButton.tonalIcon(
+                                  onPressed: selectedPickerMakeId == null
+                                      ? null
+                                      : () {
+                                          final selectedMakeId =
+                                              selectedPickerMakeId;
+                                          setState(() {
+                                            _selectedCarMakeIds.add(
+                                              selectedMakeId,
+                                            );
+                                            _selectedCarMakeId = null;
+                                          });
+                                        },
+                                  icon: const Icon(Icons.add_rounded),
+                                  label: Text(context.l10n.add),
+                                ),
+                              ],
+                            ),
+                            if (selectableMakes.isEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: Text(
+                                  context
+                                      .l10n
+                                      .allAvailableCarNamesAlreadySelected,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: const Color(0xFF6F6A63),
+                                      ),
+                                ),
+                              ),
+                          ],
                         ],
-                      ],
-                      const SizedBox(height: 20),
-                      _PreferenceToggle(
-                        title: context.l10n.chatPushNotifications,
-                        subtitle: context.l10n.chatPushNotificationsDescription,
-                        value: _chatPushEnabled,
-                        onChanged: (value) {
-                          setState(() => _chatPushEnabled = value);
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      _PreferenceToggle(
-                        title: context.l10n.showMessagePreview,
-                        subtitle: context.l10n.showMessagePreviewDescription,
-                        value: _chatMessagePreviewEnabled,
-                        onChanged: (value) {
-                          setState(() => _chatMessagePreviewEnabled = value);
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: FilledButton(
-                              onPressed: isBusy ? null : _submit,
-                              child: Text(
-                                updateState.isLoading
-                                    ? context.l10n.saving
-                                    : context.l10n.saveChanges,
+                        const SizedBox(height: 20),
+                        _PreferenceToggle(
+                          title: context.l10n.chatPushNotifications,
+                          subtitle:
+                              context.l10n.chatPushNotificationsDescription,
+                          value: _chatPushEnabled,
+                          onChanged: (value) {
+                            setState(() => _chatPushEnabled = value);
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        _PreferenceToggle(
+                          title: context.l10n.showMessagePreview,
+                          subtitle: context.l10n.showMessagePreviewDescription,
+                          value: _chatMessagePreviewEnabled,
+                          onChanged: (value) {
+                            setState(() => _chatMessagePreviewEnabled = value);
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: FilledButton(
+                                onPressed: isBusy ? null : _submit,
+                                child: Text(
+                                  updateState.isLoading
+                                      ? context.l10n.saving
+                                      : context.l10n.saveChanges,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      _AccountActionsCard(isBusy: isBusy, onLogout: _logout),
-                      const SizedBox(height: 16),
-                      _DangerZoneCard(
-                        isBusy: isBusy,
-                        onDeleteAccount: _confirmDeleteAccount,
-                      ),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        _AccountActionsCard(isBusy: isBusy, onLogout: _logout),
+                        const SizedBox(height: 16),
+                        _DangerZoneCard(
+                          isBusy: isBusy,
+                          onDeleteAccount: _confirmDeleteAccount,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -515,7 +524,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     _chatMessagePreviewEnabled = profile.chatMessagePreviewEnabled;
     _selectedCarMakeIds
       ..clear()
-      ..addAll(profile.supportedCarModels.map((item) => item.makeId));
+      ..addAll(profile.supportedCarModels.map((item) => item.makeId ?? 0));
     if (profile.supportedCarModels.isNotEmpty) {
       _selectedCarMakeId = null;
     }
@@ -527,9 +536,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   }) {
     final profileMakesById = <int, CarMakeOption>{
       for (final model in profile.supportedCarModels)
-        model.makeId: CarMakeOption(
-          id: model.makeId,
-          name: model.makeName,
+        model.makeId ?? 0: CarMakeOption(
+          id: model.makeId ?? 0,
+          name: model.makeName ?? "",
           slug: '',
           models: profile.supportedCarModels
               .where((item) => item.makeId == model.makeId)
@@ -569,9 +578,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final modelIds = <int>{
       for (final make in catalog)
         if (_selectedCarMakeIds.contains(make.id))
-          ...make.models.map((model) => model.id),
+          ...make.models.map((model) => model.id ?? 0),
       for (final model in profile.supportedCarModels)
-        if (_selectedCarMakeIds.contains(model.makeId)) model.id,
+        if (_selectedCarMakeIds.contains(model.makeId)) model.id ?? 0,
     };
     return modelIds.toList()..sort();
   }

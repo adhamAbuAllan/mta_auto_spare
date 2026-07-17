@@ -99,6 +99,9 @@ class _AutoSpareAppState extends ConsumerState<AutoSpareApp>
   Widget build(BuildContext context) {
     final materialAppLocale = ref.watch(materialAppLocaleProvider);
     return MaterialApp(
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        physics: const BouncingScrollPhysics(),
+      ),
       onGenerateTitle: (context) => context.l10n.appTitle,
       debugShowCheckedModeBanner: false,
       locale: materialAppLocale,

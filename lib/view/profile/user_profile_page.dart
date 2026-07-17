@@ -436,7 +436,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     final makes = <String>[];
 
     for (final carModel in profile.supportedCarModels) {
-      final makeName = carModel.makeName.trim();
+      final makeName = carModel.makeName?.trim()??"";
       final makeKey = makeName.toLowerCase();
       if (makeName.isEmpty || seenKeys.contains(makeKey)) {
         continue;

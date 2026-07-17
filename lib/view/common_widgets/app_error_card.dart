@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../localization/app_localizations_x.dart';
 import 'app_panel.dart';
+import 'async_error_message.dart';
 
 class AppErrorCard extends StatelessWidget {
   const AppErrorCard({super.key, required this.message, this.onRetry});
@@ -25,7 +26,7 @@ class AppErrorCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            message,
+            localizeErrorText(message, context.l10n),
             style: Theme.of(
               context,
             ).textTheme.bodyMedium?.copyWith(color: const Color(0xFF6F6A63)),

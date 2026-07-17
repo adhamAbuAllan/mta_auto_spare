@@ -60,6 +60,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createAccount => 'Create account';
 
   @override
+  String get phoneAlreadyRegistered =>
+      'This phone number already has an account. Please sign in instead.';
+
+  @override
+  String get registrationPhoneCheckFailed =>
+      'We could not check this phone number right now. Please try again.';
+
+  @override
   String get createNewAccount => 'Create new account';
 
   @override
@@ -229,6 +237,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get somethingWentWrong => 'Something went wrong';
 
   @override
+  String get errorNetwork =>
+      'Could not connect to the server. Check your internet connection and try again.';
+
+  @override
+  String get errorNotFound => 'The requested information could not be found.';
+
+  @override
+  String get errorUnauthorized =>
+      'Your session has expired. Please sign in again.';
+
+  @override
+  String get errorForbidden =>
+      'You do not have permission to perform this action.';
+
+  @override
+  String get errorServer =>
+      'The server is temporarily unavailable. Please try again later.';
+
+  @override
+  String get errorInvalidRequest =>
+      'Please check the information and try again.';
+
+  @override
+  String get errorUnexpected => 'Something went wrong. Please try again.';
+
+  @override
   String get supplierRole => 'Supplier';
 
   @override
@@ -391,6 +425,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get showTranslation => 'Show translation';
+
+  @override
+  String get realTimeTranslationFeatureAnnouncement =>
+      'New feature: real-time translation is now available. Messages are automatically translated between chat participants who use different languages.';
 
   @override
   String get typing => 'Typing...';
@@ -1284,4 +1322,102 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phoneVerificationFailed => 'Phone verification failed.';
+
+  @override
+  String get adminDashboardTab => 'Dashboard';
+
+  @override
+  String get adminDashboardCouldNotLoad =>
+      'The dashboard could not be loaded right now.';
+
+  @override
+  String get adminUsersTotal => 'Total users';
+
+  @override
+  String get adminAccountsTotal => 'Accounts';
+
+  @override
+  String get adminActiveUsers => 'Active users';
+
+  @override
+  String get adminBlockedUsers => 'Blocked users';
+
+  @override
+  String get adminSuppliers => 'Suppliers';
+
+  @override
+  String get adminOpenReports => 'Open reports';
+
+  @override
+  String get adminRequests => 'Part requests';
+
+  @override
+  String get adminConversations => 'Conversations';
+
+  @override
+  String get adminMessages => 'Messages';
+
+  @override
+  String get adminCatalogItems => 'Catalog items';
+
+  @override
+  String get adminActiveSubscriptions => 'Active subscriptions';
+
+  @override
+  String get adminPendingPayments => 'Pending payments';
+
+  @override
+  String get adminSearchUsers => 'Search users';
+
+  @override
+  String get adminUserStatusAll => 'All users';
+
+  @override
+  String get adminManageUser => 'Manage user';
+
+  @override
+  String get adminChangeRole => 'Change role';
+
+  @override
+  String get adminResetPassword => 'Reset password';
+
+  @override
+  String get adminVerifyPhone => 'Verify phone';
+
+  @override
+  String get adminPhoneVerified => 'Phone verified';
+
+  @override
+  String get adminCatalog => 'Catalog';
+
+  @override
+  String get adminCatalogCouldNotLoad =>
+      'The catalog could not be loaded right now.';
+
+  @override
+  String get adminAddSparePart => 'Add spare part';
+
+  @override
+  String get adminSpareParts => 'Spare parts';
+
+  @override
+  String get adminItemName => 'Item name';
+
+  @override
+  String get adminItemDescription => 'Description';
+
+  @override
+  String get adminItemPrice => 'Price';
+
+  @override
+  String get adminNoModels => 'No models';
+
+  @override
+  String get adminAddMake => 'Add make';
+
+  @override
+  String get adminAddModel => 'Add model';
+
+  @override
+  String get adminNoSupplierResponses => 'No supplier responses yet';
 }

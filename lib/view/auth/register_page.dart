@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/providers/auth_provider.dart';
+import '../../controllers/providers/api_provider.dart';
 import '../../controllers/providers/catalog_provider.dart';
 import '../../localization/app_localizations_x.dart';
 import '../../localization/language_selector.dart';
@@ -24,6 +25,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   String _selectedRole = 'user';
   final Set<int> _selectedCarMakeIds = <int>{};
   int? _selectedCarMakeId;
+  bool _isCheckingRegistrationPhone = false;
+  String? _registrationPhoneError;
 
   @override
   void initState() {
@@ -46,6 +49,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         .toList(growable: false);
     final carCatalogErrorMessage = asyncErrorMessage(
       carCatalog.error,
+      l10n: context.l10n,
       fallback: context.l10n.carCatalogCouldNotBeLoadedRightNow,
     );
     final showCarSelection = _selectedRole == 'supplier';
@@ -61,240 +65,263 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 560),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.setUpMarketplaceProfile,
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF111827),
-                          ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      context.l10n.suppliersCanPostRequests,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: const Color(0xFF667085),
-                        height: 1.35,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      context.l10n.accountRole,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SegmentedButton<String>(
-                      segments: [
-                        ButtonSegment<String>(
-                          value: 'user',
-                          label: Text(context.l10n.userRole),
-                          icon: Icon(Icons.person_search_outlined),
-                        ),
-                        ButtonSegment<String>(
-                          value: 'supplier',
-                          label: Text(context.l10n.supplierRole),
-                          icon: Icon(Icons.handyman_outlined),
-                        ),
-                      ],
-                      selected: {_selectedRole},
-                      onSelectionChanged: (selection) {
-                        setState(() => _selectedRole = selection.first);
-                      },
-                    ),
-                    const SizedBox(height: 18),
-                    if (showCarSelection) ...[
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: FocusManager.instance.primaryFocus?.unfocus,
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.all(20),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 560),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        context.l10n.carsIHavePartsFor,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w900),
+                        context.l10n.setUpMarketplaceProfile,
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xFF111827),
+                            ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       Text(
-                        context.l10n.pickTheCarNamesYouSupplyPartsFor,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        context.l10n.suppliersCanPostRequests,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: const Color(0xFF667085),
                           height: 1.35,
                         ),
                       ),
-                      const SizedBox(height: 14),
-                      if (selectedMakes.isEmpty)
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF8F3EC),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFFE4E7EC)),
+                      const SizedBox(height: 24),
+                      Text(
+                        context.l10n.accountRole,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w800),
+                      ),
+                      const SizedBox(height: 10),
+                      SegmentedButton<String>(
+                        segments: [
+                          ButtonSegment<String>(
+                            value: 'user',
+                            label: Text(context.l10n.userRole),
+                            icon: Icon(Icons.person_search_outlined),
                           ),
-                          child: Text(
-                            context.l10n.noCarNamesSelectedYet,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: const Color(0xFF6F6A63)),
+                          ButtonSegment<String>(
+                            value: 'supplier',
+                            label: Text(context.l10n.supplierRole),
+                            icon: Icon(Icons.handyman_outlined),
                           ),
-                        )
-                      else
-                        Wrap(
-                          spacing: 12,
-                          runSpacing: 12,
-                          children: [
-                            for (final make in selectedMakes)
-                              _SelectedMakeChip(
-                                make: make,
-                                onRemove: () {
-                                  setState(() {
-                                    _selectedCarMakeIds.remove(make.id);
-                                  });
-                                },
-                              ),
-                          ],
+                        ],
+                        selected: {_selectedRole},
+                        onSelectionChanged: (selection) {
+                          setState(() => _selectedRole = selection.first);
+                        },
+                      ),
+                      const SizedBox(height: 18),
+                      if (showCarSelection) ...[
+                        Text(
+                          context.l10n.carsIHavePartsFor,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w900),
                         ),
-                      const SizedBox(height: 16),
-                      if (carCatalog.isLoading)
-                        const LinearProgressIndicator()
-                      else if (carCatalog.hasError)
-                        AppErrorCard(
-                          message:
-                              '${context.l10n.theCarCatalogCouldNotBeLoaded}\n$carCatalogErrorMessage',
-                          onRetry: () => ref.invalidate(carCatalogProvider),
-                        )
-                      else ...[
-                        SizedBox(
-                          height: 120,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: DropdownButtonFormField<int>(
-                                  key: ValueKey(
-                                    'make-picker-${_selectedCarMakeId ?? 'none'}-${selectableMakes.length}',
-                                  ),
-                                  initialValue: _selectedCarMakeId,
-                                  decoration: InputDecoration(
-                                    labelText: context.l10n.carName,
-                                  ),
-                                  items: [
-                                    for (final make in selectableMakes)
-                                      DropdownMenuItem<int>(
-                                        value: make.id,
-                                        child: Text(make.name),
-                                      ),
-                                  ],
-                                  onChanged: selectableMakes.isEmpty
-                                      ? null
-                                      : (value) {
-                                          setState(() {
-                                            _selectedCarMakeId = value;
-                                          });
-                                        },
-                                ),
+                        const SizedBox(height: 8),
+                        Text(
+                          context.l10n.pickTheCarNamesYouSupplyPartsFor,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: const Color(0xFF667085),
+                                height: 1.35,
                               ),
-                              const SizedBox(width: 12),
-                              FilledButton.tonalIcon(
-                                onPressed: _selectedCarMakeId == null
-                                    ? null
-                                    : () {
-                                        final selectedMakeId =
-                                            _selectedCarMakeId;
-                                        if (selectedMakeId == null) {
-                                          return;
-                                        }
-                                        setState(() {
-                                          _selectedCarMakeIds.add(
-                                            selectedMakeId,
-                                          );
-                                          _selectedCarMakeId = null;
-                                        });
-                                      },
-                                icon: const Icon(Icons.add_rounded),
-                                label: Text(context.l10n.add),
-                              ),
-                            ],
-                          ),
                         ),
-                        if (selectableMakes.isEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 12),
+                        const SizedBox(height: 14),
+                        if (selectedMakes.isEmpty)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8F3EC),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(0xFFE4E7EC),
+                              ),
+                            ),
                             child: Text(
-                              context.l10n.allAvailableCarNamesAlreadySelected,
-                              style: Theme.of(context).textTheme.bodySmall
+                              context.l10n.noCarNamesSelectedYet,
+                              style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(color: const Color(0xFF6F6A63)),
                             ),
+                          )
+                        else
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 12,
+                            children: [
+                              for (final make in selectedMakes)
+                                _SelectedMakeChip(
+                                  make: make,
+                                  onRemove: () {
+                                    setState(() {
+                                      _selectedCarMakeIds.remove(make.id);
+                                    });
+                                  },
+                                ),
+                            ],
                           ),
+                        const SizedBox(height: 16),
+                        if (carCatalog.isLoading)
+                          const LinearProgressIndicator()
+                        else if (carCatalog.hasError)
+                          AppErrorCard(
+                            message:
+                                '${context.l10n.theCarCatalogCouldNotBeLoaded}\n$carCatalogErrorMessage',
+                            onRetry: () => ref.invalidate(carCatalogProvider),
+                          )
+                        else ...[
+                          SizedBox(
+                            height: 120,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: DropdownButtonFormField<int>(
+                                    key: ValueKey(
+                                      'make-picker-${_selectedCarMakeId ?? 'none'}-${selectableMakes.length}',
+                                    ),
+                                    initialValue: _selectedCarMakeId,
+                                    decoration: InputDecoration(
+                                      labelText: context.l10n.carName,
+                                    ),
+                                    items: [
+                                      for (final make in selectableMakes)
+                                        DropdownMenuItem<int>(
+                                          value: make.id,
+                                          child: Text(make.name),
+                                        ),
+                                    ],
+                                    onChanged: selectableMakes.isEmpty
+                                        ? null
+                                        : (value) {
+                                            setState(() {
+                                              _selectedCarMakeId = value;
+                                            });
+                                          },
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                FilledButton.tonalIcon(
+                                  onPressed: _selectedCarMakeId == null
+                                      ? null
+                                      : () {
+                                          final selectedMakeId =
+                                              _selectedCarMakeId;
+                                          if (selectedMakeId == null) {
+                                            return;
+                                          }
+                                          setState(() {
+                                            _selectedCarMakeIds.add(
+                                              selectedMakeId,
+                                            );
+                                            _selectedCarMakeId = null;
+                                          });
+                                        },
+                                  icon: const Icon(Icons.add_rounded),
+                                  label: Text(context.l10n.add),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (selectableMakes.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: Text(
+                                context
+                                    .l10n
+                                    .allAvailableCarNamesAlreadySelected,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(color: const Color(0xFF6F6A63)),
+                              ),
+                            ),
+                        ],
+                        const SizedBox(height: 18),
                       ],
-                      const SizedBox(height: 18),
-                    ],
-                    TextFormField(
-                      controller: nameController,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.fullName,
-                        hintText: context.l10n.fullNameHint,
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return context.l10n.enterYourFullName;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 14),
-                    TextFormField(
-                      controller: phoneController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.phone,
-                      autofillHints: const [AutofillHints.telephoneNumber],
-                      decoration: InputDecoration(
-                        labelText: context.l10n.phone,
-                        hintText: authPhoneHintText,
-                      ),
-                      validator: (value) {
-                        return authPhoneInputError(value ?? '');
-                      },
-                    ),
-                    const SizedBox(height: 14),
-                    TextFormField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.password,
-                        hintText: context.l10n.passwordMinHint,
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return context.l10n.enterPassword;
-                        }
-                        if (value.length < 6) {
-                          return context.l10n.useAtLeastSixCharacters;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 22),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: FilledButton(
-                            onPressed: _submit,
-                            child: Text(context.l10n.createAccount),
-                          ),
+                      TextFormField(
+                        controller: nameController,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          labelText: context.l10n.fullName,
+                          hintText: context.l10n.fullNameHint,
                         ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return context.l10n.enterYourFullName;
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: phoneController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.phone,
+                        autofillHints: const [AutofillHints.telephoneNumber],
+                        decoration: InputDecoration(
+                          labelText: context.l10n.phone,
+                          hintText: authPhoneHintText,
+                        ),
+                        validator: (value) {
+                          return authPhoneInputError(value ?? '');
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: context.l10n.password,
+                          hintText: context.l10n.passwordMinHint,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return context.l10n.enterPassword;
+                          }
+                          if (value.length < 6) {
+                            return context.l10n.useAtLeastSixCharacters;
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 22),
+                      if (_registrationPhoneError != null) ...[
+                        AppErrorCard(message: _registrationPhoneError!),
+                        const SizedBox(height: 14),
                       ],
-                    ),
-                    const SizedBox(height: 16),
-                    const PrivacyPolicyLink(),
-                  ],
+                      Row(
+                        children: [
+                          Expanded(
+                            child: FilledButton(
+                              onPressed: _isCheckingRegistrationPhone
+                                  ? null
+                                  : _submit,
+                              child: _isCheckingRegistrationPhone
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : Text(context.l10n.createAccount),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      const PrivacyPolicyLink(),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -304,7 +331,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     );
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -325,6 +352,41 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             )
           : null,
     );
+
+    setState(() {
+      _isCheckingRegistrationPhone = true;
+      _registrationPhoneError = null;
+    });
+    try {
+      final isAvailable = await ref
+          .read(authApiProvider)
+          .isPhoneAvailableForRegistration(phone: phone);
+      if (!mounted) {
+        return;
+      }
+      if (!isAvailable) {
+        setState(() {
+          _isCheckingRegistrationPhone = false;
+          _registrationPhoneError = context.l10n.phoneAlreadyRegistered;
+        });
+        return;
+      }
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _isCheckingRegistrationPhone = false;
+        _registrationPhoneError = localizeErrorMessage(
+          error,
+          context.l10n,
+          fallback: context.l10n.registrationPhoneCheckFailed,
+        );
+      });
+      return;
+    }
+
+    setState(() => _isCheckingRegistrationPhone = false);
 
     Navigator.of(
       context,
@@ -360,7 +422,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final modelIds = <int>{
       for (final make in catalog)
         if (_selectedCarMakeIds.contains(make.id))
-          ...make.models.map((model) => model.id),
+          ...make.models.map((model) => model.id ?? 0),
     };
     return modelIds.toList()..sort();
   }
