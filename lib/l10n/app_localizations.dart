@@ -798,6 +798,12 @@ abstract class AppLocalizations {
   /// **'Show translation'**
   String get showTranslation;
 
+  /// No description provided for @realTimeTranslationFeatureAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'New feature: real-time translation is now available. Messages are automatically translated between chat participants who use different languages.'**
+  String get realTimeTranslationFeatureAnnouncement;
+
   /// No description provided for @typing.
   ///
   /// In en, this message translates to:

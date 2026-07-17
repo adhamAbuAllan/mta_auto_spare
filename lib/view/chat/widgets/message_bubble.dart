@@ -205,7 +205,8 @@ class _MessageBubbleState extends State<MessageBubble> {
                               attachments: widget.message.media,
                               isMine: widget.isMine,
                               message: widget.message,
-                              voicePlaybackController: widget.voicePlaybackController,
+                              voicePlaybackController:
+                                  widget.voicePlaybackController,
                             ),
                           ],
                           if (!showDeletedPlaceholder &&
@@ -489,11 +490,12 @@ class _MessageMediaGallery extends StatelessWidget {
     MessageAttachmentModel attachment,
   ) {
     if (attachment.isAudio) {
-      final attachmentIndex = message.media.indexOf(attachment);
+      final playbackId = _voicePlaybackId(message, attachment);
       return VoiceMessageCard(
+        key: ValueKey(playbackId),
         attachment: attachment,
         isMine: isMine,
-        playbackId: '${message.id}:$attachmentIndex',
+        playbackId: playbackId,
         playbackController: voicePlaybackController,
       );
     }
@@ -524,6 +526,18 @@ class _MessageMediaGallery extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _voicePlaybackId(
+    MessageModel message,
+    MessageAttachmentModel attachment,
+  ) {
+    // Attachment IDs survive REST/socket rebuilds. The URL fallback keeps an
+    // optimistic attachment stable until the server assigns its ID.
+    final attachmentIdentity = attachment.id != 0
+        ? attachment.id.toString()
+        : (attachment.fileUrl ?? attachment.localPath ?? 'unknown');
+    return '${message.id}:$attachmentIdentity';
   }
 }
 

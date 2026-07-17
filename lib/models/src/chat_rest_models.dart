@@ -357,7 +357,32 @@ class MessageAttachmentModel {
   final DateTime? createdAt;
 
   bool get isImage => (contentType ?? '').toLowerCase().startsWith('image/');
-  bool get isAudio => (contentType ?? '').toLowerCase().startsWith('audio/');
+
+  /// Older attachment rows may not have a MIME type (or may have been saved
+  /// as `application/octet-stream`). Use the persisted filename as a fallback
+  /// so existing voice notes still render with the voice player.
+  bool get isAudio {
+    if ((contentType ?? '').toLowerCase().startsWith('audio/')) {
+      return true;
+    }
+    final extension = _fileExtension(fileName);
+    return const {
+      'aac',
+      'amr',
+      'caf',
+      'flac',
+      'm4a',
+      'm4b',
+      'mp3',
+      'oga',
+      'ogg',
+      'opus',
+      'wav',
+      'webm',
+      '3gp',
+      '3gpp',
+    }.contains(extension);
+  }
 
   String get fileName {
     final local = localPath?.trim();
@@ -377,6 +402,15 @@ class MessageAttachmentModel {
       return segments.last;
     }
     return remote;
+  }
+
+  static String _fileExtension(String fileName) {
+    final normalized = fileName.trim().toLowerCase();
+    final lastDot = normalized.lastIndexOf('.');
+    if (lastDot == -1 || lastDot == normalized.length - 1) {
+      return '';
+    }
+    return normalized.substring(lastDot + 1);
   }
 
   factory MessageAttachmentModel.fromJson(JsonMap json) {

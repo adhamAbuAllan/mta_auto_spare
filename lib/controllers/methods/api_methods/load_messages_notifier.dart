@@ -120,10 +120,19 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
 
     try {
       final page = await _chatApi.getMessages(conversationId: conversationId);
-      final nextState = (cachedState ?? state).copyWith(
+      // Socket events can arrive while this HTTP request is in flight (most
+      // commonly immediately after a reconnect). Never replace that live
+      // state with a potentially older paginated response.
+      final latestState = _stateForConversation(conversationId);
+      final mergedMessages = _mergeLoadedMessages(
+        currentMessages: latestState.messages,
+        loadedMessages: page.results,
+        conversationId: conversationId,
+      );
+      final nextState = latestState.copyWith(
         isLoading: false,
         conversationId: conversationId,
-        messages: _sortMessages(page.results),
+        messages: mergedMessages,
         nextPageUrl: page.next,
         errorMessage: null,
       );
@@ -684,6 +693,7 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
       return;
     }
     final currentState = _stateForConversation(conversationId);
+
     final mergedState = _mergeIncomingMessage(currentState, message);
     _cacheConversationState(conversationId, mergedState);
     _notifyConversationPreviewChanged(
@@ -835,10 +845,15 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
       (message) => message.id == incoming.id,
     );
     if (exactIndex != -1) {
-      messages[exactIndex] = incoming.copyWith(
-        isOptimistic: false,
-        hasSendError: false,
+      _debugAttachmentPreservation(
+        previous: messages[exactIndex],
+        replacement: incoming,
+        reason: 'incoming-exact-id',
       );
+      messages[exactIndex] = _preserveKnownAttachments(
+        previous: messages[exactIndex],
+        replacement: incoming,
+      ).copyWith(isOptimistic: false, hasSendError: false);
       return baseState.copyWith(messages: _sortMessages(messages));
     }
 
@@ -847,14 +862,84 @@ class LoadMessagesNotifier extends StateNotifier<MessageState> {
           message.isOptimistic && _matchesOptimisticMessage(message, incoming),
     );
     if (optimisticIndex != -1) {
-      messages[optimisticIndex] = incoming.copyWith(
-        localMessageId: messages[optimisticIndex].localMessageId,
+      _debugAttachmentPreservation(
+        previous: messages[optimisticIndex],
+        replacement: incoming,
+        reason: 'incoming-optimistic-match',
       );
+      messages[optimisticIndex] = _preserveKnownAttachments(
+        previous: messages[optimisticIndex],
+        replacement: incoming,
+      ).copyWith(localMessageId: messages[optimisticIndex].localMessageId);
       return baseState.copyWith(messages: _sortMessages(messages));
     }
 
     messages.add(incoming);
+
     return baseState.copyWith(messages: _sortMessages(messages));
+  }
+
+  List<MessageModel> _mergeLoadedMessages({
+    required List<MessageModel> currentMessages,
+    required List<MessageModel> loadedMessages,
+    required int conversationId,
+  }) {
+    final mergedById = <int, MessageModel>{
+      for (final message in currentMessages) message.id: message,
+    };
+    for (final loaded in loadedMessages) {
+      final previous = mergedById[loaded.id];
+      if (previous != null) {
+        _debugAttachmentPreservation(
+          previous: previous,
+          replacement: loaded,
+          reason: 'rest-snapshot',
+        );
+      }
+      mergedById[loaded.id] =
+          _preserveKnownAttachments(
+            previous: previous,
+            replacement: loaded,
+          ).copyWith(
+            localMessageId: previous?.localMessageId,
+            isOptimistic: false,
+            hasSendError: false,
+          );
+    }
+    final merged = _sortMessages(mergedById.values.toList());
+
+
+    return merged;
+  }
+
+  int _audioAttachmentCount(Iterable<MessageModel> messages) => messages
+      .expand((message) => message.media)
+      .where((attachment) => attachment.isAudio)
+      .length;
+
+  MessageModel _preserveKnownAttachments({
+    MessageModel? previous,
+    required MessageModel replacement,
+  }) {
+    if (previous == null ||
+        previous.media.isEmpty ||
+        replacement.media.isNotEmpty) {
+      return replacement;
+    }
+
+    return replacement.copyWith(media: previous.media);
+  }
+
+  void _debugAttachmentPreservation({
+    required MessageModel previous,
+    required MessageModel replacement,
+    required String reason,
+  }) {
+    final previousAudio = _audioAttachmentCount([previous]);
+    final replacementAudio = _audioAttachmentCount([replacement]);
+    if (previousAudio > 0 || replacementAudio > 0) {
+
+    }
   }
 
   bool _matchesOptimisticMessage(

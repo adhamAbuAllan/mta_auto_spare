@@ -390,6 +390,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get showTranslation => 'إظهار الترجمة';
 
   @override
+  String get realTimeTranslationFeatureAnnouncement =>
+      'ميزة جديدة: الترجمة الفورية متاحة الآن. تُترجم الرسائل تلقائيًا بين المشاركين في الدردشة الذين يستخدمون لغات مختلفة.';
+
+  @override
   String get typing => 'يكتب...';
 
   @override

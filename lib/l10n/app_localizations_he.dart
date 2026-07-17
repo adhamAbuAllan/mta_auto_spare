@@ -392,6 +392,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get showTranslation => 'הצג תרגום';
 
   @override
+  String get realTimeTranslationFeatureAnnouncement =>
+      'תכונה חדשה: תרגום בזמן אמת זמין כעת. הודעות מתורגמות אוטומטית בין משתתפי צ\'אט המשתמשים בשפות שונות.';
+
+  @override
   String get typing => 'מקליד...';
 
   @override

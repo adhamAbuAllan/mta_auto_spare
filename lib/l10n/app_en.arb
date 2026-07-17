@@ -200,6 +200,7 @@
   "sharedRequest": "Shared a request",
   "showOriginal": "Show original",
   "showTranslation": "Show translation",
+  "realTimeTranslationFeatureAnnouncement": "New feature: real-time translation is now available. Messages are automatically translated between chat participants who use different languages.",
   "typing": "Typing...",
   "unableToPlayVoiceMessage": "Unable to play voice message",
   "unableToSeekVoiceMessage": "Unable to seek voice message",

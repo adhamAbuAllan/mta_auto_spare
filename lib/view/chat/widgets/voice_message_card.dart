@@ -322,7 +322,12 @@ class _VoiceMessageCardState extends State<VoiceMessageCard> {
       if (fileUrl == null || fileUrl.isEmpty) {
         throw StateError('No audio source available.');
       }
-      await _player.setUrl(ApiConstants.resolveUrl(fileUrl));
+      final resolvedUrl = ApiConstants.resolveUrl(fileUrl);
+      debugPrint(
+        '[VOICE DEBUG] audio playback source '
+        'attachment=${widget.attachment.id} original=$fileUrl resolved=$resolvedUrl',
+      );
+      await _player.setUrl(resolvedUrl);
     }
 
     if (!mounted) {

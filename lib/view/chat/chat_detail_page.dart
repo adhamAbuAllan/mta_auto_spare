@@ -21,6 +21,7 @@ import '../../controllers/providers/request_provider.dart';
 import '../../controllers/statuses/message_state.dart';
 import '../../localization/app_localizations_x.dart';
 import '../../models/models.dart';
+import '../../session/session_notifier.dart';
 import '../../session/session_state.dart';
 import '../common_widgets/app_error_card.dart';
 import '../common_widgets/empty_state_card.dart';
@@ -82,6 +83,7 @@ abstract class _ChatDetailPageStateBase extends ConsumerState<ChatDetailPage> {
   bool _isRequestAccessPanelExpanded = true;
   bool _isLoadingSharedRequestState = false;
   bool _isUpdatingSharedRequestState = false;
+  bool _showTranslationFeatureAnnouncement = false;
   final Map<int, PartRequest> _sharedRequestsById = {};
   final Map<int, List<PartRequestAccess>> _sharedAccessesByRequestId = {};
 
@@ -133,6 +135,9 @@ abstract class _ChatDetailPageStateBase extends ConsumerState<ChatDetailPage> {
 
 class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
     with WidgetsBindingObserver {
+  static const _translationFeatureAnnouncementKeyPrefix =
+      'chat_translation_feature_announcement_v1_seen';
+
   @override
   void initState() {
     super.initState();
@@ -153,16 +158,73 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
     _messageSubscription = ref.listenManual<MessageState>(
       messagesNotifierProvider,
       (previous, next) {
+        debugPrint(
+          '[CHAT DEBUG] STATE UPDATE\n'
+          'previous conversation=${previous?.conversationId}\n'
+          'previous messages=${previous?.messages.length}\n'
+          'next conversation=${next.conversationId}\n'
+          'next messages=${next.messages.length}\n'
+          'loading=${next.isLoading}\n'
+          'connection=${next.connectionStatus}',
+        );
+
+        // Print audio messages in previous state
+        if (previous != null) {
+          final previousAudioMessages = previous.messages
+              .expand((message) => message.media)
+              .where((media) => media.isAudio)
+              .toList();
+
+          debugPrint(
+            '[VOICE DEBUG] previous audio count=${previousAudioMessages.length}',
+          );
+        }
+
+        // Print audio messages in next state
+        final nextAudioMessages = next.messages
+            .expand((message) => message.media)
+            .where((media) => media.isAudio)
+            .toList();
+
+        debugPrint(
+          '[VOICE DEBUG] next audio count=${nextAudioMessages.length}',
+        );
+
+        for (final media in nextAudioMessages) {
+          debugPrint('[VOICE DEBUG] next audio file=${media.fileUrl}');
+        }
+
         if (!mounted) {
           return;
         }
+
         final displayedState = _resolveDisplayedMessageState(next);
+
+        debugPrint(
+          '[CHAT DEBUG] displayed messages=${displayedState.messages.length}',
+        );
+
+        final displayedAudioMessages = displayedState.messages
+            .expand((message) => message.media)
+            .where((media) => media.isAudio)
+            .toList();
+
+        debugPrint(
+          '[VOICE DEBUG] displayed audio count=${displayedAudioMessages.length}',
+        );
+
+        for (final media in displayedAudioMessages) {
+          debugPrint('[VOICE DEBUG] displayed audio file=${media.fileUrl}');
+        }
+
         setState(() {
           _messageState = displayedState;
         });
+
         unawaited(_refreshSharedRequestContext(displayedState.messages));
       },
     );
+    unawaited(_loadTranslationFeatureAnnouncement());
     _sessionSubscription = ref.listenManual<SessionState>(
       currentSessionProvider,
       (previous, next) {
@@ -502,20 +564,42 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
 
     if (messageState.messages.isEmpty) {
       return SingleChildScrollView(
-        child: EmptyStateCard(
-          title: context.l10n.noMessagesYet,
-          message: context.l10n.noMessagesYetMessage,
-          icon: Icons.forum_outlined,
+        child: Column(
+          children: [
+            if (_showTranslationFeatureAnnouncement)
+              _TranslationFeatureSystemMessage(
+                onDismiss: _hideTranslationFeatureAnnouncement,
+              ),
+            EmptyStateCard(
+              title: context.l10n.noMessagesYet,
+              message: context.l10n.noMessagesYetMessage,
+              icon: Icons.forum_outlined,
+            ),
+          ],
         ),
       );
     }
 
     _voicePlaybackController.updatePlaybackOrder([
       for (final message in messageState.messages)
-        for (var index = 0; index < message.media.length; index += 1)
-          if (message.media[index].isAudio) '${message.id}:$index',
+        for (final attachment in message.media)
+          if (attachment.isAudio)
+            '${message.id}:${attachment.id != 0 ? attachment.id : (attachment.fileUrl ?? attachment.localPath ?? 'unknown')}',
     ]);
+    debugPrint(
+      '[VOICE DEBUG] total messages=${messageState.messages.length}, '
+      'audio messages=${messageState.messages.where((m) => m.media.any((media) => media.isAudio)).length}',
+    );
 
+    for (final message in messageState.messages) {
+      if (message.media.any((media) => media.isAudio)) {
+        debugPrint(
+          '[VOICE DEBUG] audio message id=${message.id}, '
+          'media count=${message.media.length}, '
+          'media=${message.media.map((e) => {'fileUrl': e.fileUrl, 'localPath': e.localPath}).toList()}',
+        );
+      }
+    }
     return Stack(
       children: [
         Positioned.fill(
@@ -533,10 +617,19 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
             itemCount:
                 messageState.messages.length + (showTypingIndicator ? 1 : 0),
             itemBuilder: (context, index) {
-              if (index == messageState.messages.length) {
+              final messageCount = messageState.messages.length;
+              if (index == messageCount) {
                 return const _TypingIndicatorBubble();
               }
               final message = messageState.messages[index];
+
+              if (message.media.any((media) => media.isAudio)) {
+                debugPrint(
+                  '[VOICE DEBUG] Building audio MessageBubble '
+                  'id=${message.id}, '
+                  'media=${message.media.map((e) => {'fileUrl': e.fileUrl, 'localPath': e.localPath}).toList()}',
+                );
+              }
               return MessageBubble(
                 key: ValueKey(message.id),
                 message: message,
@@ -549,6 +642,13 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
             },
           ),
         ),
+        if (_showTranslationFeatureAnnouncement)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: _TranslationFeatureSystemMessage(
+              onDismiss: _hideTranslationFeatureAnnouncement,
+            ),
+          ),
         // Align(
         //   alignment: Alignment.bottomCenter,
         //   child: Padding(
@@ -594,6 +694,29 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
     }
 
     await _activateLiveSync(conversationId);
+  }
+
+  Future<void> _loadTranslationFeatureAnnouncement() async {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) {
+      return;
+    }
+    final preferences = ref.read(sharedPreferencesProvider);
+    final key = '$_translationFeatureAnnouncementKeyPrefix:$userId';
+    if (preferences.getBool(key) ?? false) {
+      return;
+    }
+    await preferences.setBool(key, true);
+    if (!mounted) {
+      return;
+    }
+    setState(() => _showTranslationFeatureAnnouncement = true);
+  }
+
+  void _hideTranslationFeatureAnnouncement() {
+    if (mounted) {
+      setState(() => _showTranslationFeatureAnnouncement = false);
+    }
   }
 
   Future<void> _loadMessages(
@@ -660,5 +783,56 @@ class _ChatDetailPageState extends _ChatDetailPageStateVoiceAndMedia
     }
     return _messagesNotifier.peek(widget.conversationId) ??
         MessageState(conversationId: widget.conversationId, isLoading: true);
+  }
+}
+
+class _TranslationFeatureSystemMessage extends StatelessWidget {
+  const _TranslationFeatureSystemMessage({required this.onDismiss});
+
+  final VoidCallback onDismiss;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 10, 24, 12),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.translate_rounded,
+                size: 18,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  context.l10n.realTimeTranslationFeatureAnnouncement,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    height: 1.35,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              IconButton(
+                onPressed: onDismiss,
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                icon: const Icon(Icons.close_rounded),
+                iconSize: 18,
+                visualDensity: VisualDensity.compact,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

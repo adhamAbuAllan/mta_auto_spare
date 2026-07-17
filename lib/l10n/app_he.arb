@@ -151,6 +151,7 @@
   "sharedRequest": "שיתף בקשה",
   "showOriginal": "הצג מקור",
   "showTranslation": "הצג תרגום",
+  "realTimeTranslationFeatureAnnouncement": "תכונה חדשה: תרגום בזמן אמת זמין כעת. הודעות מתורגמות אוטומטית בין משתתפי צ'אט המשתמשים בשפות שונות.",
   "typing": "מקליד...",
   "unableToPlayVoiceMessage": "לא ניתן לנגן את ההודעה הקולית",
   "unableToSeekVoiceMessage": "לא ניתן לדלג בתוך ההודעה הקולית",

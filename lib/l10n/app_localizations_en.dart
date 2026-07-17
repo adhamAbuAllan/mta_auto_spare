@@ -393,6 +393,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showTranslation => 'Show translation';
 
   @override
+  String get realTimeTranslationFeatureAnnouncement =>
+      'New feature: real-time translation is now available. Messages are automatically translated between chat participants who use different languages.';
+
+  @override
   String get typing => 'Typing...';
 
   @override

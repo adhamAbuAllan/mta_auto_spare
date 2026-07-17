@@ -24,7 +24,7 @@ abstract final class ApiConstants {
 
     final parsed = Uri.tryParse(trimmed);
     if (parsed != null && parsed.hasScheme) {
-      if (_shouldReplaceWithBaseHost(parsed)) {
+      if (_shouldResolveAgainstBaseUrl(parsed)) {
         return _rebuildAgainstBaseUrl(parsed);
       }
       return trimmed;
@@ -52,9 +52,17 @@ abstract final class ApiConstants {
     return trimmed;
   }
 
-  static bool _shouldReplaceWithBaseHost(Uri uri) {
+  /// Media URLs from the API can contain an old absolute HTTP URL even when
+  /// the app itself is configured to use HTTPS. Treat URLs for this backend
+  /// (and development loopback URLs) as paths on [baseUrl], so every media
+  /// consumer gets the configured scheme and host.
+  static bool _shouldResolveAgainstBaseUrl(Uri uri) {
     final host = uri.host.trim().toLowerCase();
-    return host == '127.0.0.1' || host == 'localhost' || host == '0.0.0.0';
+    final baseHost = Uri.parse(baseUrl).host.trim().toLowerCase();
+    return host == baseHost ||
+        host == '127.0.0.1' ||
+        host == 'localhost' ||
+        host == '0.0.0.0';
   }
 
   static String _rebuildAgainstBaseUrl(Uri original) {

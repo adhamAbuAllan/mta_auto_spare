@@ -398,6 +398,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get showTranslation => 'Показать перевод';
 
   @override
+  String get realTimeTranslationFeatureAnnouncement =>
+      'Новая функция: теперь доступен перевод в реальном времени. Сообщения автоматически переводятся между участниками чата, использующими разные языки.';
+
+  @override
   String get typing => 'Ввод...';
 
   @override

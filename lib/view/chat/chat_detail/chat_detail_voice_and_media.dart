@@ -45,6 +45,8 @@ abstract class _ChatDetailPageStateVoiceAndMedia
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final filePath =
           '${tempDirectory.path}${Platform.pathSeparator}voice-${widget.conversationId}-$timestamp.m4a';
+      await(ref.read(chatSoundEffectsProvider).playRecordingStarted());
+
       await _audioRecorder.start(
         const RecordConfig(
           encoder: AudioEncoder.aacLc,
@@ -69,7 +71,6 @@ abstract class _ChatDetailPageStateVoiceAndMedia
         _voiceRecordingStartedAt = DateTime.now();
         _voiceRecordingDuration = Duration.zero;
       });
-      unawaited(ref.read(chatSoundEffectsProvider).playRecordingStarted());
       _startVoiceRecordingTicker();
       _keepLatestMessageVisible();
     } catch (_) {
